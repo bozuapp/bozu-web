@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>bozu · Pedidos desde la mesa y la pista para discotecas</title>
+<meta name="description" content="bozu convierte cada mesa y cada rincón de la pista en un punto de venta. Tus clientes piden y pagan desde el móvil; tu barra solo prepara. Demo gratuita para discotecas.">
+<meta property="og:title" content="bozu · Tap. Drink. Party.">
+<meta property="og:description" content="Más ventas por hora, menos colas y todos los datos de tu noche. Demo gratuita para discotecas.">
+<meta property="og:image" content="assets/og.jpg">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/DMSans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<!-- Definiciones compartidas para el cristal de rayos X -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b2110"/><stop offset=".55" stop-color="#050505"/><stop offset="1" stop-color="#11150a"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eaffae"/><stop offset=".6" stop-color="#b9e04a" stop-opacity=".45"/><stop offset="1" stop-color="#deff80" stop-opacity=".85"/>
+    </linearGradient>
+    <linearGradient id="rimw" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#e8eee4" stop-opacity=".35"/><stop offset="1" stop-color="#e8eee4" stop-opacity=".8"/>
+    </linearGradient>
+    <linearGradient id="liquid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d4ff3a"/><stop offset="1" stop-color="#6e9614"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<a class="skip" href="#main">Saltar al contenido</a>
+
+<header class="nav" id="top">
+  <a class="logo" href="#top" aria-label="bozu, inicio">bozu<span class="dot"></span></a>
+  <nav class="nav-links" aria-label="Secciones">
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#beneficios">Beneficios</a>
+    <a href="#tap">bozu Tap</a>
+    <a href="#datos">Dashboard</a>
+  </nav>
+  <a class="pill pill-ghost nav-cta" href="#demo">Agenda una demo <span class="arr" aria-hidden="true">↗</span></a>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="curtains" aria-hidden="true"></div>
+  <div class="hero-copy">
+    <p class="kicker">Para discotecas y clubs</p>
+    <h1 class="h-display">
+      <span class="w">Cada noche, tu barra</span>
+      <span class="g">decide cuánto facturas.</span>
+    </h1>
+    <p class="lead">bozu convierte cada mesa y cada rincón de la pista en un punto de venta. Tus clientes piden y pagan desde el móvil; tu barra solo prepara.</p>
+    <div class="ctas">
+      <a class="pill pill-light" href="#demo">Pide tu demo gratis <span class="arr" aria-hidden="true">↗</span></a>
+      <a class="pill pill-ghost" href="#club">Mira cómo cambia tu noche</a>
+    </div>
+  </div>
+  <div class="hero-stage" aria-hidden="true">
+    <div class="holo" id="holo">
+      <div class="holo-card">
+        <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip">Mesa 7</span></div>
+        <p class="ui-title">Tu ronda</p>
+        <div class="ui-item"><span class="ui-ic"><svg viewBox="0 0 40 40"><path d="M9 7h22l-3 27H12z" fill="none" stroke="#f4f4f2" stroke-width="2"/><path d="M11.3 17h17.4l-2 16H13.3z" fill="#d4ff3a"/></svg></span><span class="ui-t"><b>Gin tonic</b><small>Premium · Tónica</small></span><span class="ui-q">2</span></div>
+        <div class="ui-item"><span class="ui-ic"><svg viewBox="0 0 40 40"><path d="M9 7h22l-3 27H12z" fill="none" stroke="#f4f4f2" stroke-width="2"/><path d="M11.3 17h17.4l-2 16H13.3z" fill="#d4ff3a"/></svg></span><span class="ui-t"><b>Tequila</b><small>Con sal y lima</small></span><span class="ui-q">4</span></div>
+        <button class="ui-btn" id="heroBtn" type="button" tabindex="-1">Completar pedido</button>
+      </div>
+      <div class="beam"></div>
+      <div class="phone-top"><div class="scr"><span></span><span></span><b></b></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ESCENA: LA NOCHE VISTA DESDE ARRIBA ============ -->
+<section class="club" id="club" aria-label="Tu noche vista desde arriba, antes y después de bozu">
+  <div class="club-sticky">
+    <canvas id="clubCanvas" aria-hidden="true"></canvas>
+    <div class="club-captions">
+      <div class="cap" data-i="0"><h2>Así está tu barra a las 02:00.</h2><p>Cola, pedidos a gritos y cobros lentos. Tu equipo cobra en lugar de servir.</p></div>
+      <div class="cap" data-i="1"><h2>La cola es dinero que se va por la puerta.</h2><p>Quien espera demasiado deja de pedir. Y la segunda ronda nunca llega.</p></div>
+      <div class="cap" data-i="2"><h2>Con bozu, piden desde donde están.</h2><p>Mesas y pista mandan sus pedidos, ya pagados, directamente a la barra.</p></div>
+      <div class="cap" data-i="3"><h2>La barra solo prepara. La pista nunca se vacía.</h2><p>El camarero sirve en mesa y el resto recoge cuando le avisa el móvil.</p></div>
+    </div>
+    <div class="club-progress" aria-hidden="true"><i></i></div>
+  </div>
+</section>
+
+<!-- ============ TAP. DRINK. PARTY. ============ -->
+<section class="tdp" id="tdp" aria-label="Tap. Drink. Party.">
+  <div class="tdp-sticky">
+    <p class="tdp-words"><span data-k="0">Tap.</span> <span data-k="1">Drink.</span> <span data-k="2" class="lime">Party.</span></p>
+    <p class="tdp-sub">Pedir una copa es un gesto. Tan rápido que se pide más.</p>
+  </div>
+</section>
+
+<!-- ============ CÓMO FUNCIONA ============ -->
+<section class="how" id="como-funciona">
+  <div class="how-head">
+    <h2 class="h-section"><span class="w">Tres pasos.</span> <span class="g">Cero colas.</span></h2>
+  </div>
+  <div class="how-grid">
+    <ol class="how-steps">
+      <li class="step" data-step="0">
+        <span class="step-n">1</span>
+        <h3>Pide y paga</h3>
+        <p>Desde la app de bozu o escaneando el QR de su mesa, tu cliente elige de la carta y paga en segundos, sin moverse de su sitio.</p>
+      </li>
+      <li class="step" data-step="1">
+        <span class="step-n">2</span>
+        <h3>La barra prepara</h3>
+        <p>El pedido llega escrito, pagado y asignado a la barra adecuada. Tu equipo deja de cobrar y se dedica a preparar.</p>
+      </li>
+      <li class="step" data-step="2">
+        <span class="step-n">3</span>
+        <h3>Recoge o recibe</h3>
+        <p>El móvil avisa cuando está listo para recogerlo sin cola. En mesa, el camarero lo lleva directamente.</p>
+      </li>
+    </ol>
+    <div class="how-phone" aria-hidden="true">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen s0">
+          <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip">Pista</span></div>
+          <p class="ui-title">¿Otra ronda?</p>
+          <div class="ui-item"><span class="ui-ic"><svg viewBox="0 0 40 40"><path d="M9 7h22l-3 27H12z" fill="none" stroke="#f4f4f2" stroke-width="2"/><path d="M11.3 17h17.4l-2 16H13.3z" fill="#d4ff3a"/></svg></span><span class="ui-t"><b>Gin tonic</b><small>Premium · Tónica</small></span><span class="ui-q">2</span></div>
+          <div class="ui-item"><span class="ui-ic"><svg viewBox="0 0 40 40"><path d="M9 7h22l-3 27H12z" fill="none" stroke="#f4f4f2" stroke-width="2"/><path d="M11.3 17h17.4l-2 16H13.3z" fill="#d4ff3a"/></svg></span><span class="ui-t"><b>Tercio</b><small>Botella 33 cl</small></span><span class="ui-q">3</span></div>
+          <div class="ui-pay"><span>Total</span><b>Pagar con el móvil</b></div>
+          <div class="ui-btn">Completar pedido</div>
+        </div>
+        <div class="screen s1">
+          <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip">Barra 1</span></div>
+          <p class="ui-title">Preparando</p>
+          <div class="ticket">
+            <div class="t-head"><b>B-52</b><span class="paid">Pagado</span></div>
+            <p><em>2×</em> Gin tonic <small>Premium · Tónica</small></p>
+            <p><em>3×</em> Tercio</p>
+            <div class="t-bar"><i></i></div>
+          </div>
+          <div class="ticket dim"><div class="t-head"><b>B-53</b><span class="paid">Pagado</span></div><p><em>4×</em> Tequila</p></div>
+        </div>
+        <div class="screen s2">
+          <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip">Pista</span></div>
+          <div class="ready">
+            <div class="ready-ring"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="none" stroke="#d4ff3a" stroke-width="4"/><path d="M27 41l9 9 18-19" fill="none" stroke="#d4ff3a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <p class="ui-title">Tu pedido está listo</p>
+            <p class="ready-sub">Recógelo en Barra 1 · Pedido B-52</p>
+          </div>
+          <div class="ui-btn ghost">Ver el pedido</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BENEFICIOS ============ -->
+<section class="benefits" id="beneficios">
+  <div class="ben-head">
+    <h2 class="h-section"><span class="w">Once razones.</span> <span class="g">Una sola noche mejor.</span></h2>
+    <p class="lead">Ordenadas por lo que más le importa a un dueño: primero lo que factura, después lo que le quita dolores de cabeza.</p>
+  </div>
+  <div class="tabs" role="tablist" aria-label="Tipos de beneficio">
+    <button role="tab" aria-selected="true" aria-controls="p-sell" id="t-sell" data-tab="sell">Vendes más</button>
+    <button role="tab" aria-selected="false" aria-controls="p-ops" id="t-ops" data-tab="ops" tabindex="-1">Operas mejor</button>
+    <button role="tab" aria-selected="false" aria-controls="p-data" id="t-data" data-tab="data" tabindex="-1">Decides con datos</button>
+    <button role="tab" aria-selected="false" aria-controls="p-exp" id="t-exp" data-tab="exp" tabindex="-1">Tu cliente lo nota</button>
+  </div>
+
+  <div class="panel" role="tabpanel" id="p-sell" aria-labelledby="t-sell">
+    <article class="ben">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><circle cx="80" cy="86" r="52" fill="url(#glass)" stroke="url(#rimw)" stroke-width="2.4" filter="url(#glow)"/><rect x="70" y="20" width="20" height="12" rx="4" fill="none" stroke="#e8eee4" stroke-width="2"/><circle class="a-sweep" cx="80" cy="86" r="40" fill="none" stroke="#d4ff3a" stroke-width="6" stroke-linecap="round" filter="url(#glow)"/><circle cx="80" cy="86" r="6" fill="#d4ff3a"/><line class="a-hand" x1="80" y1="86" x2="80" y2="58" stroke="#f4f4f2" stroke-width="3" stroke-linecap="round"/></svg>
+      <div><h3>Más ventas por hora</h3><p>El pedido y el pago pasan del mostrador al móvil. La barra solo prepara y entrega, así que despacha más en el mismo tiempo.</p><p class="ex">A las 02:00 tus camareros sirven mientras el cobro ya está hecho: nadie espera cambio ni datáfono.</p></div>
+    </article>
+    <article class="ben">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><g><clipPath id="cg1"><path d="M22 52h34l-4 64H26z"/></clipPath><rect class="a-fill f1" x="20" y="52" width="40" height="66" fill="url(#liquid)" clip-path="url(#cg1)"/><path d="M22 52h34l-4 64H26z" fill="none" stroke="url(#rimw)" stroke-width="2.2" filter="url(#glow)"/></g><g><clipPath id="cg2"><path d="M63 52h34l-4 64H67z"/></clipPath><rect class="a-fill f2" x="61" y="52" width="40" height="66" fill="url(#liquid)" clip-path="url(#cg2)"/><path d="M63 52h34l-4 64H67z" fill="none" stroke="url(#rimw)" stroke-width="2.2" filter="url(#glow)"/></g><g><clipPath id="cg3"><path d="M104 52h34l-4 64h-26z"/></clipPath><rect class="a-fill f3" x="102" y="52" width="40" height="66" fill="url(#liquid)" clip-path="url(#cg3)"/><path d="M104 52h34l-4 64h-26z" fill="none" stroke="url(#rimw)" stroke-width="2.2" filter="url(#glow)"/></g></svg>
+      <div><h3>Más consumiciones por cliente</h3><p>Volver a pedir es un toque. Sin cola que desanime, la segunda y la tercera ronda llegan solas.</p><p class="ex">Un grupo en la pista repite su ronda desde el móvil sin decidir quién va a la barra.</p></div>
+    </article>
+    <article class="ben">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><g class="a-std"><path d="M72 142h16v-60l-4-10v-30h-8v30l-4 10z" fill="url(#glass)" stroke="#9a9ca0" stroke-width="2"/><rect x="69" y="98" width="22" height="16" fill="#46484c"/></g><g class="a-prem"><path d="M70 146h20v-64l-5-12v-34h-10v34l-5 12z" fill="url(#glass)" stroke="url(#rim)" stroke-width="2.4" filter="url(#glow)"/><rect x="67" y="100" width="26" height="18" fill="#d4ff3a"/><g class="spark"><line x1="80" y1="36" x2="82" y2="18" stroke="#e8eee4" stroke-width="2"/><circle cx="82" cy="16" r="5" fill="#fff" filter="url(#glow)"/></g></g><g class="a-chip"><rect x="98" y="30" width="54" height="20" rx="10" fill="#d4ff3a"/><text x="125" y="44" text-anchor="middle" font-size="10" font-weight="700" fill="#0a0e04">UPGRADE</text></g></svg>
+      <div><h3>Ticket medio más alto</h3><p>Sugerencias en el momento justo: marca premium, botella para la mesa o extras.</p><p class="ex">Quien pide un gin tonic ve la versión premium; una mesa de seis, la botella con refrescos.</p></div>
+    </article>
+    <article class="ben">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><path d="M24 54h78l34 26-34 26H24z" fill="url(#glass)" stroke="url(#rim)" stroke-width="2.4" filter="url(#glow)"/><circle cx="104" cy="80" r="6" fill="none" stroke="#deff80" stroke-width="2"/><path class="a-bolt" d="M64 60l-18 26h14l-8 20 24-30H62z" fill="#d4ff3a" filter="url(#glow)"/></svg>
+      <div><h3>Promociones dinámicas</h3><p>Activa ofertas según la hora, el producto o la demanda. Llegan al móvil del cliente al instante.</p><p class="ex">Si un producto no sale antes de la 01:00, lanzas una promo solo durante esa franja.</p></div>
+    </article>
+  </div>
+
+  <div class="panel" role="tabpanel" id="p-ops" aria-labelledby="t-ops" hidden>
+    <article class="ben">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><rect x="18" y="30" width="124" height="100" rx="14" fill="url(#glass)" stroke="url(#rimw)" stroke-width="2.2" filter="url(#glow)"/><g fill="#44464c"><rect x="32" y="96" width="12" height="22" rx="3"/><rect x="50" y="84" width="12" height="34" rx="3"/><rect x="68" y="62" width="12" height="56" rx="3"/><rect x="86" y="48" width="12" height="70" rx="3"/><rect x="104" y="70" width="12" height="48" rx="3"/><rect x="122" y="92" width="12" height="26" rx="3"/></g><path class="a-draw" d="M38 92 C60 82 80 76 92 76 S124 82 128 88" fill="none" stroke="#d4ff3a" stroke-width="3.5" stroke-linecap="round" filter="url(#glow)"/></svg>
+      <div><h3>Picos de demanda bajo control</h3><p>Los pedidos entran en una cola digital ordenada: la barra trabaja a su ritmo aunque llegue la hora punta.</p><p class="ex">Cuando termina el show y todos piden a la vez, los pedidos se ordenan solos y nadie se cuela.</p></div>
+    </article>
+    <article class="ben">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><rect x="20" y="22" width="120" height="22" rx="8" fill="url(#glass)" stroke="url(#rim)" stroke-width="2" filter="url(#glow)"/><g class="a-leave" fill="none" stroke="#e8eee4" stroke-width="1.8" opacity=".5"><ellipse cx="40" cy="72" rx="14" ry="8"/><ellipse cx="66" cy="88" rx="14" ry="8"/><ellipse cx="96" cy="76" rx="14" ry="8"/><ellipse cx="120" cy="96" rx="14" ry="8"/><ellipse cx="52" cy="110" rx="14" ry="8"/></g><g class="a-walk"><ellipse cx="80" cy="60" rx="15" ry="8" fill="url(#glass)" stroke="#deff80" stroke-width="2" filter="url(#glow)"/><circle cx="80" cy="58" r="6" fill="none" stroke="#deff80" stroke-width="2"/><circle cx="80" cy="46" r="5" fill="#d4ff3a"/></g></svg>
+      <div><h3>Menos colas y aglomeraciones</h3><p>Menos gente de pie esperando en la barra y menos cruces por la pista: mejor circulación y más seguridad.</p><p class="ex">El cliente solo se levanta cuando su copa está lista: va, la recoge y vuelve.</p></div>
+    </article>
+    <article class="ben">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><rect x="22" y="30" width="48" height="16" rx="6" fill="url(#glass)" stroke="url(#rim)" stroke-width="2" filter="url(#glow)"/><rect x="90" y="30" width="48" height="16" rx="6" fill="url(#glass)" stroke="url(#rim)" stroke-width="2" filter="url(#glow)"/><rect x="40" y="58" width="12" height="80" rx="6" fill="#26282a"/><rect x="108" y="58" width="12" height="80" rx="6" fill="#26282a"/><rect class="a-bal b1" x="40" y="58" width="12" height="80" rx="6" fill="#d4ff3a"/><rect class="a-bal b2" x="108" y="58" width="12" height="80" rx="6" fill="#d4ff3a"/><path d="M60 92c10-14 30-14 40 0" fill="none" stroke="#d4ff3a" stroke-width="2.4"/><path d="M94 86l6 6-8 3" fill="none" stroke="#d4ff3a" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <div><h3>Carga repartida entre barras</h3><p>Cada pedido se asigna a la barra adecuada para que ninguna se sature mientras otra está parada.</p><p class="ex">Si la barra principal va desbordada, los pedidos nuevos se derivan a la de la terraza.</p></div>
+    </article>
+    <article class="ben">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><path d="M34 24h74v104l-6-5-6 5-6-5-6 5-6-5-6 5-6-5-6 5-6-5-6 5-6-5-4 3z" fill="url(#glass)" stroke="url(#rimw)" stroke-width="2.2" filter="url(#glow)"/><g fill="#50544c"><rect x="46" y="44" width="46" height="5" rx="2.5"/><rect x="46" y="58" width="36" height="5" rx="2.5"/><rect x="46" y="72" width="50" height="5" rx="2.5"/></g><rect x="46" y="92" width="44" height="14" rx="3" fill="none" stroke="#d4ff3a" stroke-width="2" transform="rotate(-8 68 99)"/><circle class="a-draw" cx="120" cy="34" r="16" fill="none" stroke="#d4ff3a" stroke-width="3.5" filter="url(#glow)"/><path class="a-draw d2" d="M112 34l6 6 10-11" fill="none" stroke="#d4ff3a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><h3>Cero errores de pedido y cobro</h3><p>Todo queda registrado: qué se pidió, quién lo pagó y en qué barra. Adiós a los descuadres y a las discusiones.</p><p class="ex">«¿Eran dos?», «¡ya te he pagado!»: con el pedido escrito y cobrado, esas conversaciones desaparecen.</p></div>
+    </article>
+  </div>
+
+  <div class="panel" role="tabpanel" id="p-data" aria-labelledby="t-data" hidden>
+    <article class="ben wide">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><rect x="16" y="34" width="128" height="92" rx="14" fill="url(#glass)" stroke="url(#rimw)" stroke-width="2.2" filter="url(#glow)"/><path class="a-draw" d="M30 108l14-10 14 4 14-18 14 6 14-22 14 8 14-26" fill="none" stroke="#d4ff3a" stroke-width="3.5" stroke-linecap="round" filter="url(#glow)"/><circle cx="128" cy="50" r="5" fill="#fff"/></svg>
+      <div><h3>Un dashboard con toda tu noche</h3><p>Ventas, pedidos, barras, productos, demanda y comportamiento de tus clientes, en tiempo real y en un solo sitio.</p><p class="ex">Descubres que los jueves el gin premium se dispara desde la 01:30 y ajustas stock, personal y promos.</p><a class="link" href="#datos">Ver el dashboard</a></div>
+    </article>
+  </div>
+
+  <div class="panel" role="tabpanel" id="p-exp" aria-labelledby="t-exp" hidden>
+    <article class="ben">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><circle class="a-ping" cx="80" cy="96" r="20" fill="none" stroke="#d4ff3a" stroke-width="2"/><circle class="a-ping p2" cx="80" cy="96" r="20" fill="none" stroke="#d4ff3a" stroke-width="2"/><ellipse cx="80" cy="98" rx="22" ry="12" fill="url(#glass)" stroke="#deff80" stroke-width="2" filter="url(#glow)"/><circle cx="80" cy="95" r="9" fill="none" stroke="#deff80" stroke-width="2"/><rect x="36" y="26" width="88" height="26" rx="13" fill="#1a1c18" stroke="#e8eee4" stroke-opacity=".4"/><circle cx="52" cy="39" r="6" fill="#d4ff3a"/><rect x="64" y="36" width="48" height="6" rx="3" fill="#e8eee4" opacity=".8"/></svg>
+      <div><h3>Mejor experiencia de cliente</h3><p>Espera menos y además lo percibe así: solo deja a su grupo cuando su pedido está listo.</p><p class="ex">Recibe «Tu pedido está listo» en el móvil, va a la barra, recoge y vuelve a la pista en un momento.</p></div>
+    </article>
+    <article class="ben">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><rect x="30" y="30" width="100" height="100" rx="22" fill="url(#glass)" stroke="url(#rim)" stroke-width="2.4" filter="url(#glow)"/><g fill="none" stroke="#d4ff3a" stroke-width="4" stroke-linecap="round"><path class="a-wave w1" d="M84 66a20 20 0 0 1 0 28"/><path class="a-wave w2" d="M94 56a34 34 0 0 1 0 48"/><path class="a-wave w3" d="M104 46a48 48 0 0 1 0 68"/></g><circle cx="72" cy="80" r="6" fill="#d4ff3a"/></svg>
+      <div><h3>Imagen más tecnológica y moderna</h3><p>Pedir con un tap sobre la mesa convierte tu local en el club del que todo el mundo habla.</p><p class="ex">Etiquetas NFC con tu marca en las mesas VIP: el primer tap ya forma parte de la experiencia.</p></div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ CALCULADORA ============ -->
+<section class="calc" id="calculadora">
+  <div class="calc-copy">
+    <h2 class="h-section"><span class="w">¿Cuánto se queda</span> <span class="g">en la cola cada mes?</span></h2>
+    <p class="lead">Mueve los valores con los datos de tu local. Calculamos lo que supondría que una parte de tus clientes pidiera solo una ronda más por noche.</p>
+    <p class="fine">Estimación orientativa con tus propios datos. No es una promesa de resultados.</p>
+  </div>
+  <div class="calc-box">
+    <label class="range"><span>Clientes por noche <output id="o-cli">800</output></span><input type="range" id="r-cli" min="100" max="3000" step="50" value="800"></label>
+    <label class="range"><span>Precio medio de una copa <output id="o-pre">10 €</output></span><input type="range" id="r-pre" min="4" max="25" step="1" value="10"></label>
+    <label class="range"><span>Clientes que pedirían una ronda más <output id="o-pct">30 %</output></span><input type="range" id="r-pct" min="5" max="80" step="5" value="30"></label>
+    <label class="range"><span>Noches abiertas al mes <output id="o-noc">8</output></span><input type="range" id="r-noc" min="2" max="30" step="1" value="8"></label>
+    <div class="calc-out" aria-live="polite">
+      <p>Ingresos extra al mes</p>
+      <p class="big" id="calcMonth">19.200 €</p>
+      <p class="year">≈ <b id="calcYear">230.400 €</b> al año</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BOZU TAP ============ -->
+<section class="tap" id="tap">
+  <div class="tap-copy">
+    <p class="badge">Exclusivo mesas VIP</p>
+    <h2 class="h-section"><span class="w">bozu Tap.</span> <span class="g">Pedir es tocar la mesa.</span></h2>
+    <p class="lead">Una etiqueta NFC en cada mesa VIP. El cliente acerca el móvil, la carta se abre ya asignada a su mesa, y pide y paga sin levantarse.</p>
+    <ul class="checks">
+      <li><b>Un tap y la carta se abre.</b> Sin buscar ni esperar al camarero.</li>
+      <li><b>El pedido sabe a qué mesa va.</b> Cada etiqueta está vinculada a su mesa.</li>
+      <li><b>Servicio directo en mesa.</b> El camarero lleva la ronda en cuanto está lista.</li>
+      <li><b>Con la marca de tu club.</b> Etiquetas personalizadas con tu logo.</li>
+    </ul>
+  </div>
+  <div class="tap-stage" aria-hidden="true">
+    <div class="ripples"><i></i><i></i><i></i></div>
+    <div class="tag3d" id="tag3d">
+      <div class="tag-edge"></div>
+      <div class="tag-face">
+        <span class="tag-logo">bozu<i></i></span>
+        <span class="tag-mesa">Mesa VIP 4</span>
+        <svg class="tag-waves" viewBox="0 0 200 200"><circle cx="70" cy="100" r="9" fill="#d4ff3a"/><g fill="none" stroke="#d4ff3a" stroke-width="7" stroke-linecap="round"><path class="a-wave w1" d="M92 72a40 40 0 0 1 0 56"/><path class="a-wave w2" d="M110 54a64 64 0 0 1 0 92"/><path class="a-wave w3" d="M128 36a88 88 0 0 1 0 128"/></g></svg>
+        <span class="tag-cta">Tap para pedir</span>
+      </div>
+    </div>
+    <div class="tag-floor"></div>
+  </div>
+</section>
+
+<!-- ============ DASHBOARD ============ -->
+<section class="data" id="datos">
+  <div class="data-copy">
+    <h2 class="h-section"><span class="w">Tu noche,</span> <span class="g">en tiempo real.</span></h2>
+    <p class="lead">Un panel con todo lo que pasa en tu discoteca: ventas, pedidos, barras, productos, demanda y comportamiento de tus clientes.</p>
+  </div>
+  <div class="dash" id="dash" aria-label="Ejemplo del dashboard de bozu con datos ilustrativos">
+    <div class="d-top"><b>Esta noche</b><span class="live"><i></i>En directo</span></div>
+    <div class="kpis">
+      <div class="kpi"><span>Ventas</span><b class="lime" data-count="12480" data-suffix=" €">0 €</b></div>
+      <div class="kpi"><span>Pedidos</span><b data-count="1136">0</b></div>
+      <div class="kpi"><span>Ticket medio</span><b data-count="18.4" data-dec="1" data-suffix=" €">0 €</b></div>
+      <div class="kpi"><span>Espera media</span><b data-count="4" data-suffix=" min">0 min</b></div>
+    </div>
+    <div class="d-grid">
+      <div class="d-card chart">
+        <span class="d-lab">Ventas por hora</span>
+        <div class="bars">
+          <div class="bar" style="--h:.25"><i></i><em>23h</em></div>
+          <div class="bar" style="--h:.45"><i></i><em>00h</em></div>
+          <div class="bar" style="--h:.8"><i></i><em>01h</em></div>
+          <div class="bar peak" style="--h:1"><i></i><em>02h</em></div>
+          <div class="bar" style="--h:.7"><i></i><em>03h</em></div>
+          <div class="bar" style="--h:.4"><i></i><em>04h</em></div>
+          <div class="bar" style="--h:.2"><i></i><em>05h</em></div>
+        </div>
+      </div>
+      <div class="d-card">
+        <span class="d-lab">Carga por barra</span>
+        <div class="load"><span>Principal</span><div><i style="--w:.72"></i></div></div>
+        <div class="load"><span>Terraza</span><div><i style="--w:.58"></i></div></div>
+        <div class="load"><span>VIP</span><div><i style="--w:.41"></i></div></div>
+      </div>
+      <div class="d-card feed">
+        <span class="d-lab">Últimos pedidos</span>
+        <ul id="feed"></ul>
+      </div>
+    </div>
+    <p class="d-note">Datos ilustrativos</p>
+  </div>
+</section>
+
+<!-- ============ VÍDEO ============ -->
+<section class="video" id="video">
+  <h2 class="h-section"><span class="w">bozu en 48 segundos.</span></h2>
+  <div class="video-frame">
+    <video controls preload="none" playsinline poster="assets/poster.jpg">
+      <source src="assets/bozu-presentacion.mp4" type="video/mp4">
+    </video>
+  </div>
+</section>
+
+<!-- ============ DEMO GRATIS ============ -->
+<section class="demo" id="demo">
+  <div class="curtains soft" aria-hidden="true"></div>
+  <div class="demo-copy">
+    <h2 class="h-section"><span class="w">La demo es gratis.</span> <span class="g">Todo incluido.</span></h2>
+    <p class="lead">Hacemos el mapeo de tu local, la instalación y la formación de tu equipo sin ningún coste. Queremos que tus clientes descubran bozu, descarguen la app y lo conviertan en su forma de pedir cada noche.</p>
+    <p class="punch">Tú pones la noche. Nosotros, todo lo demás.</p>
+    <div class="ctas">
+      <a class="pill pill-light js-mail" href="#">Agenda una demo <span class="arr" aria-hidden="true">↗</span></a>
+      <a class="pill pill-ghost js-wa" href="#">Escríbenos por WhatsApp</a>
+    </div>
+  </div>
+  <div class="demo-card">
+    <p class="dc-lab">Demo gratuita</p>
+    <p class="zero">0 €</p>
+    <p class="dc-sub">Sin coste de puesta en marcha</p>
+    <ol class="dc-list">
+      <li>Mapeo del local: barras, mesas y flujos</li>
+      <li>Configuración de carta, precios y barras</li>
+      <li>Instalación de etiquetas NFC y QR</li>
+      <li>Formación de tu equipo</li>
+      <li>Acompañamiento en la primera noche</li>
+    </ol>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <a class="logo" href="#top" aria-label="Volver arriba">bozu<span class="dot"></span></a>
+  <p>Tap. Drink. Party.</p>
+  <p class="foot-contact"><a class="js-mail-text" href="#">hola@tudominio.com</a></p>
+  <p class="copy">© 2026 bozu</p>
+</footer>
+
+<script src="assets/app.js" defer></script>
+</body>
+</html>

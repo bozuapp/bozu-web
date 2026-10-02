@@ -1,0 +1,17 @@
+bozu · web para negocios
+========================
+
+Contenido
+- index.html ............ la página
+- assets/style.css ...... estilos
+- assets/app.js ......... animaciones e interacciones
+- assets/fonts/ ......... tipografía DM Sans (alojada en tu propio servidor)
+- assets/ ............... vídeo, póster, imagen para redes y favicon
+
+Antes de subirla: tu email y tu WhatsApp
+Abre assets/app.js y cambia estas líneas del principio:
+
+  email: "hola@tudominio.com",
+  whatsapp: "34600000000",   (prefijo de país + número, sin + ni espacios)
+
+Todos los botones de "Agenda una demo" y "WhatsApp" usarán esos datos.
