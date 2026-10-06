@@ -3,8 +3,8 @@
    Edita aquí tus datos de contacto:
    ========================================================= */
 const BOZU_CONTACT = {
-  email: "hola@tudominio.com",
-  whatsapp: "34600000000",          // con prefijo de país, sin + ni espacios
+  email: "we@bozu.es",
+  whatsapp: "34689504331",          // con prefijo de país, sin + ni espacios
   asunto: "Quiero una demo gratuita de bozu",
 };
 
@@ -295,7 +295,7 @@ const BOZU_CONTACT = {
   setStep(0);
   const so = new IntersectionObserver((es) => {
     es.forEach((e) => { if (e.isIntersecting) setStep(+e.target.dataset.step); });
-  }, { rootMargin: "-45% 0px -45% 0px" });
+  }, { rootMargin: matchMedia("(max-width: 860px)").matches ? "-72% 0px -27% 0px" : "-45% 0px -45% 0px" });
   steps.forEach((s) => so.observe(s));
 
   /* ---------- pestañas de beneficios ---------- */
