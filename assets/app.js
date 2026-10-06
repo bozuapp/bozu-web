@@ -295,7 +295,7 @@ const BOZU_CONTACT = {
   setStep(0);
   const so = new IntersectionObserver((es) => {
     es.forEach((e) => { if (e.isIntersecting) setStep(+e.target.dataset.step); });
-  }, { rootMargin: matchMedia("(max-width: 860px)").matches ? "-72% 0px -27% 0px" : "-45% 0px -45% 0px" });
+  }, { rootMargin: matchMedia("(max-width: 860px)").matches ? "-80% 0px -19% 0px" : "-45% 0px -45% 0px" });
   steps.forEach((s) => so.observe(s));
 
   /* ---------- pestañas de beneficios ---------- */

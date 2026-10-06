@@ -177,14 +177,16 @@ h1, h2, h3, p { margin: 0; }
   .how-grid { grid-template-columns: 1fr; }
   /* el móvil queda fijo arriba sobre un fondo opaco: el texto pasa por detrás */
   .how-grid { gap: 0; }
-  .how-phone { position: sticky; top: 0; height: auto; z-index: 3; order: -1; margin-top: -40px; padding: calc(74px + env(safe-area-inset-top, 0px)) 0 44px; background: linear-gradient(var(--black) calc(100% - 44px), rgba(0, 0, 0, 0)); }
-  .phone { width: min(170px, 20svh); border-radius: 30px; padding: 8px; }
-  .screen { inset: 8px; border-radius: 24px; padding: 40px 12px 12px; font-size: 12px; }
-  .screen .ui-title { font-size: 17px; } .screen .ui-item { padding: 6px; gap: 8px; } .screen .ui-ic { width: 30px; height: 30px; }
-  .screen .ui-t b { font-size: 12px; } .screen .ui-t small { font-size: 10px; } .screen .ui-btn { padding: 8px; font-size: 12px; }
+  .how-phone { position: sticky; top: 0; height: auto; z-index: 3; order: -1; padding: calc(70px + env(safe-area-inset-top, 0px)) 0 36px; background: linear-gradient(var(--black) calc(100% - 36px), rgba(0, 0, 0, 0)); }
+  .phone { width: min(230px, 60vw, 30svh); aspect-ratio: 9 / 16; border-radius: 32px; padding: 8px; }
+  .screen { inset: 8px; border-radius: 26px; padding: 40px 14px 14px; font-size: 13px; }
+  .screen .ui-title { font-size: 19px; } .screen .ui-item { padding: 6px; gap: 8px; } .screen .ui-ic { width: 30px; height: 30px; }
+  .screen .ui-t b { font-size: 14px; } .screen .ui-t small { font-size: 11px; } .screen .ui-btn { padding: 10px; font-size: 13px; }
   .screen .ticket { padding: 10px; } .screen .t-head b { font-size: 15px; white-space: nowrap; } .screen .paid { font-size: 10px; padding: 3px 8px; } .ready-ring { width: 64px; }
   .notch { top: 14px; width: 60px; height: 16px; }
-  .step { min-height: 52svh; position: relative; z-index: 1; text-align: center; align-items: center; }
+  .step { min-height: 36svh; position: relative; z-index: 1; text-align: center; align-items: center; }
+  .step-n { width: 34px; height: 34px; margin-bottom: 12px; font-size: 15px; }
+  .step h3 { font-size: 26px; } .step p { margin-top: 8px; font-size: 16px; }
 }
 
 /* ---------- beneficios ---------- */
