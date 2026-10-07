@@ -4,6 +4,7 @@
    ========================================================= */
 const BOZU_CONTACT = {
   email: "we@bozu.es",
+  agenda: "https://calendar.app.google/x6Lcu49jH8pyxN4E9", // reserva de llamada (Google Calendar)
   whatsapp: "34689504331",          // con prefijo de país, sin + ni espacios
   asunto: "Quiero una demo gratuita de bozu",
 };
@@ -20,6 +21,7 @@ const BOZU_CONTACT = {
   const mail = `mailto:${BOZU_CONTACT.email}?subject=${encodeURIComponent(BOZU_CONTACT.asunto)}`;
   const wa = `https://wa.me/${BOZU_CONTACT.whatsapp}?text=${encodeURIComponent("Hola, " + BOZU_CONTACT.asunto.toLowerCase() + ".")}`;
   document.querySelectorAll(".js-mail").forEach((a) => (a.href = mail));
+  document.querySelectorAll(".js-agenda").forEach((a) => { a.href = BOZU_CONTACT.agenda; a.target = "_blank"; a.rel = "noopener"; });
   document.querySelectorAll(".js-wa").forEach((a) => { a.href = wa; a.target = "_blank"; a.rel = "noopener"; });
   document.querySelectorAll(".js-mail-text").forEach((a) => { a.href = mail; a.textContent = BOZU_CONTACT.email; });
 
