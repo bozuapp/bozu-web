@@ -122,7 +122,6 @@
     </div>
     <div class="club-progress" aria-hidden="true"><i></i></div>
   </div>
-  <i class="club-snap" aria-hidden="true"></i><i class="club-snap" aria-hidden="true"></i><i class="club-snap" aria-hidden="true"></i><i class="club-snap" aria-hidden="true"></i>
 </section>
 
 <!-- ============ TAP. DRINK. PARTY. ============ -->
@@ -265,7 +264,7 @@
           <span class="ap-chip"><i></i>Sala Neón · Barra Principal</span>
           <p class="ap-row"><span class="ap-mini" data-mini="pink"></span><span>Puerto de Indias + Tónica</span></p>
           <div class="ap-sheet">
-            <div class="ap-inv"><span>Usar mis invitaciones <em>1</em></span><span class="toggle"><i></i></span></div>
+            <div class="ap-inv"><span class="ap-inv-t">Usar mis invitaciones</span><em>1</em><span class="toggle"><i></i></span></div>
             <p class="ap-total"><span>Total</span><b class="price"><s>Pagar</s><span>Invitación</span></b></p>
             <div class="ap-cta"><span class="price"><s>Pagar la ronda</s><span>Pedir con invitación</span></span></div>
           </div>
@@ -548,23 +547,56 @@
 </main>
 
 <footer class="foot">
-  <div class="foot-brand">
-    <a class="logo" href="#top" aria-label="Volver arriba">bozu<span class="dot"></span></a>
-    <p>Tap. Drink. Party.</p>
+  <div class="foot-top">
+    <div class="foot-intro">
+      <p class="foot-h">Tu próxima noche, con bozu</p>
+      <p class="foot-lead">Te enseñamos bozu en tu local, con tu carta y tus barras. La demo es gratis.</p>
+      <div class="foot-btns">
+        <a class="pill pill-light js-agenda" href="#demo">Agenda una demo <span class="arr" aria-hidden="true">↗</span></a>
+        <button class="pill pill-ghost" type="button" data-open-chat>Pregunta al asistente</button>
+      </div>
+      <p class="foot-soon"><i></i>Próximamente en App Store · 14 de noviembre</p>
+    </div>
+    <nav class="foot-col" aria-label="Producto">
+      <p class="foot-h">Producto</p>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#rrpp">RRPP, listas y puerta</a>
+      <a href="#beneficios">Beneficios</a>
+      <a href="#tap">bozu Tap</a>
+      <a href="#datos">Dashboard</a>
+    </nav>
+    <nav class="foot-col" aria-label="Ayuda">
+      <p class="foot-h">Ayuda</p>
+      <a href="#faq">Preguntas frecuentes</a>
+      <a href="#calculadora">Calculadora</a>
+      <a href="#video">Vídeo</a>
+      <a href="#demo">Demo gratis</a>
+    </nav>
+    <nav class="foot-col" aria-label="Legal">
+      <p class="foot-h">Legal</p>
+      <a href="https://bozu.app/privacidad" target="_blank" rel="noopener">Privacidad</a>
+      <a href="https://bozu.app/condiciones" target="_blank" rel="noopener">Condiciones</a>
+    </nav>
   </div>
-  <nav class="foot-links" aria-label="Pie de página">
-    <a href="#como-funciona">Cómo funciona</a>
-    <a href="#rrpp">RRPP y puerta</a>
-    <a href="#beneficios">Beneficios</a>
-    <a href="#datos">Dashboard</a>
-    <a href="#faq">Preguntas frecuentes</a>
-  </nav>
-  <div class="foot-contact">
-    <a class="js-mail-text" href="#">we@bozu.es</a>
-    <a class="js-wa" href="#">WhatsApp</a>
-    <a class="js-agenda" href="#demo">Agenda una demo</a>
+  <div class="foot-mid">
+    <div class="foot-reach">
+      <p class="foot-h">Contacto</p>
+      <a class="js-mail-text" href="#">we@bozu.es</a>
+      <a class="js-wa" href="#">+34 689 504 331</a>
+    </div>
+    <div class="foot-icons">
+      <a class="foot-ic js-mail" href="#" aria-label="Escríbenos un correo"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 7l8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a class="foot-ic js-wa" href="#" aria-label="Escríbenos por WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5a8.5 8.5 0 0 0-7.3 12.8L3.5 20.5l4.3-1.2A8.5 8.5 0 1 0 12 3.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.2 8.6c.2-.4.5-.4.7-.4h.5c.2 0 .4.1.5.4l.6 1.5c.1.2 0 .4-.1.6l-.4.5c-.1.1-.1.3 0 .5.6 1 1.4 1.8 2.4 2.4.2.1.4.1.5 0l.5-.5c.2-.2.4-.2.6-.1l1.5.7c.2.1.3.3.3.5v.5c0 .3-.1.6-.4.8-.6.4-1.4.5-2.1.3-2.3-.7-4.2-2.6-4.9-4.9-.2-.7-.1-1.5.3-2.1z" fill="currentColor"/></svg></a>
+      <a class="foot-ic js-agenda" href="#demo" aria-label="Agenda una demo"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="15" r="1.6" fill="currentColor"/></svg></a>
+      <button class="foot-ic" type="button" data-open-chat aria-label="Pregunta al asistente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="8.5" cy="11" r="1.1" fill="currentColor"/><circle cx="12" cy="11" r="1.1" fill="currentColor"/><circle cx="15.5" cy="11" r="1.1" fill="currentColor"/></svg></button>
+    </div>
   </div>
-  <p class="copy">© 2026 bozu</p>
+  <a class="foot-word" href="#top" aria-label="bozu, volver arriba">bozu<span class="dot"></span></a>
+  <div class="foot-bottom">
+    <span>© 2026 bozu</span>
+    <span>Tap. Drink. Party.</span>
+    <span>Bebe con moderación. Solo mayores de 18 años.</span>
+  </div>
 </footer>
 
 <!-- ============ ASISTENTE ============ -->

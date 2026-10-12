@@ -476,7 +476,7 @@ const BOZU_CONTACT = {
     const overSteps = stepGrids.some((g) => { const r = g.getBoundingClientRect(); return r.top < innerHeight && r.bottom > innerHeight * 0.5; });
     const show = scrollY > innerHeight * 0.8 && demoTop > innerHeight * 0.6 && chatBox.hidden && !overSteps;
     mbar.classList.toggle("show", show);
-    chatFabEl.classList.toggle("away", overSteps && innerWidth <= 860);
+    chatFabEl.classList.toggle("away", (overSteps && innerWidth <= 860) || scrollY > max - 90);
     mbar.setAttribute("aria-hidden", !show);
     mbar.querySelectorAll("a, button").forEach((el) => (el.tabIndex = show ? 0 : -1));
   }
@@ -503,40 +503,91 @@ const BOZU_CONTACT = {
   spy();
 
   /* ---------- scroll guiado ----------
-     Del inicio a la primera escena del club, y de la última escena a «Tap. Drink. Party.»:
-     si el scroll se para a medio camino, termina el recorrido en la dirección en la que iba. */
+     Del inicio a «Tap. Drink. Party.» hay una cadena de paradas: las 4 escenas del club y las 3 palabras.
+     Cada gesto (rueda, trackpad o dedo) avanza exactamente una parada, nada más empezar el gesto. */
   const heroSec = document.querySelector(".hero");
   const tdpSec = document.getElementById("tdp");
   const clubSec = document.getElementById("club");
-  const capY = (i) => clubSec.offsetTop + (clubSec.offsetHeight - innerHeight) * (i + 0.5) / 4;
-  const tdpY = () => tdpSec.offsetTop + (tdpSec.offsetHeight - innerHeight) * 0.62;
-  const guideZones = () => [
-    [(() => { const y = heroSec.offsetTop + heroSec.offsetHeight - innerHeight * 1.02; return y < 60 ? 0 : y; })(), capY(0)],
-    [capY(3), tdpY()],
-  ];
-  let lastY = scrollY, dirY = 0, settleTimer = null, guiding = false, touching = false;
-  function settle() {
-    if (touching) return;
-    if (guiding) { guiding = false; return; }
-    if (!menu.hidden || !chatBox.hidden) return;
-    const y = scrollY;
-    for (const [a, b] of guideZones()) {
-      if (y > a + 6 && y < b - 6 && dirY !== 0) {
-        guiding = true;
-        window.scrollTo({ top: dirY > 0 ? b : a, behavior: reduce ? "auto" : "smooth" });
-        return;
-      }
-    }
+  const TDP_STOPS = [0.2, 0.42, 0.66];
+  function stops() {
+    const clubRange = clubSec.offsetHeight - innerHeight, tdpRange = tdpSec.offsetHeight - innerHeight;
+    const heroEnd = heroSec.offsetTop + heroSec.offsetHeight - innerHeight;
+    return [
+      heroEnd < 60 ? 0 : heroEnd,
+      ...[0, 1, 2, 3].map((i) => clubSec.offsetTop + clubRange * (i + 0.5) / 4),
+      ...TDP_STOPS.map((k) => tdpSec.offsetTop + tdpRange * k),
+    ].map(Math.round);
   }
+  let anim = null, lastWheel = 0, gestureGuided = false;
+  const easeInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  function glide(to) {
+    if (reduce) { window.scrollTo({ top: to, behavior: "instant" }); return; }
+    const from = scrollY, t0 = performance.now(), dur = Math.min(900, 420 + Math.abs(to - from) * 0.25);
+    anim = { to };
+    const step = (now) => {
+      if (!anim) return;
+      const k = Math.min(1, (now - t0) / dur);
+      window.scrollTo({ top: from + (to - from) * easeInOut(k), behavior: "instant" });
+      if (k < 1) requestAnimationFrame(step); else { anim = null; window.dispatchEvent(new Event("scroll")); }
+    };
+    requestAnimationFrame(step);
+  }
+  // Devuelve la parada a la que ir, o null si este gesto no está en la cadena (scroll normal)
+  function nextStop(dir) {
+    const S = stops(), y = scrollY, tol = 8;
+    const first = S[0], last = S[S.length - 1];
+    if (dir > 0 && (y < first - innerHeight * 0.35 || y >= last - tol)) return null;
+    if (dir < 0 && (y <= first + tol || y > last + innerHeight * 0.35)) return null;
+    if (dir > 0) return S.find((v) => v > y + tol) ?? null;
+    for (let i = S.length - 1; i >= 0; i--) if (S[i] < y - tol) return S[i];
+    return null;
+  }
+  const blocked = () => !menu.hidden || !chatBox.hidden;
+
+  window.addEventListener("wheel", (e) => {
+    if (blocked() || e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+    const now = performance.now();
+    if (now - lastWheel > 220) gestureGuided = false; // tras una pausa empieza un gesto nuevo
+    lastWheel = now;
+    // Mientras se desliza, y con la inercia del mismo gesto, no se avanza más
+    if (anim || gestureGuided) { e.preventDefault(); return; }
+    const to = nextStop(Math.sign(e.deltaY));
+    if (to == null) return;
+    e.preventDefault();
+    gestureGuided = true;
+    glide(to);
+  }, { passive: false });
+
+  let touchY = null, touchDecided = false, touchGuided = false;
+  window.addEventListener("touchstart", (e) => { touchY = e.touches[0].clientY; touchDecided = false; touchGuided = false; }, { passive: true });
+  window.addEventListener("touchmove", (e) => {
+    if (touchY == null || blocked()) return;
+    if (anim || touchGuided) { e.preventDefault(); return; }
+    if (touchDecided) return;
+    const dy = touchY - e.touches[0].clientY;
+    if (Math.abs(dy) < 10) return;
+    touchDecided = true;
+    const to = nextStop(Math.sign(dy));
+    if (to == null) return;
+    touchGuided = true;
+    e.preventDefault();
+    glide(to);
+  }, { passive: false });
+  window.addEventListener("touchend", () => { touchY = null; }, { passive: true });
+
+  // Teclado, barra de scroll o inercia que entra en la cadena a medio camino: se termina en la parada más cercana
+  let settleTimer = null;
   window.addEventListener("scroll", () => {
-    const d = scrollY - lastY;
-    if (Math.abs(d) > 0.5) dirY = Math.sign(d);
-    lastY = scrollY;
+    if (anim) return;
     clearTimeout(settleTimer);
-    settleTimer = setTimeout(settle, 160);
+    settleTimer = setTimeout(() => {
+      if (anim || touchY != null || blocked()) return;
+      const S = stops(), y = scrollY;
+      if (y <= S[0] + 8 || y >= S[S.length - 1] - 8) return;
+      if (S.some((v) => Math.abs(v - y) < 8)) return;
+      glide(S.reduce((a, b) => (Math.abs(b - y) < Math.abs(a - y) ? b : a)));
+    }, 140);
   }, { passive: true });
-  window.addEventListener("touchstart", () => { touching = true; }, { passive: true });
-  window.addEventListener("touchend", () => { touching = false; clearTimeout(settleTimer); settleTimer = setTimeout(settle, 220); }, { passive: true });
 
   /* =========================================================
      ASISTENTE CON IA
