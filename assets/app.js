@@ -287,18 +287,35 @@ const BOZU_CONTACT = {
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
-  /* ---------- cómo funciona: el móvil cambia con cada paso ---------- */
-  const steps = [...document.querySelectorAll(".step")];
-  const screens = [...document.querySelectorAll(".screen")];
-  const setStep = (i) => {
-    steps.forEach((s, k) => s.classList.toggle("on", k === i));
-    screens.forEach((s, k) => s.classList.toggle("on", k === i));
-  };
-  setStep(0);
-  const so = new IntersectionObserver((es) => {
-    es.forEach((e) => { if (e.isIntersecting) setStep(+e.target.dataset.step); });
-  }, { rootMargin: matchMedia("(max-width: 860px)").matches ? "-80% 0px -19% 0px" : "-45% 0px -45% 0px" });
-  steps.forEach((s) => so.observe(s));
+  /* ---------- códigos QR de adorno (no llevan a ningún sitio) ---------- */
+  document.querySelectorAll("svg.qr").forEach((svg) => {
+    const n = 25;
+    let seed = +svg.dataset.seed || 1;
+    const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const finder = (x, y) => `<path d="M${x} ${y}h7v7h-7zM${x + 1} ${y + 1}v5h5v-5z" fill-rule="evenodd"/><rect x="${x + 2}" y="${y + 2}" width="3" height="3"/>`;
+    const inFinder = (x, y) => (x < 8 && y < 8) || (x > n - 9 && y < 8) || (x < 8 && y > n - 9);
+    let cells = "";
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (!inFinder(x, y) && rnd() < 0.48) cells += `M${x} ${y}h1v1h-1z`;
+    svg.setAttribute("viewBox", `0 0 ${n} ${n}`);
+    svg.setAttribute("shape-rendering", "crispEdges");
+    svg.innerHTML = `<g fill="#000">${finder(0, 0)}${finder(n - 7, 0)}${finder(0, n - 7)}<path d="${cells}"/></g>`;
+  });
+
+  /* ---------- pasos con móvil: la pantalla cambia con cada paso (cómo funciona y RRPP) ---------- */
+  const narrow = matchMedia("(max-width: 860px)").matches;
+  document.querySelectorAll(".how-grid").forEach((grid) => {
+    const steps = [...grid.querySelectorAll(".step")];
+    const screens = [...grid.querySelectorAll(".screen")];
+    const setStep = (i) => {
+      steps.forEach((s, k) => s.classList.toggle("on", k === i));
+      screens.forEach((s, k) => s.classList.toggle("on", k === i));
+    };
+    setStep(0);
+    const so = new IntersectionObserver((es) => {
+      es.forEach((e) => { if (e.isIntersecting) setStep(+e.target.dataset.step); });
+    }, { rootMargin: narrow ? "-80% 0px -19% 0px" : "-45% 0px -45% 0px" });
+    steps.forEach((s) => so.observe(s));
+  });
 
   /* ---------- pestañas de beneficios ---------- */
   const tabs = [...document.querySelectorAll('[role="tab"]')];
@@ -342,17 +359,17 @@ const BOZU_CONTACT = {
   /* ---------- dashboard en directo (datos ilustrativos) ---------- */
   const dash = document.getElementById("dash");
   const feed = document.getElementById("feed");
-  const ORDERS = [["Mesa VIP 4", "Botella + refrescos"], ["Pista", "2× Gin tonic"], ["Terraza", "4× Tequila"], ["Mesa 7", "3× Tercio"], ["Pista", "Ron cola"], ["Mesa VIP 2", "Upgrade premium"], ["Barra 1", "2× Vodka limón"]];
+  const ORDERS = [["Mesa VIP 4", "Botella + refrescos"], ["Pista", "2× Gin tonic"], ["Terraza", "4× Tequila"], ["Mesa 7", "3× Tercio"], ["Pista", "Ron cola", "Invitación"], ["Mesa VIP 2", "Upgrade premium"], ["Barra 1", "2× Vodka limón"], ["Pista", "Gin tonic", "RRPP"]];
   let num = 61, started = false;
   function pushOrder() {
-    const [where, what] = ORDERS[Math.floor(Math.random() * ORDERS.length)];
+    const [where, what, tag] = ORDERS[Math.floor(Math.random() * ORDERS.length)];
     const li = document.createElement("li");
-    li.innerHTML = `<b>B-${num++}</b><span>${what}</span><em>${where}</em>`;
+    li.innerHTML = `<b>B-${num++}</b><span>${what}${tag ? `<i class="tag">${tag}</i>` : ""}</span><em>${where}</em>`;
     feed.prepend(li);
     while (feed.children.length > 5) feed.lastElementChild.remove();
   }
-  function countUp() {
-    dash.querySelectorAll("[data-count]").forEach((el) => {
+  function countUp(root) {
+    root.querySelectorAll("[data-count]").forEach((el) => {
       const end = +el.dataset.count, dec = +(el.dataset.dec || 0), suf = el.dataset.suffix || "";
       const t0 = performance.now(), dur = reduce ? 0 : 1600;
       const tick = (now) => {
@@ -365,9 +382,19 @@ const BOZU_CONTACT = {
   }
   new IntersectionObserver((es) => {
     if (es[0].isIntersecting && !started) {
-      started = true; dash.classList.add("in"); countUp();
+      started = true; dash.classList.add("in"); countUp(dash);
       for (let k = 0; k < 4; k++) pushOrder();
       if (!reduce) setInterval(pushOrder, 1900);
     }
   }, { threshold: 0.3 }).observe(dash);
+
+  /* ---------- panel del equipo RRPP (datos ilustrativos) ---------- */
+  const teamDash = document.getElementById("teamDash");
+  if (teamDash) {
+    const to = new IntersectionObserver((es) => {
+      if (!es[0].isIntersecting) return;
+      teamDash.classList.add("in"); countUp(teamDash); to.disconnect();
+    }, { threshold: 0.3 });
+    to.observe(teamDash);
+  }
 })();

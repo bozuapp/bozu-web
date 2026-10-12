@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>bozu · Pedidos desde la mesa y la pista para discotecas</title>
-<meta name="description" content="bozu convierte cada mesa y cada rincón de la pista en un punto de venta. Tus clientes piden y pagan desde el móvil; tu barra solo prepara. Demo gratuita para discotecas.">
+<meta name="description" content="bozu convierte cada mesa y cada rincón de la pista en un punto de venta. Tus clientes piden y pagan desde el móvil, tus RRPP gestionan sus listas y la puerta escanea las entradas. Demo gratuita para discotecas.">
 <meta property="og:title" content="bozu · Tap. Drink. Party.">
-<meta property="og:description" content="Más ventas por hora, menos colas y todos los datos de tu noche. Demo gratuita para discotecas.">
+<meta property="og:description" content="Pedidos desde el móvil, RRPP, listas y puerta en una sola app. Más ventas por hora, menos colas y todos los datos de tu noche. Demo gratuita para discotecas.">
 <meta property="og:image" content="assets/og.jpg">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#000000">
@@ -44,6 +44,7 @@
   <a class="logo" href="#top" aria-label="bozu, inicio">bozu<span class="dot"></span></a>
   <nav class="nav-links" aria-label="Secciones">
     <a href="#como-funciona">Cómo funciona</a>
+    <a href="#rrpp">RRPP y puerta</a>
     <a href="#beneficios">Beneficios</a>
     <a href="#tap">bozu Tap</a>
     <a href="#datos">Dashboard</a>
@@ -57,6 +58,7 @@
 <section class="hero">
   <div class="curtains" aria-hidden="true"></div>
   <div class="hero-copy">
+    <p class="soon"><i></i>Próximamente en App Store · 14 de noviembre</p>
     <p class="kicker">Para discotecas y clubs</p>
     <h1 class="h-display">
       <span class="w">Cada noche, tu barra</span>
@@ -72,7 +74,7 @@
     <div class="holo" id="holo">
       <div class="holo-card">
         <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip">Mesa 7</span></div>
-        <p class="ui-title">Tu ronda</p>
+        <p class="ui-title">A tu ronda</p>
         <div class="ui-item"><span class="ui-ic"><svg viewBox="0 0 40 40"><path d="M9 7h22l-3 27H12z" fill="none" stroke="#f4f4f2" stroke-width="2"/><path d="M11.3 17h17.4l-2 16H13.3z" fill="#d4ff3a"/></svg></span><span class="ui-t"><b>Gin tonic</b><small>Premium · Tónica</small></span><span class="ui-q">2</span></div>
         <div class="ui-item"><span class="ui-ic"><svg viewBox="0 0 40 40"><path d="M9 7h22l-3 27H12z" fill="none" stroke="#f4f4f2" stroke-width="2"/><path d="M11.3 17h17.4l-2 16H13.3z" fill="#d4ff3a"/></svg></span><span class="ui-t"><b>Tequila</b><small>Con sal y lima</small></span><span class="ui-q">4</span></div>
         <button class="ui-btn" id="heroBtn" type="button" tabindex="-1">Completar pedido</button>
@@ -116,17 +118,17 @@
       <li class="step" data-step="0">
         <span class="step-n">1</span>
         <h3>Pide y paga</h3>
-        <p>Desde la app de bozu o escaneando el QR de su mesa, tu cliente elige de la carta y paga en segundos, sin moverse de su sitio.</p>
+        <p>Desde la app de bozu o escaneando el QR de su mesa, tu cliente elige por categorías, monta su ronda y paga sin moverse. El importe queda reservado y solo se cobra cuando la barra empieza a prepararlo.</p>
       </li>
       <li class="step" data-step="1">
         <span class="step-n">2</span>
         <h3>La barra prepara</h3>
-        <p>El pedido llega escrito, pagado y asignado a la barra adecuada. Tu equipo deja de cobrar y se dedica a preparar.</p>
+        <p>El pedido llega escrito, pagado y asignado a su barra, con una etiqueta impresa por copa. Si la barra se satura, el cliente ve el tiempo estimado antes de pedir.</p>
       </li>
       <li class="step" data-step="2">
         <span class="step-n">3</span>
-        <h3>Recoge o recibe</h3>
-        <p>El móvil avisa cuando está listo para recogerlo sin cola. En mesa, el camarero lo lleva directamente.</p>
+        <h3>Recoge con su QR</h3>
+        <p>Cuando está listo, el móvil vibra y aparece su QR. El camarero lo escanea, entrega y el pedido queda cerrado. En mesa, se lo llevan directamente.</p>
       </li>
     </ol>
     <div class="how-phone" aria-hidden="true">
@@ -134,11 +136,12 @@
         <div class="notch"></div>
         <div class="screen s0">
           <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip">Pista</span></div>
-          <p class="ui-title">¿Otra ronda?</p>
+          <div class="ui-cats"><span class="on">Copa</span><span>Chupitos</span><span>Cerveza</span><span>Embotellados</span></div>
+          <p class="ui-title">A tu ronda</p>
           <div class="ui-item"><span class="ui-ic"><svg viewBox="0 0 40 40"><path d="M9 7h22l-3 27H12z" fill="none" stroke="#f4f4f2" stroke-width="2"/><path d="M11.3 17h17.4l-2 16H13.3z" fill="#d4ff3a"/></svg></span><span class="ui-t"><b>Gin tonic</b><small>Premium · Tónica</small></span><span class="ui-q">2</span></div>
           <div class="ui-item"><span class="ui-ic"><svg viewBox="0 0 40 40"><path d="M9 7h22l-3 27H12z" fill="none" stroke="#f4f4f2" stroke-width="2"/><path d="M11.3 17h17.4l-2 16H13.3z" fill="#d4ff3a"/></svg></span><span class="ui-t"><b>Tercio</b><small>Botella 33 cl</small></span><span class="ui-q">3</span></div>
-          <div class="ui-pay"><span>Total</span><b>Pagar con el móvil</b></div>
-          <div class="ui-btn">Completar pedido</div>
+          <div class="ui-pay"><span>Total</span><b>34,00 €</b></div>
+          <div class="ui-btn">Pagar</div>
         </div>
         <div class="screen s1">
           <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip">Barra 1</span></div>
@@ -154,9 +157,9 @@
         <div class="screen s2">
           <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip">Pista</span></div>
           <div class="ready">
-            <div class="ready-ring"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="none" stroke="#d4ff3a" stroke-width="4"/><path d="M27 41l9 9 18-19" fill="none" stroke="#d4ff3a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <p class="ui-title">Tu pedido está listo</p>
-            <p class="ready-sub">Recógelo en Barra 1 · Pedido B-52</p>
+            <div class="qr-card"><svg class="qr" data-seed="52" aria-hidden="true"></svg></div>
+            <p class="ui-title">¡Listo!</p>
+            <p class="ready-sub">Enséñalo en Barra 1 · Pedido B-52</p>
           </div>
           <div class="ui-btn ghost">Ver el pedido</div>
         </div>
@@ -165,10 +168,121 @@
   </div>
 </section>
 
+<!-- ============ RRPP, LISTAS Y PUERTA ============ -->
+<section class="how rrpp" id="rrpp">
+  <div class="how-head">
+    <p class="badge">Nuevo</p>
+    <h2 class="h-section"><span class="w">RRPP, listas y puerta.</span> <span class="g">En la misma app.</span></h2>
+    <p class="lead">Tus relaciones públicas llenan la sala, la puerta deja pasar a quien toca y la barra sabe qué copas van invitadas. Sin papeles, sin capturas de pantalla y sin discusiones.</p>
+  </div>
+  <div class="how-grid flip">
+    <ol class="how-steps">
+      <li class="step" data-step="0">
+        <span class="step-n">1</span>
+        <h3>El RRPP crea su lista</h3>
+        <p>Desde su panel en la app ve su noche, sus copas, sus condiciones y lo que lleva ganado. Crea listas gratis, reducidas, con consumición o VIP, con el máximo de invitados y la hora límite que tú marques.</p>
+      </li>
+      <li class="step" data-step="1">
+        <span class="step-n">2</span>
+        <h3>Invita por @usuario</h3>
+        <p>Sus invitados aceptan en la app o desde el correo y reciben su entrada con QR. El RRPP ve en directo quién ha confirmado y quién ha entrado.</p>
+      </li>
+      <li class="step" data-step="2">
+        <span class="step-n">3</span>
+        <h3>La puerta escanea</h3>
+        <p>Con un móvil en la puerta: entradas de lista, edad mínima y fichaje de los RRPP con su credencial, que cambia cada 15 segundos para que una captura no sirva. ¿Se le ha apagado el móvil? Se le busca por su @usuario.</p>
+      </li>
+      <li class="step" data-step="3">
+        <span class="step-n">4</span>
+        <h3>La invitación llega a la barra</h3>
+        <p>Si su lista incluye consumición, la copa se carga al entrar. Al pedir, la usa con un toque y la barra la recibe marcada como invitación. Adiós a los tickets de papel.</p>
+      </li>
+    </ol>
+    <div class="how-phone" aria-hidden="true">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen r0">
+          <div class="ui-top"><span class="rp-club">Sala Neón <i>▾</i></span><span class="ui-chip">RRPP</span></div>
+          <div class="rp-night">
+            <small>Tu próxima noche</small>
+            <b>Sábado 17 oct</b>
+            <div class="rp-two"><span><small>Llegada</small>00:00</span><span><small>Listas hasta</small>01:30</span></div>
+          </div>
+          <div class="rp-btns"><span class="on">Mi credencial</span><span>+ Crear lista</span></div>
+          <div class="rp-stats"><span><b>14</b><small>Apuntados</small></span><span><b>3</b><small>Dentro</small></span><span><b>11</b><small>Libres</small></span><span><b class="lime">28 €</b><small>Ganado</small></span></div>
+          <div class="rp-list"><div class="rp-lh"><b>Lista de Marcos</b><span>14/25</span></div><div class="rp-bar"><i></i></div><small>Con consumición · 9 confirmados</small></div>
+        </div>
+        <div class="screen r1">
+          <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip">Con consumición</span></div>
+          <p class="ui-title">Lista de Marcos</p>
+          <div class="rp-invite"><span class="typed">@alex.g</span><b>Invitar</b></div>
+          <ul class="guests">
+            <li class="g-new"><i>A</i><span>@alex.g</span><em>Invitado</em></li>
+            <li><i>L</i><span>@lucia.m</span><em class="ok">Confirmado</em></li>
+            <li><i>N</i><span>@nerea.v</span><em class="flip"><span>Pendiente</span><span class="ok">Confirmado</span></em></li>
+            <li><i>P</i><span>@pablo_r</span><em class="ok">Dentro</em></li>
+          </ul>
+          <div class="mini-ticket"><span class="mt-qr"><svg class="qr" data-seed="31" aria-hidden="true"></svg></span><span class="ui-t"><b>Entrada de @alex.g</b><small>Lista de Marcos · hasta 01:30</small></span></div>
+        </div>
+        <div class="screen r2">
+          <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip live-chip"><i></i>Puerta</span></div>
+          <div class="scan"><svg class="qr" data-seed="7" aria-hidden="true"></svg><span class="frame"></span><span class="laser"></span></div>
+          <div class="verdict">
+            <span class="ok-ic">✓</span>
+            <b>Puede entrar</b>
+            <small>@lucia.m · Lista de Marcos</small>
+            <div class="v-tags"><span>+18 ✓</span><span>Con consumición</span><span class="lime">1 copa cargada</span></div>
+          </div>
+        </div>
+        <div class="screen r3">
+          <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip">Pista</span></div>
+          <p class="ui-title">A tu ronda</p>
+          <div class="ui-item"><span class="ui-ic"><svg viewBox="0 0 40 40"><path d="M9 7h22l-3 27H12z" fill="none" stroke="#f4f4f2" stroke-width="2"/><path d="M11.3 17h17.4l-2 16H13.3z" fill="#d4ff3a"/></svg></span><span class="ui-t"><b>Gin tonic</b><small>Premium · Tónica</small></span><span class="inv-tag">Invitación</span></div>
+          <div class="inv"><span class="ui-t"><b>1 copa de lista</b><small>Lista de Marcos</small></span><span class="toggle"><i></i></span></div>
+          <div class="ui-pay"><span>Total</span><b class="price"><s>10,00 €</s><span>0,00 €</span></b></div>
+          <div class="ui-btn">Pedir</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EQUIPO RRPP ============ -->
+<section class="team" id="equipo">
+  <div class="team-copy">
+    <h2 class="h-section"><span class="w">Tu equipo de RRPP,</span> <span class="g">con números.</span></h2>
+    <p class="lead">Sabes quién llena la sala de verdad, quién llega a su hora y cuánto te cuesta cada invitación. Todo sale solo de lo que pasa en la puerta y en la barra.</p>
+    <ul class="checks">
+      <li><b>Puntualidad y ausencias.</b> Cada RRPP ficha con su credencial al llegar y al irse.</li>
+      <li><b>Apuntados frente a entrados.</b> La lista dice cuántos venían; la puerta, cuántos vinieron.</li>
+      <li><b>Lo que gastan sus invitados.</b> Y lo que te cuestan las copas de invitación.</li>
+      <li><b>Condiciones, pagos y reservados.</b> Plantillas por RRPP, jefes de equipo y lo pendiente de pagar.</li>
+      <li><b>Alta en segundos.</b> Invitas por @usuario y suspendes con un toque.</li>
+    </ul>
+  </div>
+  <div class="dash team-dash" id="teamDash" aria-label="Ejemplo del panel de equipo RRPP de bozu con datos ilustrativos">
+    <div class="d-top"><b>Equipo RRPP</b><span class="seg"><span>Esta noche</span><span class="on">Últimos 30 días</span></span></div>
+    <div class="kpis">
+      <div class="kpi"><span>Apuntados</span><b data-count="481">0</b></div>
+      <div class="kpi"><span>Han entrado</span><b class="lime" data-count="380">0</b></div>
+      <div class="kpi"><span>Gasto de sus invitados</span><b data-count="4307" data-suffix=" €">0 €</b></div>
+      <div class="kpi"><span>Coste de invitaciones</span><b data-count="430" data-suffix=" €">0 €</b></div>
+    </div>
+    <div class="tbl" role="table" aria-label="Rendimiento por RRPP">
+      <div class="tr th" role="row"><span role="columnheader">RRPP</span><span role="columnheader">A su hora</span><span role="columnheader">Apuntados → entrados</span><span role="columnheader">Gasto invitados</span><span role="columnheader">Ganado</span></div>
+      <div class="tr" role="row"><span role="cell"><b>Marcos Gil</b><small>@marcos.gil · jefe</small></span><span role="cell">8/8</span><span role="cell" class="flow"><em>120 → 103</em><i style="--w:.86"></i></span><span role="cell">1.270 €</span><span role="cell" class="lime">340 €</span></div>
+      <div class="tr" role="row"><span role="cell"><b>Julia Serrano</b><small>@juliaserrano</small></span><span role="cell">6/7</span><span role="cell" class="flow"><em>128 → 104</em><i style="--w:.81"></i></span><span role="cell">929 €</span><span role="cell" class="lime">253 €</span></div>
+      <div class="tr" role="row"><span role="cell"><b>Vega Torres</b><small>@vegatorres</small></span><span role="cell">5/7</span><span role="cell" class="flow"><em>111 → 91</em><i style="--w:.82"></i></span><span role="cell">847 €</span><span role="cell" class="lime">212 €</span></div>
+      <div class="tr" role="row"><span role="cell"><b>Hugo Peña</b><small>@hugo.pena</small></span><span role="cell" class="warn">3/6</span><span role="cell" class="flow"><em>122 → 82</em><i style="--w:.67"></i></span><span role="cell">1.261 €</span><span role="cell" class="lime">205 €</span></div>
+    </div>
+    <p class="d-note">Datos ilustrativos</p>
+  </div>
+</section>
+
 <!-- ============ BENEFICIOS ============ -->
 <section class="benefits" id="beneficios">
   <div class="ben-head">
-    <h2 class="h-section"><span class="w">Once razones.</span> <span class="g">Una sola noche mejor.</span></h2>
+    <h2 class="h-section"><span class="w">Dieciséis razones.</span> <span class="g">Una sola noche mejor.</span></h2>
     <p class="lead">Ordenadas por lo que más le importa a un dueño: primero lo que factura, después lo que le quita dolores de cabeza.</p>
   </div>
   <div class="tabs" role="tablist" aria-label="Tipos de beneficio">
@@ -193,14 +307,14 @@
     </article>
     <article class="ben">
       <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><path d="M24 54h78l34 26-34 26H24z" fill="url(#glass)" stroke="url(#rim)" stroke-width="2.4" filter="url(#glow)"/><circle cx="104" cy="80" r="6" fill="none" stroke="#deff80" stroke-width="2"/><path class="a-bolt" d="M64 60l-18 26h14l-8 20 24-30H62z" fill="#d4ff3a" filter="url(#glow)"/></svg>
-      <div><h3>Promociones dinámicas</h3><p>Activa ofertas según la hora, el producto o la demanda. Llegan al móvil del cliente al instante.</p><p class="ex">Si un producto no sale antes de la 01:00, lanzas una promo solo durante esa franja.</p></div>
+      <div><h3>Promociones a tu medida</h3><p>Si tu club lo quiere, pactamos contigo ofertas según la hora, el producto o la demanda, y llegan al móvil del cliente al instante.</p><p class="ex">Si un producto no sale antes de la 01:00, se lanza una promo solo durante esa franja.</p></div>
     </article>
   </div>
 
   <div class="panel" role="tabpanel" id="p-ops" aria-labelledby="t-ops" hidden>
     <article class="ben">
-      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><rect x="18" y="30" width="124" height="100" rx="14" fill="url(#glass)" stroke="url(#rimw)" stroke-width="2.2" filter="url(#glow)"/><g fill="#44464c"><rect x="32" y="96" width="12" height="22" rx="3"/><rect x="50" y="84" width="12" height="34" rx="3"/><rect x="68" y="62" width="12" height="56" rx="3"/><rect x="86" y="48" width="12" height="70" rx="3"/><rect x="104" y="70" width="12" height="48" rx="3"/><rect x="122" y="92" width="12" height="26" rx="3"/></g><path class="a-draw" d="M38 92 C60 82 80 76 92 76 S124 82 128 88" fill="none" stroke="#d4ff3a" stroke-width="3.5" stroke-linecap="round" filter="url(#glow)"/></svg>
-      <div><h3>Picos de demanda bajo control</h3><p>Los pedidos entran en una cola digital ordenada: la barra trabaja a su ritmo aunque llegue la hora punta.</p><p class="ex">Cuando termina el show y todos piden a la vez, los pedidos se ordenan solos y nadie se cuela.</p></div>
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><rect x="18" y="30" width="124" height="100" rx="14" fill="url(#glass)" stroke="url(#rimw)" stroke-width="2.2" filter="url(#glow)"/><path d="M40 108a40 40 0 0 1 80 0" fill="none" stroke="#2c2e28" stroke-width="10" stroke-linecap="round"/><path class="a-gauge" d="M40 108a40 40 0 0 1 80 0" fill="none" stroke="#d4ff3a" stroke-width="10" stroke-linecap="round" filter="url(#glow)"/><line class="a-needle" x1="80" y1="108" x2="80" y2="76" stroke="#f4f4f2" stroke-width="3.5" stroke-linecap="round"/><circle cx="80" cy="108" r="6" fill="#f4f4f2"/></svg>
+      <div><h3>Picos de demanda bajo control</h3><p>Un medidor de saturación calcula cada 30 segundos lo cargada que va cada barra. Si se pasa, el cliente ve el tiempo estimado antes de pedir y tú puedes pausarla.</p><p class="ex">Cuando termina el show y todos piden a la vez, la cola se ordena sola y nadie espera a ciegas.</p></div>
     </article>
     <article class="ben">
       <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><rect x="20" y="22" width="120" height="22" rx="8" fill="url(#glass)" stroke="url(#rim)" stroke-width="2" filter="url(#glow)"/><g class="a-leave" fill="none" stroke="#e8eee4" stroke-width="1.8" opacity=".5"><ellipse cx="40" cy="72" rx="14" ry="8"/><ellipse cx="66" cy="88" rx="14" ry="8"/><ellipse cx="96" cy="76" rx="14" ry="8"/><ellipse cx="120" cy="96" rx="14" ry="8"/><ellipse cx="52" cy="110" rx="14" ry="8"/></g><g class="a-walk"><ellipse cx="80" cy="60" rx="15" ry="8" fill="url(#glass)" stroke="#deff80" stroke-width="2" filter="url(#glow)"/><circle cx="80" cy="58" r="6" fill="none" stroke="#deff80" stroke-width="2"/><circle cx="80" cy="46" r="5" fill="#d4ff3a"/></g></svg>
@@ -208,18 +322,30 @@
     </article>
     <article class="ben">
       <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><rect x="22" y="30" width="48" height="16" rx="6" fill="url(#glass)" stroke="url(#rim)" stroke-width="2" filter="url(#glow)"/><rect x="90" y="30" width="48" height="16" rx="6" fill="url(#glass)" stroke="url(#rim)" stroke-width="2" filter="url(#glow)"/><rect x="40" y="58" width="12" height="80" rx="6" fill="#26282a"/><rect x="108" y="58" width="12" height="80" rx="6" fill="#26282a"/><rect class="a-bal b1" x="40" y="58" width="12" height="80" rx="6" fill="#d4ff3a"/><rect class="a-bal b2" x="108" y="58" width="12" height="80" rx="6" fill="#d4ff3a"/><path d="M60 92c10-14 30-14 40 0" fill="none" stroke="#d4ff3a" stroke-width="2.4"/><path d="M94 86l6 6-8 3" fill="none" stroke="#d4ff3a" stroke-width="2.4" stroke-linecap="round"/></svg>
-      <div><h3>Carga repartida entre barras</h3><p>Cada pedido se asigna a la barra adecuada para que ninguna se sature mientras otra está parada.</p><p class="ex">Si la barra principal va desbordada, los pedidos nuevos se derivan a la de la terraza.</p></div>
+      <div><h3>Tú repartes la carga entre barras</h3><p>Ves en directo cómo va cada barra y decides: pausar la que va desbordada o abrir otra. El cliente cambia de barra sin perder su pedido.</p><p class="ex">Si la principal va al límite, la pausas y los pedidos nuevos van a la terraza.</p></div>
     </article>
     <article class="ben">
       <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><path d="M34 24h74v104l-6-5-6 5-6-5-6 5-6-5-6 5-6-5-6 5-6-5-6 5-6-5-4 3z" fill="url(#glass)" stroke="url(#rimw)" stroke-width="2.2" filter="url(#glow)"/><g fill="#50544c"><rect x="46" y="44" width="46" height="5" rx="2.5"/><rect x="46" y="58" width="36" height="5" rx="2.5"/><rect x="46" y="72" width="50" height="5" rx="2.5"/></g><rect x="46" y="92" width="44" height="14" rx="3" fill="none" stroke="#d4ff3a" stroke-width="2" transform="rotate(-8 68 99)"/><circle class="a-draw" cx="120" cy="34" r="16" fill="none" stroke="#d4ff3a" stroke-width="3.5" filter="url(#glow)"/><path class="a-draw d2" d="M112 34l6 6 10-11" fill="none" stroke="#d4ff3a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <div><h3>Cero errores de pedido y cobro</h3><p>Todo queda registrado: qué se pidió, quién lo pagó y en qué barra. Adiós a los descuadres y a las discusiones.</p><p class="ex">«¿Eran dos?», «¡ya te he pagado!»: con el pedido escrito y cobrado, esas conversaciones desaparecen.</p></div>
+      <div><h3>Cero errores de pedido y cobro</h3><p>Todo queda registrado: qué se pidió, quién lo pagó y en qué barra. Cada copa sale con su etiqueta impresa y se entrega escaneando el QR del cliente.</p><p class="ex">«¿Eran dos?», «¡ya te he pagado!»: con el pedido escrito y cobrado, esas conversaciones desaparecen.</p></div>
+    </article>
+    <article class="ben">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><rect x="22" y="42" width="116" height="76" rx="14" fill="url(#glass)" stroke="url(#rimw)" stroke-width="2.2" filter="url(#glow)"/><rect x="22" y="58" width="116" height="12" fill="#2c2e28"/><rect x="36" y="88" width="34" height="8" rx="4" fill="#50544c"/><circle cx="114" cy="96" r="20" fill="#0a0b08" stroke="#2c2e28" stroke-width="2"/><circle class="a-draw" cx="114" cy="96" r="14" fill="none" stroke="#d4ff3a" stroke-width="3.5" filter="url(#glow)"/><path class="a-draw d2" d="M107 96l5 5 9-10" fill="none" stroke="#d4ff3a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><h3>Solo se cobra lo que se prepara</h3><p>Al pagar, el importe queda reservado. Se cobra cuando la barra empieza el pedido; si se cancela antes, se libera sin cobrar.</p><p class="ex">Nadie paga una copa que no llega y tu barra no tiene que hacer devoluciones.</p></div>
+    </article>
+    <article class="ben">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><path d="M66 30h28v18l8 14v70a6 6 0 0 1-6 6H64a6 6 0 0 1-6-6V62l8-14z" fill="url(#glass)" stroke="url(#rimw)" stroke-width="2.2" filter="url(#glow)"/><clipPath id="cbot"><path d="M60 64h40v66H60z"/></clipPath><rect class="a-drain" x="58" y="64" width="44" height="74" fill="url(#liquid)" clip-path="url(#cbot)"/><circle class="a-ping" cx="122" cy="42" r="10" fill="none" stroke="#d4ff3a" stroke-width="2"/><circle cx="122" cy="42" r="10" fill="#d4ff3a"/><rect x="120.5" y="35" width="3" height="9" rx="1.5" fill="#0a0e04"/><circle cx="122" cy="48" r="1.8" fill="#0a0e04"/></svg>
+      <div><h3>Stock al día en cada barra</h3><p>La barra marca lo que se acaba y gestión recibe el aviso. Lo agotado desaparece de la carta de esa barra al momento.</p><p class="ex">Se termina el Grey Goose en la terraza: nadie lo pide ni lo paga, y tú sabes qué reponer.</p></div>
     </article>
   </div>
 
   <div class="panel" role="tabpanel" id="p-data" aria-labelledby="t-data" hidden>
-    <article class="ben wide">
+    <article class="ben">
       <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><rect x="16" y="34" width="128" height="92" rx="14" fill="url(#glass)" stroke="url(#rimw)" stroke-width="2.2" filter="url(#glow)"/><path class="a-draw" d="M30 108l14-10 14 4 14-18 14 6 14-22 14 8 14-26" fill="none" stroke="#d4ff3a" stroke-width="3.5" stroke-linecap="round" filter="url(#glow)"/><circle cx="128" cy="50" r="5" fill="#fff"/></svg>
-      <div><h3>Un dashboard con toda tu noche</h3><p>Ventas, pedidos, barras, productos, demanda y comportamiento de tus clientes, en tiempo real y en un solo sitio.</p><p class="ex">Descubres que los jueves el gin premium se dispara desde la 01:30 y ajustas stock, personal y promos.</p><a class="link" href="#datos">Ver el dashboard</a></div>
+      <div><h3>Un dashboard con toda tu noche</h3><p>Ventas por hora, por barra y por día, copas más pedidas y el cierre de cada noche, en directo o del periodo que elijas.</p><p class="ex">Descubres que los jueves el gin premium se dispara desde la 01:30 y ajustas stock, personal y promos.</p><a class="link" href="#datos">Ver el dashboard</a></div>
+    </article>
+    <article class="ben">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><g fill="url(#glass)" stroke="#5f6066" stroke-width="2"><circle cx="46" cy="62" r="14"/><path d="M22 112a24 24 0 0 1 48 0z"/><circle cx="114" cy="62" r="14"/><path d="M90 112a24 24 0 0 1 48 0z"/></g><g class="a-vip"><circle cx="80" cy="56" r="17" fill="url(#glass)" stroke="url(#rim)" stroke-width="2.6" filter="url(#glow)"/><path d="M52 120a28 28 0 0 1 56 0z" fill="url(#glass)" stroke="url(#rim)" stroke-width="2.6" filter="url(#glow)"/><path d="M72 30l8-8 8 8" fill="none" stroke="#d4ff3a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+      <div><h3>Conoces a tus clientes</h3><p>Quiénes son tus mejores clientes, cuántas noches vienen, sus edades, a qué hora piden y dónde. Y el rendimiento de cada RRPP.</p><p class="ex">Ves que tus fijos piden sobre todo en mesa a partir de las 02:00 y preparas el servicio para ellos.</p><a class="link" href="#equipo">Ver el panel de RRPP</a></div>
     </article>
   </div>
 
@@ -231,6 +357,14 @@
     <article class="ben">
       <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><rect x="30" y="30" width="100" height="100" rx="22" fill="url(#glass)" stroke="url(#rim)" stroke-width="2.4" filter="url(#glow)"/><g fill="none" stroke="#d4ff3a" stroke-width="4" stroke-linecap="round"><path class="a-wave w1" d="M84 66a20 20 0 0 1 0 28"/><path class="a-wave w2" d="M94 56a34 34 0 0 1 0 48"/><path class="a-wave w3" d="M104 46a48 48 0 0 1 0 68"/></g><circle cx="72" cy="80" r="6" fill="#d4ff3a"/></svg>
       <div><h3>Imagen más tecnológica y moderna</h3><p>Pedir con un tap sobre la mesa convierte tu local en el club del que todo el mundo habla.</p><p class="ex">Etiquetas NFC con tu marca en las mesas VIP: el primer tap ya forma parte de la experiencia.</p></div>
+    </article>
+    <article class="ben">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><rect x="50" y="16" width="60" height="128" rx="12" fill="url(#glass)" stroke="url(#rim)" stroke-width="2.4" filter="url(#glow)"/><text x="80" y="62" text-anchor="middle" font-size="26" font-weight="700" fill="#f4f4f2">23</text><text x="80" y="76" text-anchor="middle" font-size="7.5" fill="#96969c" letter-spacing=".08em">COPAS · OCT</text><g fill="#d4ff3a"><rect class="a-grow" x="60" y="100" width="8" height="28" rx="2"/><rect class="a-grow g2" x="72" y="92" width="8" height="36" rx="2"/><rect class="a-grow g3" x="84" y="106" width="8" height="22" rx="2"/><rect class="a-grow g4" x="96" y="88" width="8" height="40" rx="2"/></g></svg>
+      <div><h3>Tu club, en sus historias</h3><p>Cada mes, tus clientes reciben su resumen de noches y copas listo para subir a Instagram, también en versión transparente para ponerlo encima de una foto.</p><p class="ex">Tus clientes presumen de su mes en tu club y sus amigos lo ven en sus historias.</p></div>
+    </article>
+    <article class="ben">
+      <svg class="ic" viewBox="0 0 160 160" aria-hidden="true"><rect x="48" y="14" width="64" height="132" rx="16" fill="url(#glass)" stroke="url(#rimw)" stroke-width="2.2" filter="url(#glow)"/><rect x="68" y="22" width="24" height="7" rx="3.5" fill="#000"/><text x="80" y="88" text-anchor="middle" font-size="22" font-weight="700" fill="#f4f4f2" letter-spacing="-1">bozu</text><circle cx="105" cy="86" r="3" fill="#d4ff3a"/><g class="a-drop"><path d="M80 104v18m-8-8 8 8 8-8" fill="none" stroke="#d4ff3a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/></g></svg>
+      <div><h3>Su app, en el bolsillo</h3><p>La app de bozu llega al App Store el 14 de noviembre: el móvil vibra cuando su copa está lista y entran con la misma cuenta que ya usan en la web.</p><p class="ex">Hasta entonces, tus clientes piden desde el navegador escaneando el QR o tocando la etiqueta de su mesa.</p></div>
     </article>
   </div>
 </section>
@@ -287,10 +421,11 @@
 <section class="data" id="datos">
   <div class="data-copy">
     <h2 class="h-section"><span class="w">Tu noche,</span> <span class="g">en tiempo real.</span></h2>
-    <p class="lead">Un panel con todo lo que pasa en tu discoteca: ventas, pedidos, barras, productos, demanda y comportamiento de tus clientes.</p>
+    <p class="lead">Un panel con todo lo que pasa en tu discoteca: ventas, pedidos, saturación de cada barra, stock, clientes y equipo RRPP. En directo durante la noche y con el cierre de cada noche al terminar.</p>
   </div>
   <div class="dash" id="dash" aria-label="Ejemplo del dashboard de bozu con datos ilustrativos">
     <div class="d-top"><b>Esta noche</b><span class="live"><i></i>En directo</span></div>
+    <div class="d-tabs" aria-hidden="true"><span class="on">En directo</span><span>Dashboard</span><span>Clientes</span><span>Equipo RRPP</span><span>Carta</span></div>
     <div class="kpis">
       <div class="kpi"><span>Ventas</span><b class="lime" data-count="12480" data-suffix=" €">0 €</b></div>
       <div class="kpi"><span>Pedidos</span><b data-count="1136">0</b></div>
@@ -311,10 +446,11 @@
         </div>
       </div>
       <div class="d-card">
-        <span class="d-lab">Carga por barra</span>
-        <div class="load"><span>Principal</span><div><i style="--w:.72"></i></div></div>
-        <div class="load"><span>Terraza</span><div><i style="--w:.58"></i></div></div>
-        <div class="load"><span>VIP</span><div><i style="--w:.41"></i></div></div>
+        <span class="d-lab">Saturación por barra</span>
+        <div class="load hot"><span>Principal <em>86 % · espera 9 min</em></span><div><i style="--w:.86"></i></div></div>
+        <div class="load"><span>Terraza <em>54 %</em></span><div><i style="--w:.54"></i></div></div>
+        <div class="load off"><span>VIP <em>En pausa</em></span><div><i style="--w:.2"></i></div></div>
+        <p class="d-alert"><i></i>Terraza: Grey Goose sin stock</p>
       </div>
       <div class="d-card feed">
         <span class="d-lab">Últimos pedidos</span>
@@ -355,6 +491,7 @@
       <li>Mapeo del local: barras, mesas y flujos</li>
       <li>Configuración de carta, precios y barras</li>
       <li>Instalación de etiquetas NFC y QR</li>
+      <li>Alta de tu equipo de RRPP y de la puerta</li>
       <li>Formación de tu equipo</li>
       <li>Acompañamiento en la primera noche</li>
     </ol>
