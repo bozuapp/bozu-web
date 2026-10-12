@@ -518,17 +518,22 @@ const BOZU_CONTACT = {
       ...TDP_STOPS.map((k) => tdpSec.offsetTop + tdpRange * k),
     ].map(Math.round);
   }
-  let anim = null, lastWheel = 0, gestureGuided = false;
+  let anim = null, lastWheel = 0;
   const easeInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
   function glide(to) {
     if (reduce) { window.scrollTo({ top: to, behavior: "instant" }); return; }
     const from = scrollY, t0 = performance.now(), dur = Math.min(900, 420 + Math.abs(to - from) * 0.25);
     anim = { to };
+    lockUntil = t0 + dur + 120;
     const step = (now) => {
       if (!anim) return;
       const k = Math.min(1, (now - t0) / dur);
       window.scrollTo({ top: from + (to - from) * easeInOut(k), behavior: "instant" });
-      if (k < 1) requestAnimationFrame(step); else { anim = null; window.dispatchEvent(new Event("scroll")); }
+      if (k < 1) { requestAnimationFrame(step); return; }
+      anim = null;
+      window.dispatchEvent(new Event("scroll"));
+      // Un gesto que llegó mientras se deslizaba: se hace ahora
+      if (pendingDir) { const d = pendingDir; pendingDir = 0; const nxt = nextStop(d); if (nxt != null) glide(nxt); }
     };
     requestAnimationFrame(step);
   }
@@ -544,18 +549,28 @@ const BOZU_CONTACT = {
   }
   const blocked = () => !menu.hidden || !chatBox.hidden;
 
+  // Rueda y trackpad. Un gesto nuevo se reconoce por una pausa (>180 ms) o porque vuelve a acelerar; la inercia
+  // del trackpad (eventos cada vez más flojos) no cuenta. Si llega un gesto nuevo mientras se desliza, se hace
+  // al terminar. Fuera de la cadena nunca se bloquea nada, y como válvula de seguridad nada se bloquea más de 2,5 s.
+  let lockUntil = 0, lastMag = 0, pendingDir = 0, peak = 0;
   window.addEventListener("wheel", (e) => {
     if (blocked() || e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
     const now = performance.now();
-    if (now - lastWheel > 220) gestureGuided = false; // tras una pausa empieza un gesto nuevo
-    lastWheel = now;
-    // Mientras se desliza, y con la inercia del mismo gesto, no se avanza más
-    if (anim || gestureGuided) { e.preventDefault(); return; }
-    const to = nextStop(Math.sign(e.deltaY));
-    if (to == null) return;
+    const mag = Math.abs(e.deltaY) * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1);
+    const dir = Math.sign(e.deltaY);
+    // Nuevo gesto: tras una pausa, o si vuelve a acelerar cuando la inercia ya había bajado (no durante su propia aceleración)
+    let newGesture = false;
+    if (now - lastWheel > 180) { newGesture = true; peak = mag; }
+    else if (mag > lastMag * 1.5 && mag > 6 && lastMag < peak * 0.6) { newGesture = true; peak = mag; }
+    else peak = Math.max(peak, mag);
+    const steady = now > lockUntil + 250 && mag >= lastMag && mag >= 25; // rueda de ratón girando sin parar
+    lastWheel = now; lastMag = mag;
+    const to = nextStop(dir);
+    if (to == null && !anim) return; // fuera de la cadena: scroll normal
     e.preventDefault();
-    gestureGuided = true;
-    glide(to);
+    if (anim) { if (newGesture) pendingDir = dir; return; }
+    if (to == null) return;
+    if (newGesture || (now >= lockUntil && (steady || now > lockUntil + 2500))) glide(to);
   }, { passive: false });
 
   let touchY = null, touchDecided = false, touchGuided = false;
