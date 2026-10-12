@@ -43,8 +43,8 @@ const BOZU_CONTACT = {
   const heroBtn = document.getElementById("heroBtn");
   if (heroBtn && !reduce) {
     setInterval(() => {
-      heroBtn.classList.add("done"); heroBtn.textContent = "✓ En camino";
-      setTimeout(() => { heroBtn.classList.remove("done"); heroBtn.textContent = "Completar pedido"; }, 1800);
+      heroBtn.classList.add("done"); heroBtn.textContent = "✓ Pedido confirmado";
+      setTimeout(() => { heroBtn.classList.remove("done"); heroBtn.textContent = "Pagar la ronda"; }, 1800);
     }, 4200);
   }
 
@@ -144,10 +144,12 @@ const BOZU_CONTACT = {
     g.addColorStop(0, `rgba(${LIME},${0.05 + 0.05 * smooth((p - 0.45) / 0.2)})`); g.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = g; ctx.fillRect(0, 0, vw, vh);
 
+    // La escena (barra con camareros arriba y mesas abajo) cabe entera bajo la barra de navegación
     const wide = vw > 860;
-    const sc = wide ? Math.min(vw * 0.68 / 1600, vh / 1000) * 1.22 : Math.min(vw / 1320, vh * 0.6 / 1000);
-    const cx = wide ? vw * 0.64 : vw / 2, cy = wide ? vh / 2 : vh * 0.4;
-    ctx.translate(cx, cy); ctx.scale(sc, sc); ctx.translate(-800, -500);
+    const NAV = 80;
+    const sc = wide ? Math.min(vw * 0.68 / 1600 * 1.22, (vh - NAV - 30) / 940) : Math.min(vw / 1320, vh * 0.6 / 1000);
+    const cx = wide ? vw * 0.64 : vw / 2, cy = wide ? NAV + (vh - NAV) / 2 : vh * 0.4;
+    ctx.translate(cx, cy); ctx.scale(sc, sc); ctx.translate(-800, wide ? -475 : -500);
 
     const on = smooth((p - 0.48) / 0.06);       // bozu se activa
     const late = smooth((p - 0.74) / 0.06);     // servicio en mesa y recogida
@@ -160,8 +162,18 @@ const BOZU_CONTACT = {
     // barra y camareros
     rrPath(420, 90, 760, 80, 24); glass(RIM, 1, 2.2);
     for (let k = 0; k < 9; k++) { ctx.beginPath(); ctx.arc(470 + k * 82.5, 130, 12, 0, 6.283); glass(RIM, 0.6, 1.3, false); }
-    person(640 + 40 * Math.sin(t * 0.9), 50, Math.PI, 1, RIM, 1, 0.7);
-    person(960 + 30 * Math.sin(t * 1.1 + 1), 50, Math.PI, 1, RIM, 1, 0.7);
+    // Camareros tras la barra: antes van de un lado a otro cobrando; con bozu, preparan en su sitio
+    const rush = 1 - on;
+    [[560, 0.9, 0], [800, 1.1, 1.7], [1040, 0.8, 3.1]].forEach(([bx, sp, ph]) => {
+      const x = bx + (25 + 95 * rush) * Math.sin(t * sp * (1 + 1.4 * rush) + ph);
+      person(x, 46, Math.PI + 0.25 * rush * Math.sin(t * 5 + ph), 1.05, on > 0.5 ? RIM : WH, 1, 0.75 + 0.25 * Math.abs(Math.sin(t * 6 + ph)));
+      if (on > 0.01) {
+        const pk = (t * 0.5 + ph) % 1;
+        drink(x + 18, 112, on * Math.min(1, pk * 4) * (1 - smooth((pk - 0.8) / 0.2)));
+      }
+    });
+    ctx.save(); ctx.font = "600 19px 'DM Sans', sans-serif"; ctx.textAlign = "center";
+    ctx.fillStyle = `rgba(${on > 0.5 ? LIME : WH},${0.75})`; ctx.fillText(on > 0.5 ? "Camareros: solo preparan" : "Camareros: cobran y sirven", 800, -6); ctx.restore();
 
     // pista
     rrPath(FLOOR.x, FLOOR.y, FLOOR.w, FLOOR.h, 26); glass(WH, 0.35 + 0.25 * on, 1.4, false);
@@ -219,18 +231,23 @@ const BOZU_CONTACT = {
       person(x, y, th, 0.8, WH, a, arm);
     });
 
-    // camarero (verde) sirviendo en mesa
+    // camareros (verde) sirviendo en mesa, con su bandeja
     if (late > 0.01) {
-      const tgt = [1370, 330 + 75];
-      const w = (t * 0.16) % 1;
-      const go = smooth(w / 0.42), back = smooth((w - 0.55) / 0.42);
-      const k = w < 0.5 ? go : 1 - back;
-      const x = lerp(1120, tgt[0] - 20, k), y = lerp(205, tgt[1] + 30, k);
-      const dir = w < 0.5 ? 1 : -1;
-      const th = Math.atan2((tgt[0] - 1120) * dir, -(tgt[1] - 205) * dir);
-      person(x, y, th + 0.1 * Math.sin(t * 9), 0.9, RIM, late, 0.65);
-      if (w < 0.5) { drink(x + 22 * Math.sin(th), y - 22 * Math.cos(th), late); }
-      else drink(1370 + 18, 330 + 10, late);
+      const runs = [{ from: [1120, 205], to: [1370, 405], sp: 0.16, ph: 0, drop: [1388, 340] }, { from: [480, 205], to: [330, 750], sp: 0.13, ph: 0.45, drop: [250, 745] }];
+      runs.forEach(({ from, to, sp, ph, drop }) => {
+        const w = (t * sp + ph) % 1;
+        const k = w < 0.5 ? smooth(w / 0.42) : 1 - smooth((w - 0.55) / 0.42);
+        const x = lerp(from[0], to[0], k), y = lerp(from[1], to[1], k);
+        const dir = w < 0.5 ? 1 : -1;
+        const th = Math.atan2((to[0] - from[0]) * dir, -(to[1] - from[1]) * dir);
+        person(x, y, th + 0.1 * Math.sin(t * 9), 1, RIM, late, 0.95);
+        const tx = x + 30 * Math.sin(th), ty = y - 30 * Math.cos(th);
+        ctx.beginPath(); ctx.arc(tx, ty, 17, 0, 6.283); glass(RIM, late, 1.6, false);
+        if (w < 0.5) { drink(tx - 5, ty - 3, late); drink(tx + 6, ty + 4, late * 0.8); }
+        else drink(drop[0], drop[1], late);
+        ctx.save(); ctx.globalAlpha = late * 0.9; ctx.font = "600 18px 'DM Sans', sans-serif"; ctx.textAlign = "center";
+        ctx.fillStyle = `rgb(${LIME})`; ctx.fillText("Camarero", x, y - 52); ctx.restore();
+      });
       // alguien de la pista recoge en barra
       const v = (t * 0.13 + 0.4) % 1;
       const kk = v < 0.5 ? smooth(v / 0.4) : 1 - smooth((v - 0.55) / 0.4);
@@ -301,6 +318,32 @@ const BOZU_CONTACT = {
     svg.innerHTML = `<g fill="#000">${finder(0, 0)}${finder(n - 7, 0)}${finder(0, n - 7)}<path d="${cells}"/></g>`;
   });
 
+  /* ---------- el vaso de la app (mismo componente que bozu-app) ---------- */
+  const D = window.BozuDrink, G = window.BozuGlass;
+  const PINK = { color: "#f2a0bd" }, TONIC = { color: "#eef5f3", carbonated: true };
+  const VIS = D ? {
+    empty: D.visual({}),
+    spirit: D.visual({ spirit: PINK }),
+    pink: D.visual({ spirit: PINK, mixer: TONIC }),
+    cola: D.visual({ spirit: { type: "ron" }, mixer: { color: "#140805", carbonated: true } }),
+    beer: D.visual({ other: { kind: "beer", color: "#f0b52a" } }),
+  } : null;
+  if (G && VIS) document.querySelectorAll("[data-mini]").forEach((el) => { el.innerHTML = G.mini(VIS[el.dataset.mini], 30); });
+  const orderGlassEl = document.querySelector('[data-glass="order"]');
+  const orderGlass = G && VIS && orderGlassEl ? G.mount(orderGlassEl, reduce ? VIS.pink : VIS.empty) : null;
+  let glassTimers = [];
+  function playOrderGlass() {
+    if (!orderGlass) return;
+    glassTimers.forEach(clearTimeout);
+    if (reduce) return orderGlass.set(VIS.pink);
+    orderGlass.set(VIS.empty);
+    glassTimers = [setTimeout(() => orderGlass.set(VIS.spirit), 650), setTimeout(() => orderGlass.set(VIS.pink), 1750)];
+  }
+
+  if (orderGlassEl) new IntersectionObserver((es) => {
+    if (es[0].isIntersecting && orderGlassEl.closest(".screen").classList.contains("on")) playOrderGlass();
+  }, { threshold: 0.6 }).observe(orderGlassEl);
+
   /* ---------- pasos con móvil: la pantalla cambia con cada paso (cómo funciona y RRPP) ---------- */
   const narrow = matchMedia("(max-width: 860px)").matches;
   document.querySelectorAll(".how-grid").forEach((grid) => {
@@ -308,7 +351,11 @@ const BOZU_CONTACT = {
     const screens = [...grid.querySelectorAll(".screen")];
     const setStep = (i) => {
       steps.forEach((s, k) => s.classList.toggle("on", k === i));
-      screens.forEach((s, k) => s.classList.toggle("on", k === i));
+      screens.forEach((s, k) => {
+        const was = s.classList.contains("on");
+        s.classList.toggle("on", k === i);
+        if (k === i && !was && s.querySelector('[data-glass="order"]')) playOrderGlass();
+      });
     };
     setStep(0);
     const so = new IntersectionObserver((es) => {
@@ -439,18 +486,57 @@ const BOZU_CONTACT = {
   // Resalta en el menú la sección que se está viendo
   const navLinks = [...document.querySelectorAll('.nav-links a, .menu-links a')];
   const spied = [...new Set(navLinks.map((a) => a.getAttribute("href")))].map((h) => document.querySelector(h)).filter(Boolean);
-  const spy = new IntersectionObserver((es) => {
-    es.forEach((e) => {
-      if (!e.isIntersecting) return;
-      const id = "#" + e.target.id;
-      navLinks.forEach((a) => {
-        const on = a.getAttribute("href") === id;
-        a.classList.toggle("on", on);
-        if (on) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
-      });
+  let spiedId = null;
+  function spy() {
+    const line = innerHeight * 0.45;
+    const cur = spied.find((sec) => { const r = sec.getBoundingClientRect(); return r.top <= line && r.bottom > line; });
+    const id = cur ? "#" + cur.id : null;
+    if (id === spiedId) return;
+    spiedId = id;
+    navLinks.forEach((a) => {
+      const on = a.getAttribute("href") === id;
+      a.classList.toggle("on", on);
+      if (on) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
     });
-  }, { rootMargin: "-45% 0px -54% 0px" });
-  spied.forEach((sec) => spy.observe(sec));
+  }
+  window.addEventListener("scroll", spy, { passive: true });
+  spy();
+
+  /* ---------- scroll guiado ----------
+     Del inicio a la primera escena del club, y de la última escena a «Tap. Drink. Party.»:
+     si el scroll se para a medio camino, termina el recorrido en la dirección en la que iba. */
+  const heroSec = document.querySelector(".hero");
+  const tdpSec = document.getElementById("tdp");
+  const clubSec = document.getElementById("club");
+  const capY = (i) => clubSec.offsetTop + (clubSec.offsetHeight - innerHeight) * (i + 0.5) / 4;
+  const tdpY = () => tdpSec.offsetTop + (tdpSec.offsetHeight - innerHeight) * 0.62;
+  const guideZones = () => [
+    [(() => { const y = heroSec.offsetTop + heroSec.offsetHeight - innerHeight * 1.02; return y < 60 ? 0 : y; })(), capY(0)],
+    [capY(3), tdpY()],
+  ];
+  let lastY = scrollY, dirY = 0, settleTimer = null, guiding = false, touching = false;
+  function settle() {
+    if (touching) return;
+    if (guiding) { guiding = false; return; }
+    if (!menu.hidden || !chatBox.hidden) return;
+    const y = scrollY;
+    for (const [a, b] of guideZones()) {
+      if (y > a + 6 && y < b - 6 && dirY !== 0) {
+        guiding = true;
+        window.scrollTo({ top: dirY > 0 ? b : a, behavior: reduce ? "auto" : "smooth" });
+        return;
+      }
+    }
+  }
+  window.addEventListener("scroll", () => {
+    const d = scrollY - lastY;
+    if (Math.abs(d) > 0.5) dirY = Math.sign(d);
+    lastY = scrollY;
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(settle, 160);
+  }, { passive: true });
+  window.addEventListener("touchstart", () => { touching = true; }, { passive: true });
+  window.addEventListener("touchend", () => { touching = false; clearTimeout(settleTimer); settleTimer = setTimeout(settle, 220); }, { passive: true });
 
   /* =========================================================
      ASISTENTE CON IA

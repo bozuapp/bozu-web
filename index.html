@@ -98,10 +98,11 @@
     <div class="holo" id="holo">
       <div class="holo-card">
         <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip">Mesa 7</span></div>
-        <p class="ui-title">A tu ronda</p>
-        <div class="ui-item"><span class="ui-ic"><svg viewBox="0 0 40 40"><path d="M9 7h22l-3 27H12z" fill="none" stroke="#f4f4f2" stroke-width="2"/><path d="M11.3 17h17.4l-2 16H13.3z" fill="#d4ff3a"/></svg></span><span class="ui-t"><b>Gin tonic</b><small>Premium · Tónica</small></span><span class="ui-q">2</span></div>
-        <div class="ui-item"><span class="ui-ic"><svg viewBox="0 0 40 40"><path d="M9 7h22l-3 27H12z" fill="none" stroke="#f4f4f2" stroke-width="2"/><path d="M11.3 17h17.4l-2 16H13.3z" fill="#d4ff3a"/></svg></span><span class="ui-t"><b>Tequila</b><small>Con sal y lima</small></span><span class="ui-q">4</span></div>
-        <button class="ui-btn" id="heroBtn" type="button" tabindex="-1">Completar pedido</button>
+        <p class="ap-h1 hero-h">Tu ronda.<span>Paga y olvídate.</span></p>
+        <p class="ap-row"><span class="ap-mini" data-mini="pink"></span><span>Puerto de Indias + Tónica</span></p>
+        <p class="ap-row"><span class="ap-mini" data-mini="cola"></span><span>Barceló + Coca-Cola</span></p>
+        <p class="ap-row"><span class="ap-mini" data-mini="beer"></span><span>Tercio</span></p>
+        <button class="ui-btn" id="heroBtn" type="button" tabindex="-1">Pagar la ronda</button>
       </div>
       <div class="beam"></div>
       <div class="phone-top"><div class="scr"><span></span><span></span><b></b></div></div>
@@ -158,34 +159,34 @@
     <div class="how-phone" aria-hidden="true">
       <div class="phone">
         <div class="notch"></div>
-        <div class="screen s0">
-          <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip">Pista</span></div>
-          <div class="ui-cats"><span class="on">Copa</span><span>Chupitos</span><span>Cerveza</span><span>Embotellados</span></div>
-          <p class="ui-title">A tu ronda</p>
-          <div class="ui-item"><span class="ui-ic"><svg viewBox="0 0 40 40"><path d="M9 7h22l-3 27H12z" fill="none" stroke="#f4f4f2" stroke-width="2"/><path d="M11.3 17h17.4l-2 16H13.3z" fill="#d4ff3a"/></svg></span><span class="ui-t"><b>Gin tonic</b><small>Premium · Tónica</small></span><span class="ui-q">2</span></div>
-          <div class="ui-item"><span class="ui-ic"><svg viewBox="0 0 40 40"><path d="M9 7h22l-3 27H12z" fill="none" stroke="#f4f4f2" stroke-width="2"/><path d="M11.3 17h17.4l-2 16H13.3z" fill="#d4ff3a"/></svg></span><span class="ui-t"><b>Tercio</b><small>Botella 33 cl</small></span><span class="ui-q">3</span></div>
-          <div class="ui-pay"><span>Total</span><b>34,00 €</b></div>
-          <div class="ui-btn">Pagar</div>
+        <div class="screen s0 ap">
+          <div class="ap-top"><span class="ap-club">Sala Neón <i>▾</i></span><span class="ap-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4L6 21z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8h6M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><span class="ap-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 20c1.2-3.6 4-5.2 7-5.2s5.8 1.6 7 5.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span></div>
+          <div class="ap-glass" data-glass="order" aria-hidden="true"></div>
+          <p class="ap-name"><span class="n0">Créala</span><span class="n1">Puerto de Indias</span><span class="n2">Puerto de Indias + Tónica</span></p>
+          <div class="ap-dash"><i></i><i></i><i></i><i></i></div>
+          <p class="ap-q">¿Con qué lo mezclas?</p>
+          <div class="ap-opts"><span>Coca-Cola</span><span class="pick">Tónica</span><span>Sprite</span><span>Ginger Ale</span></div>
+          <div class="ap-cta">Añadir a la ronda</div>
         </div>
-        <div class="screen s1">
-          <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip">Barra 1</span></div>
-          <p class="ui-title">Preparando</p>
-          <div class="ticket">
-            <div class="t-head"><b>B-52</b><span class="paid">Pagado</span></div>
-            <p><em>2×</em> Gin tonic <small>Premium · Tónica</small></p>
-            <p><em>3×</em> Tercio</p>
-            <div class="t-bar"><i></i></div>
+        <div class="screen s1 ap">
+          <div class="ap-top"><span class="ap-logo">bozu<i></i></span><span class="ap-pill">Barra Principal ▾</span></div>
+          <div class="ap-sat"><div class="ap-meter"><i></i></div><p><b>Saturación tranquila</b><small>Automático</small></p></div>
+          <p class="ap-sec">Nuevos</p>
+          <div class="ap-ticket">
+            <div class="ap-th"><b>@lucia.m</b><span class="ap-paid">Pagado</span></div>
+            <p class="ap-tl"><span class="ap-mini" data-mini="pink"></span>Puerto de Indias + Tónica</p>
+            <div class="ap-tb"><span class="t0">Empezar · 1 etiqueta</span><span class="t1">Preparando…</span></div>
           </div>
-          <div class="ticket dim"><div class="t-head"><b>B-53</b><span class="paid">Pagado</span></div><p><em>4×</em> Tequila</p></div>
+          <p class="ap-sec dim">Esperando recogida</p>
+          <div class="ap-empty">Nada por aquí</div>
         </div>
-        <div class="screen s2">
-          <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip">Pista</span></div>
-          <div class="ready">
+        <div class="screen s2 ap">
+          <div class="ap-head"><span class="ap-back">‹</span><span><b>Tu pedido</b><small>Sala Neón · Barra Principal</small></span></div>
+          <div class="ap-panel">
+            <p class="ap-h2">¡Listo!</p>
+            <p class="ap-sub">Recógelo en Barra Principal y enseña este QR</p>
             <div class="qr-card"><svg class="qr" data-seed="52" aria-hidden="true"></svg></div>
-            <p class="ui-title">¡Listo!</p>
-            <p class="ready-sub">Enséñalo en Barra 1 · Pedido B-52</p>
           </div>
-          <div class="ui-btn ghost">Ver el pedido</div>
         </div>
       </div>
     </div>
@@ -258,13 +259,16 @@
             <div class="v-tags"><span>+18 ✓</span><span>Con consumición</span><span class="lime">1 copa cargada</span></div>
           </div>
         </div>
-        <div class="screen r3">
-          <div class="ui-top"><span class="ui-logo">bozu<i></i></span><span class="ui-chip">Pista</span></div>
-          <p class="ui-title">A tu ronda</p>
-          <div class="ui-item"><span class="ui-ic"><svg viewBox="0 0 40 40"><path d="M9 7h22l-3 27H12z" fill="none" stroke="#f4f4f2" stroke-width="2"/><path d="M11.3 17h17.4l-2 16H13.3z" fill="#d4ff3a"/></svg></span><span class="ui-t"><b>Gin tonic</b><small>Premium · Tónica</small></span><span class="inv-tag">Invitación</span></div>
-          <div class="inv"><span class="ui-t"><b>1 copa de lista</b><small>Lista de Marcos</small></span><span class="toggle"><i></i></span></div>
-          <div class="ui-pay"><span>Total</span><b class="price"><s>10,00 €</s><span>0,00 €</span></b></div>
-          <div class="ui-btn">Pedir</div>
+        <div class="screen r3 ap">
+          <div class="ap-head"><span class="ap-back">‹</span><span><small class="ap-keep">Seguir pidiendo</small></span></div>
+          <p class="ap-h1">Tu ronda.<span>Paga y olvídate.</span></p>
+          <span class="ap-chip"><i></i>Sala Neón · Barra Principal</span>
+          <p class="ap-row"><span class="ap-mini" data-mini="pink"></span><span>Puerto de Indias + Tónica</span></p>
+          <div class="ap-sheet">
+            <div class="ap-inv"><span>Usar mis invitaciones <em>1</em></span><span class="toggle"><i></i></span></div>
+            <p class="ap-total"><span>Total</span><b class="price"><s>Pagar</s><span>Invitación</span></b></p>
+            <div class="ap-cta"><span class="price"><s>Pagar la ronda</s><span>Pedir con invitación</span></span></div>
+          </div>
         </div>
       </div>
     </div>
@@ -585,6 +589,8 @@
   <p class="chat-legal">No compartas datos personales. Para cerrar algo concreto, <a class="js-agenda" href="#demo">agenda una demo</a>.</p>
 </section>
 
+<script src="assets/app-ui/drink.js" defer></script>
+<script src="assets/app-ui/glass.js" defer></script>
 <script src="assets/app.js" defer></script>
 </body>
 </html>
