@@ -1,0 +1,9 @@
+{
+  "name": "bozu-web",
+  "private": true,
+  "description": "Web de bozu para negocios. La carpeta netlify/functions contiene el asistente con IA.",
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0"
+  }
+}

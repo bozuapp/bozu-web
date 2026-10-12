@@ -15,3 +15,12 @@ Abre assets/app.js y cambia estas líneas del principio:
   whatsapp: "34600000000",   (prefijo de país + número, sin + ni espacios)
 
 Todos los botones de "Agenda una demo" y "WhatsApp" usarán esos datos.
+
+Asistente con IA (chat de la web)
+- El chat llama a netlify/functions/chat/chat.mjs, que responde con Claude.
+- Para que funcione, en Netlify: Site configuration > Environment variables >
+  añade ANTHROPIC_API_KEY con una clave de https://platform.claude.com
+  (opcional: BOZU_CHAT_MODEL para usar otro modelo; por defecto claude-opus-5-5).
+- Lo que sabe el asistente está en netlify/functions/chat/knowledge.mjs.
+  Si cambia algo de bozu (funciones, fechas, contacto), edítalo ahí.
+- Sin la clave, el chat no se rompe: ofrece agendar una demo o escribir por WhatsApp.

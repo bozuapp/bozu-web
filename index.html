@@ -46,11 +46,35 @@
     <a href="#como-funciona">Cómo funciona</a>
     <a href="#rrpp">RRPP y puerta</a>
     <a href="#beneficios">Beneficios</a>
-    <a href="#tap">bozu Tap</a>
     <a href="#datos">Dashboard</a>
+    <a href="#faq">Preguntas</a>
   </nav>
-  <a class="pill pill-ghost nav-cta js-agenda" href="#demo">Agenda una demo <span class="arr" aria-hidden="true">↗</span></a>
+  <div class="nav-right">
+    <a class="pill pill-ghost nav-cta js-agenda" href="#demo">Agenda una demo <span class="arr" aria-hidden="true">↗</span></a>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú"><i></i><i></i></button>
+  </div>
+  <span class="nav-progress" aria-hidden="true"><i id="navProgress"></i></span>
 </header>
+
+<div class="menu" id="menu" hidden>
+  <nav aria-label="Menú">
+    <ol class="menu-links">
+      <li><a href="#como-funciona"><em>01</em>Cómo funciona</a></li>
+      <li><a href="#rrpp"><em>02</em>RRPP, listas y puerta</a></li>
+      <li><a href="#beneficios"><em>03</em>Beneficios</a></li>
+      <li><a href="#calculadora"><em>04</em>Calculadora</a></li>
+      <li><a href="#tap"><em>05</em>bozu Tap</a></li>
+      <li><a href="#datos"><em>06</em>Dashboard</a></li>
+      <li><a href="#video"><em>07</em>Vídeo</a></li>
+      <li><a href="#faq"><em>08</em>Preguntas frecuentes</a></li>
+    </ol>
+  </nav>
+  <div class="menu-ctas">
+    <a class="pill pill-light js-agenda" href="#demo">Agenda una demo <span class="arr" aria-hidden="true">↗</span></a>
+    <button class="pill pill-ghost" type="button" data-open-chat>Pregunta al asistente</button>
+    <a class="menu-wa js-wa" href="#">Escríbenos por WhatsApp</a>
+  </div>
+</div>
 
 <main id="main">
 
@@ -471,6 +495,25 @@
   </div>
 </section>
 
+<!-- ============ PREGUNTAS FRECUENTES ============ -->
+<section class="faq" id="faq">
+  <div class="faq-head">
+    <h2 class="h-section"><span class="w">Preguntas</span> <span class="g">frecuentes.</span></h2>
+    <p class="lead">Lo que más nos preguntan los dueños de discotecas. ¿Tienes otra duda? Pregúntale al asistente o escríbenos.</p>
+    <div class="ctas"><button class="pill pill-light" type="button" data-open-chat>Pregunta al asistente</button><a class="pill pill-ghost js-wa" href="#">WhatsApp</a></div>
+  </div>
+  <div class="faq-list">
+    <details><summary>¿Tus clientes tienen que descargarse una app?</summary><p>No. Pueden pedir desde el navegador escaneando el QR de su mesa o tocando la etiqueta NFC en las mesas VIP. Además, la app de bozu llega al App Store el 14 de noviembre para quien prefiera tenerla en el móvil.</p></details>
+    <details><summary>¿Qué necesito en la barra?</summary><p>Una tablet o iPad con el panel de barra y, si quieres etiquetas por copa, una impresora térmica de etiquetas. En la demo revisamos tu local, lo configuramos todo y formamos a tu equipo.</p></details>
+    <details><summary>¿Cuándo se cobra al cliente?</summary><p>Al pagar, el importe queda reservado. Se cobra cuando la barra empieza a preparar el pedido; si se cancela antes, se libera sin cobrar.</p></details>
+    <details><summary>¿Qué pasa si una barra se satura?</summary><p>El medidor de saturación calcula cada 30 segundos cómo va cada barra. Desde el 85 % el cliente ve el tiempo estimado antes de pedir, y tú decides si pausar esa barra para que los pedidos nuevos vayan a otra.</p></details>
+    <details><summary>¿Cómo funcionan las listas de RRPP y la puerta?</summary><p>Tus RRPP crean sus listas en la app e invitan por @usuario. Cada invitado recibe una entrada con QR que la puerta escanea con un móvil, comprobando la edad mínima. Los RRPP fichan con una credencial que cambia cada 15 segundos, y si la lista incluye consumición, la copa se carga al entrar.</p></details>
+    <details><summary>¿Vendéis entradas?</summary><p>No. bozu gestiona las listas de invitados de tus RRPP y el acceso por la puerta, pero no vende entradas.</p></details>
+    <details><summary>¿Cuánto cuesta?</summary><p>La demo es gratis y no hay coste de puesta en marcha: mapeo del local, configuración, etiquetas NFC y QR, alta del equipo y acompañamiento la primera noche. Las condiciones te las contamos en la demo, según tu local.</p></details>
+    <details><summary>¿Qué pasa con los datos de mis clientes?</summary><p>Se guardan protegidos y no se pueden leer desde fuera. Firmamos contigo un contrato de encargo del tratamiento de datos, y tus clientes pueden borrar su cuenta desde su perfil.</p></details>
+  </div>
+</section>
+
 <!-- ============ DEMO GRATIS ============ -->
 <section class="demo" id="demo">
   <div class="curtains soft" aria-hidden="true"></div>
@@ -501,11 +544,46 @@
 </main>
 
 <footer class="foot">
-  <a class="logo" href="#top" aria-label="Volver arriba">bozu<span class="dot"></span></a>
-  <p>Tap. Drink. Party.</p>
-  <p class="foot-contact"><a class="js-mail-text" href="#">we@bozu.es</a></p>
+  <div class="foot-brand">
+    <a class="logo" href="#top" aria-label="Volver arriba">bozu<span class="dot"></span></a>
+    <p>Tap. Drink. Party.</p>
+  </div>
+  <nav class="foot-links" aria-label="Pie de página">
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#rrpp">RRPP y puerta</a>
+    <a href="#beneficios">Beneficios</a>
+    <a href="#datos">Dashboard</a>
+    <a href="#faq">Preguntas frecuentes</a>
+  </nav>
+  <div class="foot-contact">
+    <a class="js-mail-text" href="#">we@bozu.es</a>
+    <a class="js-wa" href="#">WhatsApp</a>
+    <a class="js-agenda" href="#demo">Agenda una demo</a>
+  </div>
   <p class="copy">© 2026 bozu</p>
 </footer>
+
+<!-- ============ ASISTENTE ============ -->
+<div class="mbar" id="mbar" aria-hidden="true">
+  <a class="pill pill-light js-agenda" href="#demo" tabindex="-1">Agenda una demo <span class="arr" aria-hidden="true">↗</span></a>
+  <button class="mbar-chat" type="button" data-open-chat tabindex="-1" aria-label="Pregunta al asistente"><span class="fab-dot"></span>Pregunta</button>
+</div>
+<button class="chat-fab" id="chatFab" type="button" data-open-chat aria-controls="chat" aria-expanded="false"><span class="fab-dot"></span><span>¿Dudas? Pregunta</span></button>
+<section class="chat" id="chat" role="dialog" aria-modal="false" aria-labelledby="chatTitle" hidden>
+  <header class="chat-h">
+    <span class="chat-av" aria-hidden="true">b<i></i></span>
+    <div><b id="chatTitle">Asistente de bozu</b><small>Con IA · puede equivocarse</small></div>
+    <button class="chat-reset" type="button" id="chatReset" aria-label="Empezar de nuevo" title="Empezar de nuevo">↺</button>
+    <button class="chat-x" type="button" id="chatClose" aria-label="Cerrar el asistente">✕</button>
+  </header>
+  <div class="chat-log" id="chatLog" aria-live="polite"></div>
+  <div class="chat-sug" id="chatSug"></div>
+  <form class="chat-f" id="chatForm">
+    <textarea id="chatIn" rows="1" maxlength="800" placeholder="Escribe tu pregunta…" aria-label="Tu pregunta"></textarea>
+    <button type="submit" id="chatSend" aria-label="Enviar"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </form>
+  <p class="chat-legal">No compartas datos personales. Para cerrar algo concreto, <a class="js-agenda" href="#demo">agenda una demo</a>.</p>
+</section>
 
 <script src="assets/app.js" defer></script>
 </body>

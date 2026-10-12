@@ -388,6 +388,190 @@ const BOZU_CONTACT = {
     }
   }, { threshold: 0.3 }).observe(dash);
 
+  /* =========================================================
+     NAVEGACIÓN: menú, sección activa y progreso de lectura
+     ========================================================= */
+  const nav = document.querySelector(".nav");
+  const navProgress = document.getElementById("navProgress");
+  const burger = document.getElementById("burger");
+  const menu = document.getElementById("menu");
+  const mbar = document.getElementById("mbar");
+  const chatBox = document.getElementById("chat");
+  const lock = () => document.body.classList.toggle("locked", !menu.hidden || (!chatBox.hidden && innerWidth <= 760));
+
+  function setMenu(open) {
+    menu.hidden = !open;
+    menu.classList.toggle("open", open);
+    burger.setAttribute("aria-expanded", open);
+    burger.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+    lock();
+    if (open) menu.querySelector("a").focus({ preventScroll: true });
+  }
+  burger.addEventListener("click", () => setMenu(menu.hidden));
+  menu.addEventListener("click", (e) => { if (e.target.closest("a, button")) setMenu(false); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (!chatBox.hidden) closeChat();
+    else if (!menu.hidden) { setMenu(false); burger.focus(); }
+  });
+  matchMedia("(min-width: 1081px)").addEventListener("change", (e) => { if (e.matches && !menu.hidden) setMenu(false); });
+
+  const stepGrids = [...document.querySelectorAll(".how-grid")];
+  const chatFabEl = document.getElementById("chatFab");
+  let ticking = false;
+  function onScrollNav() {
+    ticking = false;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    nav.classList.toggle("scrolled", scrollY > 40);
+    navProgress.style.transform = `scaleX(${max > 0 ? (scrollY / max).toFixed(4) : 0})`;
+    const demoTop = document.getElementById("demo").getBoundingClientRect().top;
+    // En las secciones con móvil fijo el texto se lee abajo: ahí la barra no se muestra
+    const overSteps = stepGrids.some((g) => { const r = g.getBoundingClientRect(); return r.top < innerHeight && r.bottom > innerHeight * 0.5; });
+    const show = scrollY > innerHeight * 0.8 && demoTop > innerHeight * 0.6 && chatBox.hidden && !overSteps;
+    mbar.classList.toggle("show", show);
+    chatFabEl.classList.toggle("away", overSteps && innerWidth <= 860);
+    mbar.setAttribute("aria-hidden", !show);
+    mbar.querySelectorAll("a, button").forEach((el) => (el.tabIndex = show ? 0 : -1));
+  }
+  window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(onScrollNav); } }, { passive: true });
+  onScrollNav();
+
+  // Resalta en el menú la sección que se está viendo
+  const navLinks = [...document.querySelectorAll('.nav-links a, .menu-links a')];
+  const spied = [...new Set(navLinks.map((a) => a.getAttribute("href")))].map((h) => document.querySelector(h)).filter(Boolean);
+  const spy = new IntersectionObserver((es) => {
+    es.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const id = "#" + e.target.id;
+      navLinks.forEach((a) => {
+        const on = a.getAttribute("href") === id;
+        a.classList.toggle("on", on);
+        if (on) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
+      });
+    });
+  }, { rootMargin: "-45% 0px -54% 0px" });
+  spied.forEach((sec) => spy.observe(sec));
+
+  /* =========================================================
+     ASISTENTE CON IA
+     ========================================================= */
+  const CHAT_URL = "/api/chat";
+  const CHAT_KEY = "bozu.chat";
+  const WELCOME = "¡Hola! Soy el asistente de bozu. Pregúntame lo que quieras sobre cómo funciona: pedidos desde el móvil, la barra, tus RRPP, las listas o la puerta.";
+  const SUGGESTIONS = ["¿Cómo pide un cliente?", "¿Cómo funcionan las listas de RRPP?", "¿Qué necesito en la barra?", "¿Cuándo se cobra al cliente?", "¿Cuánto cuesta?"];
+  const fab = document.getElementById("chatFab");
+  const log = document.getElementById("chatLog");
+  const sug = document.getElementById("chatSug");
+  const form = document.getElementById("chatForm");
+  const input = document.getElementById("chatIn");
+  const sendBtn = document.getElementById("chatSend");
+  let history = [];
+  let busy = false;
+  let lastOpener = null;
+  try { history = JSON.parse(sessionStorage.getItem(CHAT_KEY)) || []; } catch { history = []; }
+  const save = () => { try { sessionStorage.setItem(CHAT_KEY, JSON.stringify(history.slice(-20))); } catch {} };
+
+  const esc = (t) => t.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const linkLabel = (url) => url.includes("calendar.app.google") ? "Agenda una demo ↗" : url.includes("wa.me") ? "WhatsApp ↗" : url.replace(/^https:\/\/(www\.)?/, "").split("/")[0] + " ↗";
+  // Formato mínimo y seguro: negritas, enlaces, listas con guion y párrafos
+  function render(text) {
+    const inline = (t) => esc(t)
+      .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
+      .replace(/(https:\/\/[^\s<)]+[^\s<).,;:!?])/g, (url) => `<a href="${url}" target="_blank" rel="noopener">${linkLabel(url)}</a>`);
+    const blocks = text.trim().split(/\n{2,}/);
+    return blocks.map((b) => {
+      const lines = b.split("\n");
+      if (lines.every((l) => /^\s*[-•*]\s+/.test(l))) return "<ul>" + lines.map((l) => "<li>" + inline(l.replace(/^\s*[-•*]\s+/, "")) + "</li>").join("") + "</ul>";
+      return "<p>" + lines.map(inline).join("<br>") + "</p>";
+    }).join("");
+  }
+  function bubble(role, html, extra = "") {
+    const el = document.createElement("div");
+    el.className = `msg ${role} ${extra}`.trim();
+    el.innerHTML = html;
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+    return el;
+  }
+  const contactActs = () => `<div class="acts"><a href="${BOZU_CONTACT.agenda}" target="_blank" rel="noopener">Agenda una demo</a><a href="https://wa.me/${BOZU_CONTACT.whatsapp}" target="_blank" rel="noopener">WhatsApp</a></div>`;
+
+  function drawChat() {
+    log.innerHTML = "";
+    bubble("bot", render(WELCOME));
+    history.forEach((m) => bubble(m.role === "user" ? "me" : "bot", m.role === "user" ? esc(m.content) : render(m.content)));
+    sug.innerHTML = "";
+    if (!history.length) SUGGESTIONS.forEach((q) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = q;
+      b.addEventListener("click", () => ask(q));
+      sug.appendChild(b);
+    });
+    sug.hidden = !!history.length;
+  }
+
+  function openChat(opener) {
+    lastOpener = opener || null;
+    if (!menu.hidden) setMenu(false);
+    chatBox.hidden = false;
+    fab.setAttribute("aria-expanded", "true");
+    drawChat();
+    lock(); onScrollNav();
+    setTimeout(() => input.focus({ preventScroll: true }), 50);
+  }
+  function closeChat() {
+    chatBox.hidden = true;
+    fab.setAttribute("aria-expanded", "false");
+    lock(); onScrollNav();
+    (lastOpener && document.body.contains(lastOpener) && lastOpener.offsetParent ? lastOpener : fab).focus({ preventScroll: true });
+  }
+  document.querySelectorAll("[data-open-chat]").forEach((b) => b.addEventListener("click", () => openChat(b)));
+  document.getElementById("chatClose").addEventListener("click", closeChat);
+  document.getElementById("chatReset").addEventListener("click", () => { if (busy) return; history = []; save(); drawChat(); input.focus(); });
+
+  const grow = () => { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 120) + "px"; };
+  input.addEventListener("input", grow);
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); } });
+  form.addEventListener("submit", (e) => { e.preventDefault(); ask(input.value); });
+
+  async function ask(text) {
+    text = (text || "").trim().slice(0, 800);
+    if (!text || busy) return;
+    busy = true; sendBtn.disabled = true;
+    input.value = ""; grow();
+    sug.hidden = true;
+    history.push({ role: "user", content: text });
+    bubble("me", esc(text));
+    const out = bubble("bot", '<span class="typing" aria-label="Escribiendo"><i></i><i></i><i></i></span>');
+    let reply = "";
+    try {
+      const res = await fetch(CHAT_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: history.slice(-12) }) });
+      if (!res.ok || !res.body) {
+        let msg = "";
+        try { msg = (await res.json()).error || ""; } catch {}
+        throw new Error(res.status === 429 ? msg : "");
+      }
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        reply += dec.decode(value, { stream: true });
+        out.innerHTML = render(reply);
+        log.scrollTop = log.scrollHeight;
+      }
+      if (!reply.trim()) throw new Error("");
+      history.push({ role: "assistant", content: reply });
+      save();
+    } catch (err) {
+      history.pop();
+      out.classList.add("err");
+      out.innerHTML = render(err.message || "Ahora mismo no puedo responder. Escríbenos por WhatsApp o agenda una demo y te lo contamos.") + contactActs();
+    } finally {
+      busy = false; sendBtn.disabled = false;
+      if (!chatBox.hidden && matchMedia("(pointer: fine)").matches) input.focus({ preventScroll: true });
+    }
+  }
+
   /* ---------- panel del equipo RRPP (datos ilustrativos) ---------- */
   const teamDash = document.getElementById("teamDash");
   if (teamDash) {
