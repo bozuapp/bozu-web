@@ -619,8 +619,8 @@ input[type="range"]:focus-visible { outline: 2px solid var(--lime); outline-offs
 .foot-ic { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; color: var(--text); background: #121315; border: 1px solid var(--line); cursor: pointer; transition: color .2s, border-color .2s, transform .3s var(--ease), box-shadow .3s; }
 .foot-ic svg { width: 21px; height: 21px; }
 .foot-ic:hover { color: var(--lime); border-color: rgba(212, 255, 58, 0.5); transform: translateY(-2px); box-shadow: 0 0 20px rgba(212, 255, 58, 0.2); }
-.foot-word { display: flex; align-items: flex-end; gap: .04em; margin: 50px -0.04em 0; color: var(--text); font-weight: 700; font-size: min(41vw, 720px); line-height: .78; letter-spacing: -0.065em; user-select: none; }
-.foot-word .dot { width: .15em; height: .15em; border-radius: 50%; background: var(--lime); box-shadow: 0 0 .3em rgba(212, 255, 58, 0.7); margin-bottom: .02em; flex: none; }
+.foot-word { display: flex; gap: .22em; margin: 46px 0 0; font-weight: 700; font-size: min(13.2vw, 210px); line-height: 1; letter-spacing: -0.05em; color: var(--text); white-space: nowrap; user-select: none; }
+.foot-word .lime { color: var(--lime); text-shadow: 0 0 40px rgba(212, 255, 58, 0.45); }
 .foot-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; margin-top: 30px; font-size: 13px; color: var(--dim); }
 @media (max-width: 960px) { .foot-top { grid-template-columns: 1fr 1fr 1fr; } .foot-intro { grid-column: 1 / -1; } }
 @media (max-width: 760px) {

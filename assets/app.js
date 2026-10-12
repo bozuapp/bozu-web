@@ -549,28 +549,34 @@ const BOZU_CONTACT = {
   }
   const blocked = () => !menu.hidden || !chatBox.hidden;
 
-  // Rueda y trackpad. Un gesto nuevo se reconoce por una pausa (>180 ms) o porque vuelve a acelerar; la inercia
-  // del trackpad (eventos cada vez más flojos) no cuenta. Si llega un gesto nuevo mientras se desliza, se hace
-  // al terminar. Fuera de la cadena nunca se bloquea nada, y como válvula de seguridad nada se bloquea más de 2,5 s.
-  let lockUntil = 0, lastMag = 0, pendingDir = 0, peak = 0;
+  // Rueda y trackpad. Un gesto nuevo se reconoce por una pausa (>200 ms) o porque la fuerza media de los últimos
+  // eventos vuelve a subir claramente frente a los anteriores. La inercia del trackpad del Mac pierde fuerza en
+  // media aunque repita valores o tenga altibajos, así que no cuenta como gesto nuevo. Si llega un gesto nuevo
+  // mientras se desliza, se hace al terminar. Fuera de la cadena nunca se bloquea nada.
+  let lockUntil = 0, pendingDir = 0, mags = [], gPeak = 0, decayed = false;
+  const avg = (a) => a.reduce((x, y) => x + y, 0) / (a.length || 1);
   window.addEventListener("wheel", (e) => {
     if (blocked() || e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
     const now = performance.now();
     const mag = Math.abs(e.deltaY) * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1);
     const dir = Math.sign(e.deltaY);
-    // Nuevo gesto: tras una pausa, o si vuelve a acelerar cuando la inercia ya había bajado (no durante su propia aceleración)
     let newGesture = false;
-    if (now - lastWheel > 180) { newGesture = true; peak = mag; }
-    else if (mag > lastMag * 1.5 && mag > 6 && lastMag < peak * 0.6) { newGesture = true; peak = mag; }
-    else peak = Math.max(peak, mag);
-    const steady = now > lockUntil + 250 && mag >= lastMag && mag >= 25; // rueda de ratón girando sin parar
-    lastWheel = now; lastMag = mag;
+    if (now - lastWheel > 200) { newGesture = true; mags = []; gPeak = 0; decayed = false; }
+    mags.push(mag); if (mags.length > 10) mags.shift();
+    gPeak = Math.max(gPeak, mag);
+    if (mag < gPeak * 0.5) decayed = true; // la inercia ya ha perdido fuerza
+    if (!newGesture && decayed && mags.length === 10) {
+      const older = avg(mags.slice(0, 5)), newer = avg(mags.slice(5));
+      if (newer > older * 1.8 && newer > 15) { newGesture = true; mags = mags.slice(5); gPeak = Math.max(...mags); decayed = false; }
+    }
+    lastWheel = now;
     const to = nextStop(dir);
     if (to == null && !anim) return; // fuera de la cadena: scroll normal
     e.preventDefault();
     if (anim) { if (newGesture) pendingDir = dir; return; }
     if (to == null) return;
-    if (newGesture || (now >= lockUntil && (steady || now > lockUntil + 2500))) glide(to);
+    // Válvula: una rueda de ratón girando sin parar (sin perder fuerza) avanza cada 1,5 s; la inercia nunca
+    if (newGesture || (!decayed && now > lockUntil + 1500)) glide(to);
   }, { passive: false });
 
   let touchY = null, touchDecided = false, touchGuided = false;
