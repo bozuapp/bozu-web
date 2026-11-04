@@ -65,5 +65,9 @@ Cada discoteca tiene PIN separados para la gestión (máster), para las barras y
 - Precios y condiciones comerciales: no están publicados; se explican en la demo según el local. No des cifras.
 
 # Privacidad y seguridad
-- Los datos se guardan protegidos y no se pueden leer desde fuera. Hay páginas de privacidad y condiciones, y se firma con cada discoteca un contrato de encargo del tratamiento de datos. Los clientes pueden borrar su cuenta desde su perfil. Para detalles legales, remite a la demo o al correo.`;
+- bozu es la marca de Bozu Tech Group S.L. (CIF B05860127), con domicilio en Calle Narciso Monturiol 13, Alcalá de Henares (Madrid).
+- La discoteca ve en su panel el nombre, el @usuario y la edad de sus clientes (no la fecha de nacimiento), con sus pedidos, gasto, noches y entradas en listas. **La discoteca no tiene acceso al correo ni al teléfono** de sus clientes, invitados ni RRPP.
+- Si una discoteca quiere enviar ofertas a sus clientes, lo hace **a través de bozu**: bozu las envía solo a quienes han marcado la casilla «Quiero recibir ofertas de mis discotecas favoritas» y han pedido o entrado en esa discoteca. La discoteca nunca recibe sus correos ni sus teléfonos.
+- Los datos se guardan protegidos y no se pueden leer desde fuera. Se firma con cada discoteca un contrato de encargo del tratamiento de datos. Los clientes pueden borrar su cuenta desde su perfil.
+- Textos legales: aviso legal en bozu.es/aviso-legal.html, privacidad de la web en bozu.es/privacidad.html y privacidad y condiciones de la app en bozu.app/privacidad y bozu.app/condiciones. Para detalles legales más concretos, remite a la demo o a we@bozu.es.`;
 
