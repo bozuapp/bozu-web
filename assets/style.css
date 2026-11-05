@@ -172,14 +172,15 @@ body.locked { overflow: hidden; }
   .club-captions::before { inset: -20vh -10vw -10vh -10vw; }
 }
 
-/* ---------- Tap. Drink. Party. ---------- */
-.tdp { position: relative; height: 220vh; }
+/* ---------- Menos barra, más copas. ---------- */
+.tdp { position: relative; height: 200vh; }
 .tdp-sticky { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 var(--pad); overflow: hidden; }
-.tdp-words { font-weight: 700; font-size: clamp(56px, 12.5vw, 230px); line-height: 0.95; letter-spacing: -0.045em; }
-.tdp-words span { display: inline-block; opacity: 0.08; filter: blur(14px); transform: scale(1.25); transition: opacity .5s var(--ease), filter .5s var(--ease), transform .5s var(--ease), text-shadow .5s; }
+.tdp-words { font-weight: 700; font-size: clamp(40px, 11vw, 200px); line-height: 0.95; letter-spacing: -0.045em; }
+.tdp-words span { display: block; opacity: 0.08; filter: blur(14px); transform: scale(1.25); transition: opacity .5s var(--ease), filter .5s var(--ease), transform .5s var(--ease), text-shadow .5s; }
 .tdp-words span.on { opacity: 1; filter: none; transform: none; }
 .tdp-words .lime.on { color: var(--lime); text-shadow: 0 0 40px rgba(212, 255, 58, 0.55); }
 .tdp-sub { color: var(--muted); margin-top: 34px; font-size: clamp(17px, 1.5vw, 22px); }
+@media (max-width: 640px) { .tdp-words { font-size: 15vw; } }
 
 /* ---------- cómo funciona ---------- */
 .how { padding: 120px var(--pad) 60px; }
@@ -619,7 +620,7 @@ input[type="range"]:focus-visible { outline: 2px solid var(--lime); outline-offs
 .foot-ic { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; color: var(--text); background: #121315; border: 1px solid var(--line); cursor: pointer; transition: color .2s, border-color .2s, transform .3s var(--ease), box-shadow .3s; }
 .foot-ic svg { width: 21px; height: 21px; }
 .foot-ic:hover { color: var(--lime); border-color: rgba(212, 255, 58, 0.5); transform: translateY(-2px); box-shadow: 0 0 20px rgba(212, 255, 58, 0.2); }
-.foot-word { display: flex; gap: .22em; margin: 46px 0 0; font-weight: 700; font-size: min(13.2vw, 210px); line-height: 1; letter-spacing: -0.05em; color: var(--text); white-space: nowrap; user-select: none; }
+.foot-word { display: flex; gap: .22em; margin: 46px 0 0; font-weight: 700; font-size: min(8.4vw, 142px); line-height: 1; letter-spacing: -0.05em; color: var(--text); white-space: nowrap; user-select: none; }
 .foot-word .lime { color: var(--lime); text-shadow: 0 0 40px rgba(212, 255, 58, 0.45); }
 .foot-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; margin-top: 30px; font-size: 13px; color: var(--dim); }
 @media (max-width: 960px) { .foot-top { grid-template-columns: 1fr 1fr 1fr; } .foot-intro { grid-column: 1 / -1; } }

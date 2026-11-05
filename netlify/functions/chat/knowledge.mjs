@@ -14,11 +14,11 @@ export const SYSTEM_PROMPT = `Eres el asistente de la web de bozu (bozu.es), una
 
 # Contacto
 - Agendar una demo (videollamada o llamada): https://calendar.app.google/x6Lcu49jH8pyxN4E9
-- WhatsApp: +34 689 504 331 (https://wa.me/34689504331)
+- WhatsApp: +34 623 55 29 33 (https://wa.me/34623552933)
 - Correo: we@bozu.es
 
 # Qué es bozu
-bozu convierte cada mesa y cada rincón de la pista en un punto de venta. Los clientes piden y pagan sus copas desde el móvil; la barra solo prepara y entrega. Además, bozu gestiona el equipo de RRPP, las listas de invitados y la puerta. Lema: «Tap. Drink. Party.»
+bozu convierte cada mesa y cada rincón de la pista en un punto de venta. Los clientes piden y pagan sus copas desde el móvil; la barra solo prepara y entrega. Además, bozu gestiona el equipo de RRPP, las listas de invitados y la puerta. Lema: «Menos barra, más copas.»
 
 Tiene varias partes:
 - **App del cliente**: en la web (bozu.app) y, a partir del 14 de noviembre, también como app de iPhone en el App Store (Android, más adelante). El cliente entra con Apple, Google o su correo, con un @usuario único. Solo para mayores de 18.

@@ -5,7 +5,7 @@
 const BOZU_CONTACT = {
   email: "we@bozu.es",
   agenda: "https://calendar.app.google/x6Lcu49jH8pyxN4E9", // reserva de llamada (Google Calendar)
-  whatsapp: "34689504331",          // con prefijo de país, sin + ni espacios
+  whatsapp: "34623552933",          // con prefijo de país, sin + ni espacios
   asunto: "Quiero una demo gratuita de bozu",
 };
 
@@ -284,7 +284,7 @@ const BOZU_CONTACT = {
   if (reduce) window.addEventListener("scroll", () => clubFrame(performance.now()), { passive: true });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => clubFrame(performance.now()));
 
-  /* ---------- Tap. Drink. Party. ---------- */
+  /* ---------- Menos barra, más copas. ---------- */
   const tdp = document.getElementById("tdp");
   const words = [...document.querySelectorAll(".tdp-words span")];
   /* ---------- bozu Tap ---------- */
@@ -293,7 +293,7 @@ const BOZU_CONTACT = {
 
   function onScroll() {
     const p = progressOf(tdp);
-    words.forEach((w, i) => w.classList.toggle("on", reduce || p > 0.12 + i * 0.22));
+    words.forEach((w, i) => w.classList.toggle("on", reduce || p > 0.12 + i * 0.26));
     if (tag) {
       const r = tapSec.getBoundingClientRect();
       const q = clamp(1 - (r.top + r.height / 2) / (window.innerHeight * 1.2));
@@ -503,12 +503,12 @@ const BOZU_CONTACT = {
   spy();
 
   /* ---------- scroll guiado ----------
-     Del inicio a «Tap. Drink. Party.» hay una cadena de paradas: las 4 escenas del club y las 3 palabras.
+     Del inicio a «Menos barra, más copas.» hay una cadena de paradas: las 4 escenas del club y las 2 frases.
      Cada gesto (rueda, trackpad o dedo) avanza exactamente una parada, nada más empezar el gesto. */
   const heroSec = document.querySelector(".hero");
   const tdpSec = document.getElementById("tdp");
   const clubSec = document.getElementById("club");
-  const TDP_STOPS = [0.2, 0.42, 0.66];
+  const TDP_STOPS = [0.2, 0.46];
   function stops() {
     const clubRange = clubSec.offsetHeight - innerHeight, tdpRange = tdpSec.offsetHeight - innerHeight;
     const heroEnd = heroSec.offsetTop + heroSec.offsetHeight - innerHeight;
