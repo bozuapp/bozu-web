@@ -1,0 +1,2138 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simula una noche en tu discoteca · bozu</title>
+<meta name="description" content="Responde 11 preguntas sobre tu local y mira tu noche simulada persona a persona: con tu barra de siempre y con bozu. Colas, ventas perdidas, facturación y las estadísticas que verías en tu panel.">
+<link rel="canonical" href="https://bozu.es/simulador/">
+<meta property="og:title" content="Simula una noche en tu discoteca · bozu">
+<meta property="og:description" content="Tu noche simulada persona a persona, con y sin bozu. Gratis, en 2 minutos.">
+<meta property="og:image" content="https://bozu.es/assets/og.jpg">
+<meta property="og:url" content="https://bozu.es/simulador/">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../assets/fonts/DMSans.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+<body>
+<style>
+@font-face {
+  font-family: "DM Sans";
+  src: url("../assets/fonts/DMSans.woff2") format("woff2-variations"), url("../assets/fonts/DMSans.woff2") format("woff2");
+  font-weight: 100 1000;
+  font-display: swap;
+}
+a.logo { text-decoration: none; }
+/* Layout: cuestionario a pantalla completa; después, software con menú lateral (arriba en móvil) y cuatro vistas. */
+:root {
+  --bg: #000000;
+  --g1: #0c0c0e;
+  --g2: #141417;
+  --g3: #232229;
+  --line: rgba(255, 255, 255, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.22);
+  --text: #f4f4f2;
+  --muted: #96969c;
+  --dim: #5f5f66;
+  --lime: #d4ff3a;
+  --lime-ink: #08080a;
+  --normal: #6a8cf0;
+  --good: #7fdc9a;
+  --bad: #ff7a66;
+  --font: "DM Sans", "Helvetica Neue", Arial, sans-serif;
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --r-lg: 24px;
+  --r-md: 16px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--bg); color: var(--text); }
+body { font-family: var(--font); font-optical-sizing: auto; font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; margin: 0; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+.num { font-variant-numeric: tabular-nums; }
+button { font-family: var(--font); }
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+.logo { font-weight: 700; letter-spacing: -0.035em; display: inline-flex; align-items: flex-end; gap: .045em; line-height: 1; font-size: 26px; color: var(--text); }
+.logo .dot { width: .2em; height: .2em; border-radius: 50%; background: var(--lime); box-shadow: 0 0 .5em var(--lime); margin-bottom: .04em; }
+.label { font-weight: 600; font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.h-display { font-weight: 500; font-size: clamp(32px, 4.4vw, 60px); line-height: 1.04; letter-spacing: -0.035em; margin: 0; text-wrap: balance; }
+.h-display span { display: block; }
+.w { color: var(--text); }
+.g { color: var(--muted); }
+.lead { color: var(--muted); font-size: 17px; line-height: 1.6; max-width: 46em; margin: 0; }
+.lead strong { color: var(--text); font-weight: 600; }
+.fine { color: var(--dim); font-size: 13px; margin: 0; }
+
+.pill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border-radius: 999px; font: 500 15px/1 var(--font); text-decoration: none; cursor: pointer; border: 1px solid var(--line-strong); color: var(--text); background: var(--g1); transition: transform .3s var(--ease-expo), border-color .2s, opacity .2s; }
+.pill:hover { transform: translateY(-1px); border-color: var(--text); }
+.pill-lime { background: var(--lime); color: var(--lime-ink); border-color: var(--lime); font-weight: 700; box-shadow: 0 0 24px rgba(212,255,58,.25); }
+.pill-lime:hover { border-color: var(--lime); }
+.pill-light { background: var(--text); color: var(--lime-ink); border-color: var(--text); }
+.pill.small { min-height: 36px; padding: 0 14px; font-size: 13px; }
+.pill[disabled] { opacity: .35; pointer-events: none; }
+:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+
+/* ---------- cuestionario ---------- */
+.intro { min-height: 100vh; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+.intro::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(60% 50% at 80% 0%, rgba(212,255,58,.10), transparent 70%), repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 120px); }
+.intro-top { display: flex; align-items: center; gap: 14px; padding-block: 20px; position: relative; }
+.intro-top .logo { text-decoration: none; }
+.intro-top .tag { font-weight: 600; font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: var(--muted); }
+.intro-top .skip { margin-left: auto; color: var(--muted); background: none; border: 0; font-size: 14px; cursor: pointer; padding: 8px 0; }
+.intro-top .skip:hover { color: var(--text); }
+@media (max-width: 560px) { .intro-top .tag { display: none; } }
+.intro-body { flex: 1; display: flex; align-items: center; position: relative; padding-block: 16px 48px; }
+.step { width: 100%; max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; animation: stepIn .6s var(--ease-expo); }
+.step.back { animation-name: stepBack; }
+@keyframes stepIn { from { opacity: 0; transform: translateY(14px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes stepBack { from { opacity: 0; transform: translateY(-14px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+
+.quiz { width: 100%; max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 48px; align-items: start; }
+.quiz .step { margin: 0; max-width: 720px; }
+@media (max-width: 1100px) { .quiz { grid-template-columns: minmax(0, 1fr); } .quiz-side { display: none; } }
+
+.segs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.seg-p { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.seg-p .bar { height: 3px; border-radius: 999px; background: var(--g3); overflow: hidden; }
+.seg-p .bar i { display: block; height: 100%; background: var(--lime); transition: width .5s var(--ease-expo); }
+.seg-p span { font-size: 12px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.seg-p.cur span { color: var(--lime); }
+.seg-p.done span { color: var(--muted); }
+@media (max-width: 560px) { .seg-p span { display: none; } .seg-p.cur span { display: block; overflow: visible; } }
+
+.q-kicker { margin: 4px 0 -10px; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.q-title { font-weight: 500; font-size: clamp(28px, 4vw, 48px); line-height: 1.08; letter-spacing: -0.03em; margin: 0; text-wrap: balance; }
+.q-help { color: var(--muted); font-size: 16px; margin: -8px 0 0; max-width: 40em; }
+.q-warn { color: var(--bad); font-size: 14px; margin: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip-opt { min-height: 50px; padding: 0 20px; border-radius: 999px; border: 1px solid var(--line-strong); background: rgba(12,12,14,.7); color: var(--text); font: 500 16px var(--font); cursor: pointer; transition: border-color .2s, background .2s, transform .3s var(--ease-expo); font-variant-numeric: tabular-nums; }
+.chip-opt:hover { border-color: var(--text); transform: translateY(-1px); }
+.chip-opt[aria-pressed="true"] { background: var(--lime); color: var(--lime-ink); border-color: var(--lime); font-weight: 700; }
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.opt { position: relative; text-align: left; display: flex; flex-direction: column; gap: 4px; min-height: 96px; padding: 16px 16px 14px; border-radius: var(--r-md); border: 1px solid var(--line-strong); background: rgba(12,12,14,.75); color: var(--text); font: inherit; cursor: pointer; transition: border-color .2s, background .2s, transform .3s var(--ease-expo), box-shadow .3s; }
+.opt:hover { border-color: var(--text); transform: translateY(-2px); }
+.opt b { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; padding-right: 26px; }
+.opt span { font-size: 13px; color: var(--muted); line-height: 1.35; }
+.opt kbd { position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 6px; border: 1px solid var(--line-strong); font: 600 11px var(--font); color: var(--muted); }
+.opt[aria-pressed="true"] { border-color: var(--lime); background: linear-gradient(160deg, rgba(212,255,58,.16), rgba(212,255,58,.04)); box-shadow: 0 0 28px rgba(212,255,58,.12); }
+.opt[aria-pressed="true"] kbd { background: var(--lime); color: var(--lime-ink); border-color: var(--lime); }
+.opt[aria-pressed="true"] span { color: var(--text); }
+.q-group { display: flex; flex-direction: column; gap: 10px; }
+.q-group > .t { font-size: 14px; color: var(--muted); }
+.q-input { width: 100%; max-width: 560px; font: 500 clamp(26px, 3.4vw, 36px) var(--font); color: var(--text); background: transparent; border: 0; border-bottom: 2px solid var(--line-strong); padding: 10px 0; letter-spacing: -0.02em; border-radius: 0; }
+.q-input::placeholder { color: var(--dim); }
+.q-input:focus { outline: none; border-bottom-color: var(--lime); }
+.big-num { display: flex; align-items: baseline; gap: 12px; }
+.big-num output { font-weight: 500; font-size: clamp(56px, 8vw, 96px); letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+.big-num span { color: var(--muted); font-size: 20px; }
+.q-range { max-width: 620px; display: flex; flex-direction: column; gap: 14px; }
+.q-range .marks { display: flex; justify-content: space-between; color: var(--dim); font-size: 12px; font-variant-numeric: tabular-nums; }
+.steppers { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; max-width: 680px; }
+.stepper { border: 1px solid var(--line-strong); background: rgba(12,12,14,.75); border-radius: var(--r-md); padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.stepper .t { font-size: 16px; font-weight: 500; }
+.stepper .t small { display: block; color: var(--dim); font-size: 12px; font-weight: 400; }
+.stepper .ctl { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+.stepper button { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-strong); background: var(--g2); color: var(--text); font-size: 20px; line-height: 1; cursor: pointer; transition: border-color .2s, transform .2s; }
+.stepper button:hover { border-color: var(--lime); }
+.stepper button:active { transform: scale(.94); }
+.stepper output { min-width: 3.4em; text-align: center; font-weight: 600; font-size: 24px; font-variant-numeric: tabular-nums; }
+.q-nav { display: flex; gap: 10px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+.q-nav .hint { color: var(--dim); font-size: 13px; margin-left: 6px; }
+.q-nav .hint kbd { font: 600 11px var(--font); border: 1px solid var(--line-strong); border-radius: 5px; padding: 1px 6px; color: var(--muted); }
+.q-nav .back-btn { width: 44px; padding: 0; }
+@media (max-width: 760px) {
+  .intro-body { align-items: flex-start; padding-bottom: 0; }
+  .q-nav { position: sticky; bottom: 0; margin: 8px -16px 0; padding: 14px max(16px, env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); background: linear-gradient(to top, var(--bg) 70%, rgba(0,0,0,0)); flex-wrap: nowrap; }
+  .q-nav .pill-lime { flex: 1; }
+  .q-nav .hint { display: none; }
+}
+
+/* resumen lateral */
+.quiz-side { position: sticky; top: 24px; }
+.sum-card { border: 1px solid var(--line); border-radius: var(--r-lg); background: rgba(12,12,14,.82); backdrop-filter: blur(12px); padding: 18px 18px 14px; }
+.sum-card .head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.sum-card .head b { font-weight: 600; font-size: 16px; }
+.sum-card .head span { color: var(--dim); font-size: 12px; font-variant-numeric: tabular-nums; }
+.sum-card ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.sum-card li button { width: 100%; display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 8px 10px; margin: 0 -10px; width: calc(100% + 20px); border: 0; border-radius: 10px; background: transparent; color: var(--dim); font: 400 13px var(--font); text-align: left; cursor: pointer; }
+.sum-card li button:hover { background: var(--g2); }
+.sum-card li button b { font-weight: 500; text-align: right; color: var(--dim); font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 62%; }
+.sum-card li.done button { color: var(--muted); }
+.sum-card li.done button b { color: var(--text); }
+.sum-card li.cur button { background: var(--g2); color: var(--text); box-shadow: inset 2px 0 0 var(--lime); }
+.sum-card li.cur button b { color: var(--lime); }
+.sum-card .foot-note { color: var(--dim); font-size: 12px; margin: 10px 0 0; }
+
+/* revisión final */
+.review-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.review-grid button { text-align: left; display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-radius: var(--r-md); border: 1px solid var(--line); background: rgba(12,12,14,.75); color: var(--text); font: inherit; cursor: pointer; transition: border-color .2s; }
+.review-grid button:hover { border-color: var(--lime); }
+.review-grid button span { color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; }
+.review-grid button span em { font-style: normal; color: var(--lime); opacity: 0; transition: opacity .2s; }
+.review-grid button:hover span em { opacity: 1; }
+.review-grid button b { font-weight: 600; font-size: 16px; font-variant-numeric: tabular-nums; }
+.welcome .h-display { font-size: clamp(38px, 6vw, 76px); }
+.welcome-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; max-width: 760px; }
+@media (max-width: 640px) { .welcome-list { grid-template-columns: minmax(0, 1fr); } }
+.welcome-list div { border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px 16px; background: rgba(12,12,14,.7); }
+.welcome-list b { display: block; font-weight: 600; margin-bottom: 2px; }
+.welcome-list span { color: var(--muted); font-size: 14px; }
+
+/* carga */
+.loading { min-height: 100vh; display: flex; align-items: center; }
+.loading .step { gap: 18px; }
+.load-bar { height: 4px; background: var(--g3); border-radius: 999px; overflow: hidden; max-width: 560px; }
+.load-bar i { display: block; height: 100%; width: 0; background: var(--lime); box-shadow: 0 0 16px var(--lime); transition: width .4s var(--ease-expo); }
+.load-lines { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 15px; min-height: 140px; }
+.load-lines li { animation: stepIn .5s var(--ease-expo); }
+.load-lines li.done::before { content: "✓"; color: var(--lime); margin-right: 10px; }
+
+/* ---------- software ---------- */
+.app { display: grid; grid-template-columns: 252px minmax(0, 1fr); min-height: 100vh; }
+.side { position: sticky; top: 0; height: 100vh; border-right: 1px solid var(--line); background: var(--g1); display: flex; flex-direction: column; gap: 20px; padding: calc(env(safe-area-inset-top, 0px) + 22px) 18px 20px max(18px, env(safe-area-inset-left, 0px)); }
+.side .brand { display: flex; flex-direction: column; gap: 6px; }
+.side .brand .tag { font-weight: 600; font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: var(--muted); }
+.venue { border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 14px; background: var(--g2); }
+.venue b { display: block; font-weight: 600; font-size: 15px; overflow-wrap: anywhere; }
+.venue span { color: var(--muted); font-size: 12px; }
+.nav { display: flex; flex-direction: column; gap: 4px; }
+.nav a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; color: var(--muted); text-decoration: none; font-weight: 500; font-size: 15px; transition: background .2s, color .2s; }
+.nav a svg { width: 18px; height: 18px; flex: none; }
+.nav a:hover { color: var(--text); background: var(--g2); }
+.nav a[aria-current="page"] { color: var(--text); background: var(--g3); }
+.nav a[aria-current="page"] svg { color: var(--lime); }
+.nav a .badge { margin-left: auto; font-size: 10px; font-weight: 700; letter-spacing: .08em; color: var(--lime-ink); background: var(--lime); border-radius: 999px; padding: 2px 7px; }
+.side .foot { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+.status { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); min-height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); align-self: flex-start; }
+.status .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--dim); }
+.status.busy .pulse { background: var(--lime); box-shadow: 0 0 10px var(--lime); animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .3; } }
+.linkbtn { background: none; border: 0; color: var(--muted); font-size: 13px; text-align: left; cursor: pointer; padding: 4px 0; }
+.linkbtn:hover { color: var(--text); }
+.mainc { min-width: 0; }
+.view { padding-block: 28px 72px; display: flex; flex-direction: column; gap: 20px; max-width: 1180px; }
+.view-head { display: flex; flex-direction: column; gap: 14px; padding-top: 4px; }
+
+@media (max-width: 980px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .side { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; height: auto; flex-direction: column; gap: 10px; padding: 12px max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); border-right: 0; border-bottom: 1px solid var(--line); background: rgba(12,12,14,.92); backdrop-filter: blur(14px); }
+  .side .brand { flex-direction: row; align-items: center; gap: 12px; }
+  .side .brand .tag { display: none; }
+  .venue { display: none; }
+  .nav { flex-direction: row; overflow-x: auto; gap: 2px; scrollbar-width: none; }
+  .nav a { white-space: nowrap; padding: 10px 12px; border-radius: 10px 10px 0 0; font-size: 14px; }
+  .nav a[aria-current="page"] { background: transparent; box-shadow: inset 0 -2px 0 var(--lime); }
+  .side .foot { display: none; }
+  .mobile-status { display: flex !important; }
+}
+.mobile-status { display: none; position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); top: 14px; }
+
+/* tarjetas */
+.card { background: linear-gradient(160deg, #111312, #08080a); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 22px; min-width: 0; }
+.card h2 { font-weight: 500; font-size: 22px; letter-spacing: -0.02em; margin: 0; line-height: 1.2; text-wrap: balance; }
+.card h2 span { color: var(--muted); }
+.card .sub { color: var(--muted); font-size: 14px; margin: 6px 0 0; max-width: 60em; }
+.card-head { display: flex; justify-content: space-between; gap: 12px 20px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 14px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
+
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 1100px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) { .kpis { grid-template-columns: minmax(0, 1fr); } }
+.kpi { border: 1px solid var(--line); border-radius: var(--r-md); background: var(--g1); padding: 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.kpi .t { color: var(--muted); font-size: 13px; }
+.kpi .v { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kpi .from { color: var(--dim); font-size: 13px; font-variant-numeric: tabular-nums; }
+.kpi .from s { text-decoration-color: var(--dim); }
+
+.tablewrap { overflow-x: auto; }
+table.cmp { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 560px; }
+@media (max-width: 600px) { table.cmp { min-width: 500px; font-size: 13px; } .cmp th, .cmp td { padding: 9px 6px; } .card { padding: 18px; } }
+.cmp th, .cmp td { padding: 11px 10px; border-bottom: 1px solid var(--line); text-align: right; vertical-align: top; }
+.cmp th:first-child, .cmp td:first-child { text-align: left; padding-left: 0; }
+.cmp thead th { font-weight: 600; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); border-bottom-color: var(--line-strong); }
+.cmp thead th .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: 0; }
+.cmp td { font-variant-numeric: tabular-nums; }
+.cmp td small { display: block; color: var(--dim); font-size: 12px; }
+.cmp td .k { color: var(--text); }
+.cmp td .kh { display: block; color: var(--dim); font-size: 12px; font-weight: 400; }
+.cmp tr.key td { font-size: 16px; font-weight: 600; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; white-space: nowrap; }
+.chip i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.chip.up i { background: var(--good); }
+.chip.down i { background: var(--bad); }
+.chip.flat i { background: var(--dim); }
+
+/* gráficos */
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+.legend i.sq { width: 10px; height: 10px; border-radius: 3px; }
+.legend i.band { height: 12px; width: 14px; background: rgba(212,255,58,.12); border: 1px solid rgba(212,255,58,.35); }
+.plot { position: relative; }
+.plot svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+.plot text { font-family: var(--font); font-variant-numeric: tabular-nums; }
+.tip { position: absolute; pointer-events: none; background: var(--g2); border: 1px solid var(--line-strong); border-radius: 12px; padding: 9px 12px; font-size: 13px; line-height: 1.45; min-width: 150px; box-shadow: 0 10px 30px rgba(0,0,0,.5); z-index: 2; }
+.tip b { font-weight: 600; display: block; margin-bottom: 3px; }
+.tip .row { display: flex; align-items: center; gap: 12px; justify-content: space-between; }
+.tip .row span { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+.tip .row i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+details.data { margin-top: 12px; }
+details.data summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+details.data .tablewrap { max-height: 280px; overflow: auto; margin-top: 10px; }
+details.data table { border-collapse: collapse; font-size: 13px; width: 100%; font-variant-numeric: tabular-nums; }
+details.data td, details.data th { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; }
+details.data th:first-child, details.data td:first-child { text-align: left; }
+details.data th { color: var(--muted); font-weight: 500; position: sticky; top: 0; background: var(--g1); }
+
+.hbars { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+.hb { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px 12px; align-items: baseline; }
+.hb .name { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hb .name small { color: var(--dim); font-size: 12px; margin-left: 6px; }
+.hb .val { font-weight: 600; font-variant-numeric: tabular-nums; font-size: 14px; }
+.hb .track { grid-column: 1 / -1; height: 10px; background: var(--g2); border-radius: 999px; overflow: hidden; }
+.hb .bar { height: 100%; background: var(--lime); border-radius: 0 4px 4px 0; transition: width .6s var(--ease-expo); }
+.hb .bar.neg { background: var(--dim); }
+.hb.total { border-top: 1px solid var(--line-strong); padding-top: 12px; }
+.hb.total .name { font-weight: 600; white-space: normal; }
+.hb .name.wrap { white-space: normal; }
+.hb .name.wrap small { display: block; margin: 0; }
+
+.big { font-weight: 500; font-size: clamp(34px, 4vw, 48px); letter-spacing: -0.035em; line-height: 1; margin: 14px 0 8px; font-variant-numeric: tabular-nums; }
+.big small { font-size: .45em; color: var(--muted); letter-spacing: -0.01em; }
+.checks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+@media (max-width: 760px) { .checks { grid-template-columns: minmax(0, 1fr); } }
+.check { border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px; background: var(--g1); }
+.check .t { color: var(--muted); font-size: 13px; }
+.check .v { font-size: 22px; font-weight: 600; margin: 4px 0; font-variant-numeric: tabular-nums; }
+.check .r { font-size: 13px; color: var(--muted); }
+.model ul { margin: 12px 0 0; padding-left: 18px; color: var(--muted); display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.model ul strong { color: var(--text); font-weight: 600; }
+.dim-while-busy { transition: opacity .3s; }
+.busy-results .dim-while-busy { opacity: .55; }
+
+/* estadísticas */
+.switch2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 640px) { .switch2 { grid-template-columns: minmax(0, 1fr); } }
+.sbtn { text-align: left; border-radius: var(--r-lg); padding: 18px 20px; border: 1px solid var(--line); background: var(--g1); color: var(--text); display: flex; gap: 14px; align-items: center; cursor: pointer; font: inherit; }
+.sbtn svg { width: 26px; height: 26px; flex: none; }
+.sbtn b { display: block; font-size: 17px; font-weight: 600; }
+.sbtn span { color: var(--muted); font-size: 13px; }
+.sbtn.on { border-color: var(--lime); background: linear-gradient(160deg, rgba(212,255,58,.12), rgba(212,255,58,.02)); box-shadow: 0 0 30px rgba(212,255,58,.08); }
+.sbtn.on svg { color: var(--lime); }
+.sbtn[aria-disabled="true"] { cursor: not-allowed; opacity: .6; background: repeating-linear-gradient(135deg, var(--g1) 0 10px, #101013 10px 20px); }
+.sbtn[aria-disabled="true"] svg { color: var(--dim); }
+.locked { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px 20px; align-items: center; border: 1px dashed var(--line-strong); border-radius: var(--r-md); padding: 16px 18px; background: var(--g1); }
+@media (max-width: 640px) { .locked { grid-template-columns: minmax(0, 1fr); } }
+.locked .t { font-size: 15px; }
+.locked .t b { font-weight: 600; }
+.locked .t span { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+.locked .nope { display: flex; flex-wrap: wrap; gap: 6px; }
+.locked .nope span { font-size: 12px; color: var(--dim); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; text-decoration: line-through; }
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--g2); border: 1px solid var(--line-strong); color: var(--text); border-radius: 999px; padding: 10px 18px; font-size: 14px; z-index: 40; box-shadow: 0 12px 30px rgba(0,0,0,.5); max-width: calc(100vw - 32px); text-align: center; }
+.panel { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--g1); overflow: hidden; }
+.panel-bar { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--g2); flex-wrap: wrap; }
+.panel-bar .ttl { font-weight: 600; }
+.panel-bar .ttl span { color: var(--muted); font-weight: 500; }
+.panel-bar .live-pill { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.panel-bar .live-pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 8px var(--lime); }
+.panel-body { padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 1100px) { .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.tile { border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px; background: var(--bg); min-width: 0; }
+.tile .t { color: var(--muted); font-size: 12px; }
+.tile .v { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-top: 4px; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile .s { color: var(--dim); font-size: 12px; margin-top: 2px; }
+.tile.accent { border-color: rgba(212,255,58,.4); }
+.tile.accent .v { color: var(--lime); }
+.sub-card { border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px; background: var(--bg); min-width: 0; }
+.sub-card h3 { margin: 0; font-weight: 500; font-size: 17px; letter-spacing: -0.01em; }
+.sub-card h3 span { color: var(--muted); }
+.sub-card .sub { color: var(--muted); font-size: 13px; margin: 4px 0 0; }
+
+/* directo */
+.live-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 12px 24px; }
+.live-head > div:first-child { min-width: 0; }
+.clock { font-weight: 500; font-size: clamp(40px, 5vw, 56px); letter-spacing: 0; line-height: .9; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.clock .d { display: inline-block; width: 0.56em; text-align: center; }
+.clock .c { display: inline-block; width: 0.24em; text-align: center; }
+.clock-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; width: 11em; }
+.clock-wrap small { color: var(--muted); font-size: 13px; white-space: nowrap; }
+@media (max-width: 560px) { .live-head { grid-template-columns: minmax(0, 1fr); } .clock-wrap { align-items: flex-start; width: auto; } }
+.live-ctl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 16px 0 14px; }
+.live-ctl #play { min-width: 112px; }
+.seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 999px; overflow: hidden; background: var(--g1); }
+.seg button { font: 500 13px var(--font); color: var(--muted); background: transparent; border: 0; padding: 0 14px; min-height: 40px; cursor: pointer; }
+.seg button[aria-pressed="true"] { color: var(--lime-ink); background: var(--text); }
+.progress { flex: 1 1 140px; height: 4px; border-radius: 999px; background: var(--g3); overflow: hidden; min-width: 120px; }
+.progress i { display: block; height: 100%; width: 0; background: var(--lime); }
+.arenas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .arenas { grid-template-columns: minmax(0, 1fr); } }
+.arena { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.arena-head { display: flex; justify-content: space-between; align-items: baseline; gap: 4px 10px; font-weight: 600; font-size: 15px; flex-wrap: wrap; }
+.arena-head .who { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.arena-head .who i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.arena-head .money { color: var(--muted); font-weight: 500; font-size: 13px; }
+.arena canvas { display: block; width: 100%; height: 420px; border-radius: var(--r-md); border: 1px solid var(--line); background: #08080a; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.stats div { background: var(--g1); border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; min-width: 0; }
+.stats span { display: block; color: var(--muted); font-size: 11px; line-height: 1.3; }
+.stats strong { display: block; font-size: 16px; font-weight: 600; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 420px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.feed { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; min-height: 92px; font-size: 13px; color: var(--muted); }
+.feed li { display: flex; gap: 8px; line-height: 1.35; }
+.feed li time { color: var(--dim); font-variant-numeric: tabular-nums; flex: none; }
+.feed li.new { color: var(--text); }
+.live-key { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px; font-size: 12px; color: var(--muted); }
+.live-key span { display: inline-flex; align-items: center; gap: 7px; }
+.live-key i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: var(--text); }
+.live-key i.ring { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--lime); }
+.live-key i.lime { background: var(--lime); box-shadow: 0 0 6px var(--lime); }
+.live-key i.bad { background: var(--bad); }
+.live-key i.x { background: none; color: var(--bad); width: auto; height: auto; font-style: normal; font-weight: 700; }
+.live-key i.staff { width: 10px; height: 10px; }
+
+/* ajustes rápidos y cierre */
+.quick { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: 12px 16px; align-items: end; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--g1); margin-bottom: 14px; }
+@media (max-width: 1100px) { .quick { grid-template-columns: repeat(2, minmax(0, 1fr)); } .quick #promoNow { grid-column: 1 / -1; } }
+.qc { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.qc .row { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; }
+.qc label { color: var(--muted); }
+.qc output { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.live-end { display: flex; justify-content: space-between; align-items: center; gap: 14px 24px; flex-wrap: wrap; margin-top: 16px; padding: 18px 20px; border-radius: var(--r-md); border: 1px solid rgba(212,255,58,.45); background: linear-gradient(160deg, rgba(212,255,58,.12), rgba(212,255,58,.02)); animation: stepIn .6s var(--ease-expo); }
+.live-end b { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+.live-end p { margin: 4px 0 0; color: var(--muted); max-width: 52em; }
+.live-end p strong { color: var(--text); }
+.live-end .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* supuestos */
+.sum-strip { display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap; border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px 18px; background: var(--g1); position: sticky; top: calc(env(safe-area-inset-top, 0px) + 10px); z-index: 5; }
+@media (max-width: 980px) { .sum-strip { top: calc(env(safe-area-inset-top, 0px) + 104px); } }
+.sum-strip .v { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.sum-strip .t { color: var(--muted); font-size: 13px; }
+.sum-strip .pill { margin-left: auto; }
+.ctl-grid { columns: 2 340px; column-gap: 14px; }
+.sec { border: 1px solid var(--line); border-radius: var(--r-md); background: var(--g1); margin: 0 0 14px; break-inside: avoid; }
+.sec > summary { list-style: none; cursor: pointer; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 14px; }
+.sec > summary::-webkit-details-marker { display: none; }
+.sec > summary::after { content: "+"; color: var(--muted); font-weight: 400; font-size: 18px; line-height: 1; }
+.sec[open] > summary::after { content: "−"; }
+.sec > summary .hint { color: var(--dim); font-weight: 400; font-size: 12px; margin-left: 8px; margin-right: auto; }
+.sec .body { padding: 2px 16px 16px; display: flex; flex-direction: column; gap: 16px; }
+.ctl { display: flex; flex-direction: column; gap: 6px; }
+.ctl .row { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.ctl label { font-size: 14px; }
+.ctl output { font-weight: 600; font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ctl .help { color: var(--dim); font-size: 12px; line-height: 1.4; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; margin: 0; cursor: pointer; }
+input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: linear-gradient(to right, var(--lime) 0 var(--p, 50%), var(--g3) var(--p, 50%) 100%); }
+input[type=range]::-moz-range-track { height: 4px; border-radius: 999px; background: var(--g3); }
+input[type=range]::-moz-range-progress { height: 4px; border-radius: 999px; background: var(--lime); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--text); border: 3px solid var(--bg); box-shadow: 0 0 0 1px var(--line-strong); margin-top: -7px; }
+input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--text); border: 3px solid var(--bg); box-shadow: 0 0 0 1px var(--line-strong); }
+.toggle { display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; }
+.toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.toggle .sw { flex: none; width: 40px; height: 24px; border-radius: 999px; background: var(--g3); position: relative; transition: background .2s; }
+.toggle .sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--text); transition: transform .3s var(--ease-expo); }
+.toggle input:checked + .sw { background: var(--lime); }
+.toggle input:checked + .sw::after { transform: translateX(16px); background: var(--lime-ink); }
+.toggle input:focus-visible + .sw { outline: 2px solid var(--lime); outline-offset: 2px; }
+select { width: 100%; font: 500 14px var(--font); color: var(--text); background: var(--g2); border: 1px solid var(--line-strong); border-radius: 12px; padding: 10px 12px; }
+.carta { width: 100%; border-collapse: collapse; font-size: 13px; }
+.carta th { color: var(--muted); font-weight: 500; text-align: left; padding: 0 4px 6px; font-size: 12px; }
+.carta td { padding: 3px 4px; }
+.carta input { width: 100%; font: 500 13px var(--font); color: var(--text); background: var(--g2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 8px; font-variant-numeric: tabular-nums; }
+.carta input[type=number] { text-align: right; }
+.carta col.n { width: 40%; }
+.sumnote { font-size: 12px; color: var(--dim); margin: 0; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<!-- ============ cuestionario ============ -->
+<section class="intro" id="intro" hidden>
+  <div class="intro-top gutter">
+    <a class="logo" href="../" aria-label="bozu, volver a la portada">bozu<span class="dot"></span></a>
+    <span class="tag">Simulador de noche</span>
+    <button class="skip" id="skip" type="button">Saltar y ver un ejemplo</button>
+  </div>
+  <div class="intro-body gutter" id="stepHost"></div>
+</section>
+
+<section class="loading gutter" id="loading" hidden>
+  <div class="step">
+    <p class="label" id="loadLabel">Tu local</p>
+    <h1 class="h-display"><span class="w">Simulando tu noche.</span><span class="g">Persona a persona, 20 veces.</span></h1>
+    <div class="load-bar"><i id="loadBar"></i></div>
+    <ul class="load-lines" id="loadLines"></ul>
+  </div>
+</section>
+
+<!-- ============ software ============ -->
+<div class="app" id="app" hidden>
+  <aside class="side">
+    <div class="brand">
+      <a class="logo" href="../" aria-label="bozu, volver a la portada">bozu<span class="dot"></span></a>
+      <span class="tag">Simulador de noche</span>
+    </div>
+    <span class="status mobile-status" id="statusM"><span class="pulse"></span><span class="st">Listo</span></span>
+    <div class="venue"><b id="venueName">Tu local</b><span id="venueMeta">600 personas · 2 barras · 4 camareros</span></div>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#directo" data-v="directo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg>En directo</a>
+      <a href="#estadisticas" data-v="estadisticas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.4 6.4"/></svg>Estadísticas<span class="badge">bozu</span></a>
+      <a href="#resumen" data-v="resumen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Resumen</a>
+      <a href="#supuestos" data-v="supuestos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Supuestos</a>
+    </nav>
+    <div class="foot">
+      <span class="status" id="status"><span class="pulse"></span><span class="st">Listo</span></span>
+      <a class="pill pill-light small" href="../#demo">Agenda una demo ↗</a>
+      <button class="linkbtn" id="redo" type="button">Repetir el cuestionario</button>
+    </div>
+  </aside>
+
+  <main class="mainc gutter" id="results">
+    <!-- RESUMEN -->
+    <section class="view" id="view-resumen" data-view="resumen">
+      <div class="view-head">
+        <p class="label" id="resLabel">Resumen</p>
+        <h1 class="h-display"><span class="w" id="h1a">Calculando la noche.</span><span class="g" id="h1b">&nbsp;</span></h1>
+        <p class="lead" id="lead">&nbsp;</p>
+        <p class="fine">Estimación orientativa con tus respuestas. No es una promesa de resultados.</p>
+      </div>
+      <div class="kpis dim-while-busy" id="kpis"></div>
+
+      <div class="card dim-while-busy">
+        <div class="card-head">
+          <div>
+            <h2>Facturación de barra <span>por hora</span></h2>
+            <p class="sub" id="hourSub">Media de las noches simuladas.</p>
+          </div>
+          <div class="legend"><span><i class="sq" style="background:var(--normal)"></i>Noche normal</span><span><i class="sq" style="background:var(--lime)"></i>Con bozu</span></div>
+        </div>
+        <div id="hourChart"></div>
+        <details class="data"><summary>Ver los datos en tabla</summary><div class="tablewrap" id="hourTable"></div></details>
+      </div>
+
+      <div class="card dim-while-busy">
+        <div class="card-head">
+          <div>
+            <h2>Personas haciendo cola <span>en la barra</span></h2>
+            <p class="sub">Gente de pie esperando para pedir, sumando todas las barras. Con bozu solo hacen cola quienes no lo usan.</p>
+          </div>
+          <div class="legend"><span><i style="background:var(--normal)"></i>Noche normal</span><span><i style="background:var(--lime)"></i>Con bozu</span></div>
+        </div>
+        <div id="qChart"></div>
+      </div>
+
+      <div class="grid2">
+        <div class="card dim-while-busy">
+          <h2>De dónde sale <span>la diferencia</span></h2>
+          <p class="sub">Cada palanca de bozu, activada una a una sobre la misma noche.</p>
+          <div class="hbars" id="parts"><p class="sub">Calculando…</p></div>
+        </div>
+        <div class="card dim-while-busy">
+          <h2>¿Y con un camarero <span>menos?</span></h2>
+          <p class="sub" id="staffSub">Con bozu, la barra hace más con la misma gente.</p>
+          <div class="big" id="staffBig">…</div>
+          <p class="sub" id="staffText"></p>
+        </div>
+      </div>
+
+      <div class="card dim-while-busy">
+        <div class="card-head">
+          <div>
+            <h2>Cuánto cambia <span>según cuánta gente use bozu</span></h2>
+            <p class="sub">Aumento de facturación frente a tu noche normal. El resto de respuestas no cambia.</p>
+          </div>
+        </div>
+        <div id="sensChart"></div>
+      </div>
+
+      <div class="card dim-while-busy">
+        <div class="card-head">
+          <div>
+            <h2>Todos los números</h2>
+            <p class="sub">Mediana de todas las noches simuladas. La diferencia se calcula noche a noche con la misma gente.</p>
+          </div>
+        </div>
+        <div class="tablewrap">
+          <table class="cmp" id="cmp">
+            <thead><tr><th>Qué se mide</th><th><span class="sw" style="background:var(--normal)"></span>Noche normal</th><th><span class="sw" style="background:var(--lime)"></span>Con bozu</th><th>Diferencia</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card dim-while-busy">
+        <h2>¿Se parece <span>a tu local?</span></h2>
+        <p class="sub">Así queda tu noche normal con tus respuestas. Si no se parece a lo que ves cada sábado, afina los supuestos hasta que cuadre. Después, fíate más de la comparación.</p>
+        <div class="checks" id="checks"></div>
+      </div>
+
+      <div class="grid2 model">
+        <div class="card">
+          <h2>Cómo se comporta <span>la gente aquí</span></h2>
+          <ul>
+            <li><strong>Llega en grupos</strong>, sobre todo en tu hora punta, y la mayoría va a por la primera copa nada más entrar.</li>
+            <li><strong>Cada persona tiene unas ganas de beber</strong>: las copas de la entrada más unas cuantas pagadas. Si subes los precios, bajan.</li>
+            <li><strong>Pide por rondas.</strong> Cuando a alguien le toca otra copa, pide para todos los del grupo que también quieren.</li>
+            <li><strong>Mira la cola antes de ponerse.</strong> Si parece más larga de lo que aguanta, no se pone. Si lleva demasiado esperando, se va. Parte de esas copas ya no se piden nunca.</li>
+            <li><strong>Durante un temazo nadie deja la pista.</strong> Con bozu se puede pedir desde la pista igualmente.</li>
+            <li><strong>Con bozu el camarero no toma nota ni cobra</strong>: solo prepara, y en tanda. El cliente espera bailando y va al punto bozu cuando le avisan.</li>
+            <li><strong>Si alguien del grupo tiene bozu</strong>, suele pedir la ronda con él.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h2>Lo que la simulación <span>no tiene en cuenta</span></h2>
+          <ul>
+            <li>La cola de la puerta y el ritmo real de entrada de cada noche.</li>
+            <li>Caídas de pago o de red, roturas y errores de pedido.</li>
+            <li>Pedidos en mesa VIP con bozu Tap.</li>
+            <li>Que la gente vuelva más o se quede más tiempo porque la noche fue mejor.</li>
+            <li>Gente que paga con Bizum entre amigos o que pide por separado dentro del mismo grupo.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ESTADÍSTICAS -->
+    <section class="view" id="view-estadisticas" data-view="estadisticas" hidden>
+      <div class="view-head">
+        <p class="label">Estadísticas de tu noche</p>
+        <h1 class="h-display"><span class="w">Sin bozu, tu noche es una caja.</span><span class="g">Con bozu, sabes quién, qué y cuándo.</span></h1>
+      </div>
+      <div class="switch2" role="group" aria-label="Qué noche ver">
+        <button class="sbtn" id="sNormal" type="button" aria-disabled="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+          <div><b>Tu noche normal</b><span>Bloqueado: sin bozu no hay datos de tus clientes</span></div>
+        </button>
+        <button class="sbtn on" id="sBozu" type="button" aria-pressed="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+          <div><b>Tu noche con bozu</b><span>Cada pedido, cliente y copa, en tu panel</span></div>
+        </button>
+      </div>
+      <div class="locked dim-while-busy">
+        <div class="t"><b>Lo que sabes de tu noche normal: <span class="num" id="cajaTotal" style="display:inline;color:var(--text);font-size:15px">—</span> en caja.</b><span>Y nada más. El TPV te da el total, pero no quién pidió, qué ni a qué hora.</span></div>
+        <div class="nope"><span>Edad</span><span>Hora punta</span><span>Lo más pedido</span><span>Clientes</span><span>Por barra</span></div>
+      </div>
+
+      <div class="panel dim-while-busy">
+        <div class="panel-bar">
+          <span class="logo" style="font-size:18px" aria-hidden="true">bozu<span class="dot"></span></span>
+          <span class="ttl">Panel del club <span id="panelVenue">· Tu local</span></span>
+          <span class="live-pill"><i></i>Noche simulada</span>
+        </div>
+        <div class="panel-body">
+          <div class="tiles" id="bzTiles"></div>
+          <div class="sub-card">
+            <div class="card-head" style="margin-bottom:8px">
+              <div><h3>Pedidos <span>cada 15 minutos</span></h3><p class="sub" id="bzPeakSub"></p></div>
+            </div>
+            <div id="bzHours"></div>
+          </div>
+          <div class="grid2">
+            <div class="sub-card"><h3>Lo más pedido</h3><p class="sub">Copas de cada ronda, sin contar los extras.</p><div class="hbars" id="bzTop"></div></div>
+            <div class="sub-card"><h3>Por tipo</h3><p class="sub">Qué se bebe en tu barra.</p><div class="hbars" id="bzType"></div></div>
+          </div>
+          <div class="grid2">
+            <div class="sub-card"><h3>Edad <span>de quien pide</span></h3><p class="sub" id="bzAgeSub"></p><div id="bzAge"></div></div>
+            <div class="sub-card"><h3>Forma de pago</h3><p class="sub">Pedidos pagados en la app.</p><div class="hbars" id="bzPay"></div></div>
+          </div>
+          <div class="grid2">
+            <div class="sub-card"><h3>Por barra</h3><p class="sub">Facturación con bozu en cada barra.</p><div class="hbars" id="bzBar"></div></div>
+            <div class="sub-card"><h3>Extras <span>añadidos al pedir</span></h3><p class="sub" id="bzExtraSub"></p><div class="hbars" id="bzExtras"></div></div>
+          </div>
+          <div class="q-nav"><a class="pill pill-lime" href="../#demo">Quiero estos datos de mi local ↗</a></div>
+          <p class="fine" id="bzNote">Datos de la simulación de tu noche, solo de los pedidos hechos con bozu. En tu panel de bozu salen los de verdad, cada noche.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EN DIRECTO -->
+    <section class="view" id="view-directo" data-view="directo" hidden>
+      <div class="card live" id="live">
+        <div class="live-head">
+          <div>
+            <h2>La noche <span>en directo</span></h2>
+            <p class="sub">Cada punto es una persona. Las dos noches reciben a la misma gente, a la misma hora, con las mismas ganas de beber. Toca los ajustes de abajo y mira cómo cambia.</p>
+          </div>
+          <div class="clock-wrap"><div class="clock" id="clock">00:00</div><small id="liveDiff">&nbsp;</small></div>
+        </div>
+        <div class="live-ctl">
+          <button class="pill pill-lime" id="play" type="button" aria-pressed="true">Pausa</button>
+          <div class="seg" id="speed" role="group" aria-label="Velocidad">
+            <button type="button" data-s="60" aria-pressed="false">1 s = 1 min</button>
+            <button type="button" data-s="120" aria-pressed="true">1 s = 2 min</button>
+            <button type="button" data-s="300" aria-pressed="false">1 s = 5 min</button>
+          </div>
+          <button class="pill" id="peak" type="button">Ir a la hora punta</button>
+          <button class="pill" id="again" type="button">Otra noche</button>
+          <div class="progress" aria-hidden="true"><i id="prog"></i></div>
+          <a class="pill pill-light" href="#estadisticas" data-go="estadisticas">Ver estadísticas ↗</a>
+        </div>
+        <div class="quick" id="quick">
+          <div class="qc"><div class="row"><label for="q-aforo">Personas</label><output id="qo-aforo"></output></div><input type="range" id="q-aforo" data-k="aforo" min="100" max="2000" step="50"></div>
+          <div class="qc"><div class="row"><label for="q-camareros">Camareros</label><output id="qo-camareros"></output></div><input type="range" id="q-camareros" data-k="camareros" min="1" max="20" step="1"></div>
+          <div class="qc"><div class="row"><label for="q-adopcion">Usan bozu</label><output id="qo-adopcion"></output></div><input type="range" id="q-adopcion" data-k="adopcion" min="0" max="100" step="5"></div>
+          <div class="qc"><div class="row"><label for="q-precio">Precio de la copa</label><output id="qo-precio"></output></div><input type="range" id="q-precio" data-k="precio" min="5" max="20" step="0.5"></div>
+          <button class="pill pill-lime" id="promoNow" type="button">Lanzar promo ahora</button>
+        </div>
+        <div class="arenas">
+          <div class="arena">
+            <div class="arena-head"><span class="who"><i style="background:var(--normal)"></i>Noche normal</span><span class="money">Se pide y se paga en barra</span></div>
+            <canvas id="cv0" role="img" aria-label="Vista desde arriba de tu noche normal: barras, cola y pista"></canvas>
+            <div class="stats" id="st0"></div>
+            <ul class="feed" id="fd0" aria-live="polite"><li><time>00:00</time>Abren las puertas.</li></ul>
+          </div>
+          <div class="arena">
+            <div class="arena-head"><span class="who"><i style="background:var(--lime)"></i>Con bozu</span><span class="money">Se pide desde la pista</span></div>
+            <canvas id="cv1" role="img" aria-label="Vista desde arriba de tu noche con bozu: barras, punto bozu y pista"></canvas>
+            <div class="stats" id="st1"></div>
+            <ul class="feed" id="fd1" aria-live="polite"><li><time>00:00</time>Abren las puertas.</li></ul>
+          </div>
+        </div>
+        <div class="live-end" id="liveEnd" hidden>
+          <div><b id="endTitle">Cierre.</b><p id="endText"></p></div>
+          <div class="btns"><a class="pill pill-lime" href="#estadisticas" data-go="estadisticas">Ver estadísticas de la noche ↗</a><a class="pill" href="#resumen" data-go="resumen">Ver el resumen</a><a class="pill pill-light" href="../#demo">Agenda una demo ↗</a></div>
+        </div>
+        <div class="live-key">
+          <span><i></i>Persona</span>
+          <span><i class="bad"></i>Lleva en la cola más de lo que aguanta</span>
+          <span><i class="x">×</i>Se rinde y vuelve a la pista</span>
+          <span><i class="ring"></i>Ha pedido con bozu, espera bailando</span>
+          <span><i class="lime"></i>Pedido listo, va a recogerlo</span>
+          <span><i class="staff" style="background:var(--text)"></i>Camarero atendiendo en barra</span>
+          <span><i class="staff" style="background:var(--lime)"></i>Camarero preparando un pedido bozu</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUPUESTOS -->
+    <section class="view" id="view-supuestos" data-view="supuestos" hidden>
+      <div class="view-head">
+        <p class="label">Supuestos</p>
+        <h1 class="h-display"><span class="w">Afina tu noche.</span><span class="g">Cada cambio se simula al momento.</span></h1>
+      </div>
+      <div class="sum-strip">
+        <div><div class="t">Con bozu facturas</div><div class="v" id="sumV">—</div></div>
+        <div><div class="t">Por noche</div><div class="v" id="sumE">—</div></div>
+        <button class="pill small" id="reset" type="button">Volver a mis respuestas</button>
+      </div>
+      <div class="ctl-grid" id="ctlHost"></div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script id="sim-src">
+// Motor de simulación de una noche de discoteca: barra tradicional frente a bozu.
+// Simulación por agentes (grupos de personas) con pasos de 5 segundos.
+// Mismas personas en todos los escenarios (números aleatorios comunes) para comparar en paralelo.
+
+var DEFAULT_CARTA = [
+  { id: 'copa', name: 'Copa (combinado)', price: 10, share: 55, prep: 30, kind: 'copa' },
+  { id: 'premium', name: 'Copa premium', price: 13, share: 10, prep: 40, kind: 'copa' },
+  { id: 'tercio', name: 'Tercio', price: 6, share: 22, prep: 10, kind: 'cerveza' },
+  { id: 'chupito', name: 'Chupito', price: 4, share: 8, prep: 12, kind: 'chupito' },
+  { id: 'refresco', name: 'Refresco', price: 4, share: 3, prep: 8, kind: 'refresco' },
+  { id: 'agua', name: 'Agua', price: 3, share: 2, prep: 5, kind: 'agua' }
+];
+
+// Marcas y mezclas de la carta por defecto de bozu, con una popularidad supuesta. Solo se usan para las estadísticas.
+var BRANDS = [
+  ['Ron', 'Barceló', 14, 0], ['Ron', 'Brugal', 10, 0], ['Ron', 'Bacardí', 7, 0], ['Ron', 'Havana Club 7', 6, 1],
+  ['Ginebra', "Seagram's", 12, 0], ['Ginebra', 'Tanqueray', 8, 0], ['Ginebra', 'Bombay Sapphire', 6, 1], ['Ginebra', 'Puerto de Indias', 7, 1],
+  ['Whisky', "Ballantine's", 8, 0], ['Whisky', 'J&B', 6, 0], ['Whisky', "Jack Daniel's", 5, 1],
+  ['Vodka', 'Absolut', 6, 0], ['Vodka', 'Smirnoff', 4, 0], ['Vodka', 'Grey Goose', 3, 1], ['Tequila', 'José Cuervo', 2, 0]
+];
+var MIXERS = [['Coca-Cola', 34], ['Coca-Cola Zero', 12], ['Fanta Naranja', 6], ['Fanta Limón', 6], ['Sprite', 8], ['Tónica', 10], ['Ginger Ale', 3], ['Red Bull', 9], ['Zumo de naranja', 4]];
+
+var DEFAULTS = {
+  aforo: 600, barras: 2, camareros: 4, cierre: 6, picoEntrada: 1.5, dispEntrada: 40, estancia: 3,
+  incluidas: 1, extra: 1.8, pideAlEntrar: 80, entreCopas: 35, grupo: 3, elasticidad: 0.8, temazos: true,
+  tNota: 30, tCobroTarjeta: 20, tCobroEfectivo: 45, efectivo: 20, paciencia: 10, perder: 40, upsellBarra: 3,
+  adopcion: 30, conApp: 50, preCompra: 15, upsellBozu: 12, preparaTanda: 15, tEntrega: 8,
+  coberturaMala: 20, puntoBozu: 15, canjeEntradas: true, impulso: 0, edad: 25, edadSd: 3.5,
+  promoOn: false, promoTipo: 'descuento', promoValor: 30, promoInicio: 4, promoDur: 30, promoAlcance: 'bozu',
+  reps: 20,
+  carta: DEFAULT_CARTA
+};
+
+function rng(seed) {
+  var a = seed >>> 0;
+  return function () {
+    a = (a + 0x6D2B79F5) | 0;
+    var t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function U(r, a, b) { return a + (b - a) * r(); }
+function N(r) { var u = r() || 1e-9, v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+function LN(r, med, s) { return med * Math.exp(s * N(r)); }
+function poisInv(u, l) {
+  if (l <= 0) return 0;
+  var k = 0, p = Math.exp(-l), c = p;
+  while (u > c && k < 60) { k++; p *= l / k; c += p; }
+  return k;
+}
+function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+function createNight(P, S, seed) {
+  var DT = 5;
+  var close = P.cierre * 3600;
+  var steps = Math.floor(close / DT);
+  var carta = P.carta.filter(function (c) { return c.share > 0; });
+  if (!carta.length) carta = P.carta.map(function (c) { return Object.assign({}, c, { share: 1 }); });
+  var byId = {}; P.carta.forEach(function (c) { byId[c.id] = c; });
+  var shareSum = carta.reduce(function (s, c) { return s + c.share; }, 0);
+  var cum = []; var acc = 0;
+  carta.forEach(function (c) { acc += c.share / shareSum; cum.push(acc); });
+  var defPrice = {}; DEFAULT_CARTA.forEach(function (c) { defPrice[c.id] = c.price; });
+  var curAvg = carta.reduce(function (s, c) { return s + c.share * c.price; }, 0) / shareSum;
+  var refAvg = carta.reduce(function (s, c) { return s + c.share * (defPrice[c.id] != null ? defPrice[c.id] : c.price); }, 0) / shareSum;
+  var priceFactor = Math.pow(refAvg / Math.max(0.5, curAvg), P.elasticidad);
+  var extras = [['agua', 40], ['refresco', 25], ['chupito', 35]].filter(function (e) { return byId[e[0]]; });
+  var extraSum = extras.reduce(function (s, e) { return s + e[1]; }, 0);
+  var tercio = byId.tercio;
+
+  // ---------- población (igual en todos los escenarios) ----------
+  var pr = rng(seed * 7919 + 1);
+  var groups = []; var people = 0; var gid = 0;
+  while (people < P.aforo) {
+    var size = 1 + poisInv(pr(), Math.max(0, P.grupo - 1));
+    size = Math.min(size, 8, P.aforo - people);
+    var arr = clamp(P.picoEntrada * 3600 + N(pr) * P.dispEntrada * 60, 0, close - 5400);
+    var stay = LN(pr, P.estancia * 3600, 0.3);
+    var g = {
+      id: gid++, size: size, arr: arr, leave: Math.min(close, arr + Math.max(3600, stay)),
+      patience: LN(pr, P.paciencia * 60, 0.45), cash: pr() < P.efectivo / 100,
+      badCov: pr() < P.coberturaMala / 100, preU: pr(), preOff: U(pr, 300, 900),
+      barU: pr(), promoU: pr(), capable: false, app: false, members: [],
+      status: 'idle', nextCheck: 0, order: null, bar: null, promoReach: false
+    };
+    for (var i = 0; i < size; i++) {
+      var ua = pr(), uapp = pr(), uw = pr(), uf = pr();
+      var first = uf < P.pideAlEntrar / 100 ? U(pr, 0, 240) : U(pr, 480, 2400);
+      var adopter = ua < S.adopcion / 100;
+      if (adopter) { g.capable = true; if (uapp < P.conApp / 100) g.app = true; }
+      g.members.push({ uw: uw, first: first, adopter: adopter });
+    }
+    groups.push(g); people += size;
+  }
+  var useBozuGroup = function (g) { return S.bozu && g.capable; };
+  // demografía y marcas: generador aparte para no alterar el resto de la noche
+  var ar = rng(seed * 13 + 7);
+  groups.forEach(function (g) { g.members.forEach(function (m) { m.age = Math.round(clamp(P.edad + N(ar) * P.edadSd, 18, 60)); }); });
+  function pickW(list, wi) { var tot = 0, i; for (i = 0; i < list.length; i++) tot += list[i][wi]; var u = ar() * tot; for (i = 0; i < list.length; i++) { u -= list[i][wi]; if (u <= 0) return list[i]; } return list[list.length - 1]; }
+  var brandsStd = BRANDS.filter(function (b) { return !b[3]; }), brandsPrem = BRANDS.filter(function (b) { return b[3]; });
+  function brandOf(it) {
+    if (it.id === 'copa' || it.id === 'premium') {
+      var sp = pickW(it.id === 'premium' ? brandsPrem : brandsStd, 2);
+      var mx = sp[0] === 'Ginebra' && ar() < 0.65 ? 'Tónica' : pickW(MIXERS, 1)[0];
+      return { name: sp[1] + ' + ' + mx, type: sp[0] };
+    }
+    var t = { tercio: 'Cerveza', chupito: 'Chupitos', refresco: 'Refrescos', agua: 'Agua' }[it.id] || 'Otros';
+    return { name: it.name, type: t };
+  }
+  var BZ = { orders: 0, units: 0, rev: 0, pre: 0, promo: 0, extras: 0, ageSum: 0, ageN: 0, ageHist: [0, 0, 0, 0, 0, 0],
+    buck: [], buyers: {}, top: {}, type: {}, bar: [], pay: {}, extrasBy: {} };
+  function ageBin(a) { return a <= 20 ? 0 : a <= 23 ? 1 : a <= 26 ? 2 : a <= 29 ? 3 : a <= 34 ? 4 : 5; }
+  function bzRecord(o, t, rev) {
+    BZ.orders++; BZ.rev += rev;
+    var bi = Math.max(0, Math.min(BZ.buck.length - 1, Math.floor(Math.max(0, o.t0) / 900))); BZ.buck[bi]++;
+    var ads = o.g.members.filter(function (m) { return m.adopter; });
+    var buyer = ads.length ? ads[Math.floor(ar() * ads.length)] : o.g.members[0];
+    BZ.ageSum += buyer.age; BZ.ageN++; BZ.ageHist[ageBin(buyer.age)]++;
+    var bk = o.g.id + '-' + o.g.members.indexOf(buyer); BZ.buyers[bk] = (BZ.buyers[bk] || 0) + 1;
+    o.lines.forEach(function (l) {
+      BZ.units += l.served; var b = brandOf(l.item);
+      if (!l.extra) BZ.top[b.name] = (BZ.top[b.name] || 0) + l.served; BZ.type[b.type] = (BZ.type[b.type] || 0) + l.served;
+      if (l.extra) { BZ.extras++; BZ.extrasBy[l.item.name] = (BZ.extrasBy[l.item.name] || 0) + 1; }
+    });
+    BZ.bar[o.g.bar.id] = (BZ.bar[o.g.bar.id] || 0) + rev;
+    var u = ar(), pm = u < 0.55 ? 'Apple Pay' : u < 0.85 ? 'Google Pay' : 'Tarjeta';
+    BZ.pay[pm] = (BZ.pay[pm] || 0) + 1;
+    if (o.pre) BZ.pre++; if (o.promo) BZ.promo++;
+  }
+  groups.forEach(function (g) {
+    var lam = P.extra * priceFactor * (useBozuGroup(g) ? 1 + P.impulso / 100 : 1);
+    var pre = useBozuGroup(g) && g.preU < P.preCompra / 100;
+    g.members.forEach(function (m) {
+      m.wantLeft = P.incluidas + poisInv(m.uw, lam);
+      m.consumed = 0;
+      m.ready = g.arr + m.first;
+      if (pre && m.first < 240) m.ready = Math.max(0, g.arr - g.preOff);
+    });
+    g.nextCheck = minReady(g);
+  });
+
+  // temazos: momentos en los que nadie quiere dejar la pista
+  var hr = rng(seed * 31 + 99);
+  var hitEnd = new Float64Array(steps + 1);
+  if (P.temazos) {
+    var h = 1800 + U(hr, 0, 600);
+    while (h < close) {
+      var len = U(hr, 180, 240);
+      for (var s0 = Math.floor(h / DT); s0 <= Math.min(steps, Math.floor((h + len) / DT)); s0++) hitEnd[s0] = h + len;
+      h += len + LN(hr, 720, 0.3);
+    }
+  }
+
+  // barras y camareros
+  var bars = [];
+  for (var b = 0; b < P.barras; b++) bars.push({ id: b, staff: [], q: [], bq: [], ready: [], qWork: 0, bqWork: 0, counter: 0 });
+  for (var st = 0; st < S.staff; st++) bars[st % P.barras].staff.push({ busyUntil: 0, task: null });
+  var open = bars.filter(function (x) { return x.staff.length > 0; });
+
+  var pS = P.promoInicio * 3600, pE = pS + P.promoDur * 60;
+  var promoStarted = false, promoEnded = false;
+
+  var dr = rng(seed * 104729 + 3);
+  var nb = Math.ceil(close / 900);
+  BZ.buck = new Array(nb).fill(0); for (var bi0 = 0; bi0 < P.barras; bi0++) BZ.bar[bi0] = 0;
+  var M = {
+    rev: 0, drinks: 0, paid: 0, extras: 0, orders: 0, bozuOrders: 0, lostDrinks: 0, lostRev: 0, balks: 0,
+    busy: 0, unmet: 0, noRecogido: 0, cancelados: 0, maxCounter: 0, maxQueue: 0,
+    buckets: new Array(nb).fill(0), hourly: new Array(Math.ceil(close / 3600)).fill(0), queueSeries: [], pendSeries: [],
+    hand: [], away: [], tradWait: [], bozuReady: []
+  };
+
+  function minReady(g) {
+    var mr = Infinity;
+    for (var i = 0; i < g.members.length; i++) { var m = g.members[i]; if (m.wantLeft > 0 && m.ready < mr) mr = m.ready; }
+    return mr;
+  }
+  function sampleItem(g, t) {
+    var promoBeer = P.promoOn && g.promoReach && t >= pS && t < pE && (P.promoTipo === 'cerveza' || P.promoTipo === 'barralibre') && tercio;
+    if (promoBeer && dr() < 0.7) return tercio;
+    var u = dr();
+    for (var i = 0; i < cum.length; i++) if (u <= cum[i]) return carta[i];
+    return carta[carta.length - 1];
+  }
+  function promoApplies(channel, t) {
+    if (!P.promoOn || S.promoMode === 'none' || t < pS || t >= pE) return false;
+    if (S.promoMode === 'dj') return true;
+    return channel === 'bozu' || P.promoAlcance === 'todos';
+  }
+  function makeOrder(g, due, t, channel) {
+    var lines = []; var pa = promoApplies(channel, t);
+    var upP = channel === 'bozu' ? S.upsell : P.upsellBarra / 100;
+    due.forEach(function (m) {
+      var incl = m.consumed < P.incluidas;
+      var it = sampleItem(g, t);
+      var price = incl ? 0 : it.price, prep = it.prep, served = 1;
+      if (pa && !incl) {
+        if (P.promoTipo === 'descuento' && it.kind === 'copa') price = it.price * (1 - P.promoValor / 100);
+        else if (P.promoTipo === '2x1' && it.kind === 'copa') { prep = it.prep * 2; served = 2; }
+        else if (P.promoTipo === 'cerveza' && it.id === 'tercio') price = Math.min(it.price, P.promoValor);
+        else if (P.promoTipo === 'barralibre' && it.id === 'tercio') price = 0;
+      }
+      lines.push({ m: m, item: it, price: price, prep: prep, served: served, incl: incl });
+      if (extraSum > 0 && dr() < upP) {
+        var u = dr() * extraSum, ex = null;
+        for (var i = 0; i < extras.length; i++) { u -= extras[i][1]; if (u <= 0) { ex = byId[extras[i][0]]; break; } }
+        if (!ex) ex = byId[extras[extras.length - 1][0]];
+        lines.push({ m: null, item: ex, price: ex.price, prep: ex.prep, served: 1, incl: false, extra: true });
+      }
+    });
+    var prepSum = lines.reduce(function (s, l) { return s + l.prep; }, 0);
+    var allIncl = lines.every(function (l) { return l.incl; });
+    var o = { g: g, lines: lines, channel: channel, t0: t, prepSum: prepSum, promo: pa };
+    if (channel === 'barra') o.work = P.tNota + prepSum + (allIncl ? 5 : (g.cash ? P.tCobroEfectivo : P.tCobroTarjeta));
+    else o.work = prepSum * (1 - P.preparaTanda / 100) + P.tEntrega;
+    o.persons = due.length > 2 ? 2 : 1;
+    return o;
+  }
+  function busyLeft(bar, t) {
+    var s = 0; for (var i = 0; i < bar.staff.length; i++) s += Math.max(0, bar.staff[i].busyUntil - t); return s;
+  }
+  var events = [];
+  function ev(type, g, n, t, x) { if (S.trace) events.push({ t: t, type: type, g: g, n: n, x: x }); }
+  function balk(g, members, t, kind, x) {
+    M.balks++; ev(kind || 'balk', g, members.length, t, x);
+    members.forEach(function (m) {
+      if (m.consumed < P.incluidas) m.ready = t + U(dr, 600, 1500);
+      else if (dr() < P.perder / 100) { m.wantLeft = Math.max(0, m.wantLeft - 1); M.lostDrinks++; M.lostRev += curAvg; }
+      else m.ready = t + U(dr, 600, 1500);
+    });
+    g.status = 'idle'; g.nextCheck = minReady(g);
+  }
+  function drinkDur(it) {
+    var base = P.entreCopas * 60;
+    if (it.kind === 'copa') return LN(dr, base, 0.35);
+    if (it.kind === 'cerveza') return LN(dr, base * 0.7, 0.35);
+    if (it.kind === 'chupito') return LN(dr, base * 0.35, 0.4);
+    return LN(dr, base * 0.6, 0.35);
+  }
+  function addRev(o, t) {
+    var r = 0; o.lines.forEach(function (l) { r += l.price; });
+    M.rev += r; M.buckets[Math.min(nb - 1, Math.floor(t / 900))] += r; M.hourly[Math.min(M.hourly.length - 1, Math.floor(t / 3600))] += r;
+    if (o.channel === 'bozu') bzRecord(o, t, r);
+  }
+  function deliver(g, o, t) {
+    o.lines.forEach(function (l) {
+      if (!l.m) return;
+      l.m.consumed += 1; l.m.wantLeft = Math.max(0, l.m.wantLeft - 1);
+      if (l.m.bonus && o.t0 >= pS && o.t0 < pE) l.m.inWin++;
+      l.m.ready = t + drinkDur(l.item) * (l.served > 1 ? 1.8 : 1);
+    });
+    g.status = 'idle'; g.order = null; g.nextCheck = minReady(g);
+  }
+  function removeFrom(arr, o) { var i = arr.indexOf(o); if (i >= 0) arr.splice(i, 1); }
+  function leaveGroup(g, t) {
+    if (g.status === 'queue') { removeFrom(g.bar.q, g.order); g.bar.qWork -= g.order.work; }
+    else if (g.status === 'bozu') { removeFrom(g.bar.bq, g.order); g.bar.bqWork -= g.order.work; M.cancelados++; }
+    else if (g.status === 'pickup') { M.noRecogido++; g.order.lost = true; }
+    g.members.forEach(function (m) { M.unmet += Math.max(0, m.wantLeft - Math.max(0, P.incluidas - m.consumed)); });
+    g.status = 'gone';
+  }
+
+  var step = 0;
+  function stepOnce() {
+    if (step >= steps) return false;
+    var t = step * DT;
+
+    // promoción: al empezar, la gente avisada se anima
+    if (P.promoOn && S.promoMode !== 'none' && !promoStarted && t >= pS) {
+      promoStarted = true;
+      var d = P.promoTipo === 'descuento' ? P.promoValor / 100 : P.promoTipo === '2x1' ? 0.5
+        : P.promoTipo === 'cerveza' ? Math.max(0, 1 - P.promoValor / (tercio ? tercio.price : 6)) : 1;
+      var pExtra = P.promoTipo === 'barralibre' ? 0.9 : Math.min(0.9, P.elasticidad * d * 1.5);
+      var reached = 0;
+      groups.forEach(function (g) {
+        if (g.status === 'gone' || t < g.arr || t >= g.leave) return;
+        var reach;
+        if (S.promoMode === 'dj') reach = g.promoU < 0.5;
+        else reach = useBozuGroup(g) ? (g.app || g.promoU < 0.3) : (P.promoAlcance === 'todos' && g.promoU < 0.5);
+        if (!reach) return;
+        g.promoReach = true; reached++;
+        g.members.forEach(function (m) {
+          if (dr() < pExtra) {
+            m.bonus = 1; if (P.promoTipo === 'barralibre' && dr() < 0.5) m.bonus = 2;
+            m.wantLeft += m.bonus; m.inWin = 0;
+            m.ready = Math.min(m.ready, t + U(dr, 0, 600));
+          }
+        });
+        if (g.status === 'idle') g.nextCheck = minReady(g);
+      });
+      ev('promo', null, reached, t);
+    }
+
+    // al acabar la promo, las ganas que daba la promo y no se usaron desaparecen
+    if (promoStarted && !promoEnded && t >= pE) {
+      promoEnded = true;
+      groups.forEach(function (g) {
+        g.members.forEach(function (m) {
+          if (m.bonus) { m.wantLeft = Math.max(0, m.wantLeft - Math.max(0, m.bonus - m.inWin)); m.bonus = 0; }
+        });
+        if (g.status === 'idle') g.nextCheck = minReady(g);
+      });
+    }
+
+    // decisiones de los grupos
+    for (var gi = 0; gi < groups.length; gi++) {
+      var g = groups[gi];
+      if (g.status === 'gone') continue;
+      if (t >= g.leave) { leaveGroup(g, t); continue; }
+      if (g.status !== 'idle' || t < g.nextCheck) continue;
+      var inside = t >= g.arr;
+      var due = g.members.filter(function (m) { return m.wantLeft > 0 && m.ready <= t + 300; });
+      if (!due.length) { g.nextCheck = minReady(g); continue; }
+      var hasIncl = due.some(function (m) { return m.consumed < P.incluidas; });
+      // quien va a pedir la ronda: si tiene bozu lo usa; si no, la mitad de las veces se lo pide a un amigo que lo tenga
+      var bozu = false;
+      if (useBozuGroup(g) && (P.canjeEntradas || !hasIncl)) {
+        if (!inside) bozu = true;
+        else {
+          var ad = 0; g.members.forEach(function (m) { if (m.adopter) ad++; });
+          var pAd = ad / g.members.length;
+          bozu = dr() < pAd + (1 - pAd) * 0.5;
+        }
+      }
+      if (!inside && !bozu) { g.nextCheck = g.arr; continue; }
+      if (!bozu) {
+        if (hitEnd[step] > t) { g.nextCheck = hitEnd[step] + U(dr, 0, 60); continue; }
+        var bar = null;
+        if (g.barU < 0.3) bar = open[g.id % open.length];
+        else { var best = Infinity; open.forEach(function (x) { var w = x.qWork / x.staff.length; if (w < best) { best = w; bar = x; } }); }
+        var W = (bar.qWork / bar.staff.length) * U(dr, 0.8, 1.2);
+        if (W > g.patience) { balk(g, due, t, 'balk', W); continue; }
+        var o = makeOrder(g, due, t, 'barra'); o.tJoin = t;
+        bar.q.push(o); bar.qWork += o.work; g.status = 'queue'; g.order = o; g.bar = bar;
+      } else {
+        var bb = null, bw = Infinity;
+        open.forEach(function (x) { var w = (x.qWork + x.bqWork + busyLeft(x, t)) / x.staff.length; if (w < bw) { bw = w; bb = x; } });
+        if (inside && bw > g.patience * 2) { balk(g, due, t, 'balk-bozu', bw); continue; }
+        var ob = makeOrder(g, due, t, 'bozu'); ob.pre = !inside;
+        ob.tPaid = t + (g.badCov ? U(dr, 20, 90) : U(dr, 15, 40));
+        var k = bb.bq.length; while (k > 0 && bb.bq[k - 1].tPaid > ob.tPaid) k--;
+        bb.bq.splice(k, 0, ob); bb.bqWork += ob.work; g.status = 'bozu'; g.order = ob; g.bar = bb;
+        ev('order', g, due.length, t, { extras: ob.lines.length - due.length, pre: !inside });
+      }
+    }
+
+    // gente que se cansa de la cola
+    if (step % 6 === 0) {
+      bars.forEach(function (bar) {
+        for (var i = bar.q.length - 1; i >= 0; i--) {
+          var o = bar.q[i];
+          if (t - o.tJoin > o.g.patience * 1.5) {
+            bar.q.splice(i, 1); bar.qWork -= o.work;
+            balk(o.g, o.lines.filter(function (l) { return l.m; }).map(function (l) { return l.m; }), t, 'renege', t - o.tJoin);
+          }
+        }
+      });
+    }
+
+    // camareros
+    for (var bi = 0; bi < bars.length; bi++) {
+      var bar2 = bars[bi];
+      for (var si = 0; si < bar2.staff.length; si++) {
+        var s = bar2.staff[si];
+        if (s.task && t >= s.busyUntil) {
+          var o2 = s.task, te = s.busyUntil; s.task = null;
+          o2.lines.forEach(function (l) { M.drinks += l.served; if (l.extra) M.extras++; if (!l.incl) M.paid += l.served; });
+          if (o2.channel === 'barra') {
+            addRev(o2, te);
+            M.hand.push(te - o2.tJoin); M.away.push(te - o2.tJoin); M.tradWait.push(te - o2.tJoin);
+            if (o2.g.status !== 'gone') { ev('served', o2.g, o2.lines.length, te, te - o2.tJoin); deliver(o2.g, o2, te); }
+          } else {
+            var delay = (o2.g.app ? U(dr, 60, 180) : U(dr, 180, 420)) + (o2.g.badCov ? U(dr, 0, 120) : 0);
+            o2.tCollect = te + delay;
+            M.bozuReady.push(te - o2.tPaid); M.hand.push(o2.tCollect - o2.t0); M.away.push(U(dr, 60, 150));
+            if (o2.g.status !== 'gone') { o2.g.status = 'pickup'; bar2.ready.push(o2); bar2.counter += o2.lines.length; ev('ready', o2.g, o2.lines.length, te); }
+            else { M.noRecogido++; ev('norecogido', o2.g, o2.lines.length, te); }
+          }
+        }
+        if (!s.task && t < close) {
+          var pq = bar2.q[0] || null;
+          var bo = bar2.bq.length && bar2.bq[0].tPaid <= t ? bar2.bq[0] : null;
+          var pick = !pq ? bo : !bo ? pq : (pq.tJoin <= bo.tPaid ? pq : bo);
+          if (pick) {
+            if (pick === pq) { bar2.q.shift(); bar2.qWork -= pick.work; pick.g.status = 'serving'; }
+            else { bar2.bq.shift(); bar2.bqWork -= pick.work; pick.g.status = 'preparing'; addRev(pick, t); M.bozuOrders++; }
+            M.orders++;
+            s.task = pick; s.busyUntil = t + pick.work; M.busy += Math.min(pick.work, close - t);
+          }
+        }
+      }
+      // recogida en el punto bozu
+      for (var ri = bar2.ready.length - 1; ri >= 0; ri--) {
+        var ro = bar2.ready[ri];
+        if (ro.lost) { bar2.ready.splice(ri, 1); bar2.counter -= ro.lines.length; continue; }
+        if (t >= ro.tCollect) { bar2.ready.splice(ri, 1); bar2.counter -= ro.lines.length; deliver(ro.g, ro, t); }
+      }
+      if (bar2.counter > M.maxCounter) M.maxCounter = bar2.counter;
+    }
+
+    if (step % 12 === 0) {
+      var qp = 0, pend = 0;
+      bars.forEach(function (x) { x.q.forEach(function (o) { qp += o.persons; }); pend += x.bq.length; });
+      M.queueSeries.push(qp); M.pendSeries.push(pend);
+      if (qp > M.maxQueue) M.maxQueue = qp;
+    }
+    step++;
+    return true;
+  }
+  function finish() {
+  groups.forEach(function (g) { if (g.status !== 'gone') leaveGroup(g, close); });
+
+  function mean(a) { return a.length ? a.reduce(function (s, x) { return s + x; }, 0) / a.length : 0; }
+  function pct(a, p) { if (!a.length) return 0; var s = a.slice().sort(function (x, y) { return x - y; }); return s[Math.min(s.length - 1, Math.floor(p * s.length))]; }
+  // series de cola cada 5 minutos
+  function per5(a) { var out = []; for (var i = 0; i < a.length; i += 5) { var c = a.slice(i, i + 5); out.push(mean(c)); } return out; }
+  return {
+    rev: M.rev, drinks: M.drinks, extras: M.extras, orders: M.orders, bozuShare: M.orders ? M.bozuOrders / M.orders : 0,
+    lostDrinks: M.lostDrinks, lostRev: M.lostRev, balks: M.balks, unmet: M.unmet, noRecogido: M.noRecogido,
+    cancelados: M.cancelados, maxCounter: M.maxCounter, maxQueue: M.maxQueue,
+    paidPP: M.paid / P.aforo, util: S.staff ? M.busy / (S.staff * close) : 0, spend: M.rev / P.aforo,
+    hand: mean(M.hand) / 60, handP90: pct(M.hand, 0.9) / 60, away: mean(M.away) / 60,
+    tradWait: mean(M.tradWait) / 60, tradWaitP90: pct(M.tradWait, 0.9) / 60,
+    bozuReady: mean(M.bozuReady) / 60, tradCount: M.tradWait.length,
+    buckets: M.buckets, hourly: M.hourly, queue: per5(M.queueSeries), pend: per5(M.pendSeries),
+    bz: (function () {
+      var ids = Object.keys(BZ.buyers), rep2 = ids.filter(function (k) { return BZ.buyers[k] > 1; }).length;
+      return { orders: BZ.orders, units: BZ.units, rev: BZ.rev, pre: BZ.pre, promo: BZ.promo, extras: BZ.extras,
+        ageSum: BZ.ageSum, ageN: BZ.ageN, ageHist: BZ.ageHist, buck: BZ.buck, customers: ids.length, repeat: rep2,
+        top: BZ.top, type: BZ.type, bar: BZ.bar, pay: BZ.pay, extrasBy: BZ.extrasBy, ready: mean(M.bozuReady) / 60 };
+    })()
+  };
+  }
+  return {
+    step: stepOnce, finish: finish, groups: groups, bars: bars, M: M, events: events, close: close, DT: DT,
+    hitEnd: hitEnd, pS: pS, pE: pE, now: function () { return step * DT; }
+  };
+}
+
+function simulateNight(P, S, seed) {
+  var n = createNight(P, S, seed);
+  while (n.step()) {}
+  return n.finish();
+}
+
+function scen(P, kind, over) {
+  var base = { bozu: false, adopcion: P.adopcion, upsell: 0, staff: P.camareros,
+    promoMode: P.promoOn && P.promoAlcance === 'todos' ? 'dj' : 'none' };
+  if (kind === 'A') return Object.assign(base, over || {});
+  base.bozu = true;
+  if (kind === 'B') base.upsell = P.upsellBarra / 100;
+  else base.upsell = P.upsellBozu / 100;
+  if (kind === 'D') base.promoMode = P.promoOn ? 'push' : 'none';
+  return Object.assign(base, over || {});
+}
+
+function runMany(P, S, reps) {
+  var out = [];
+  for (var r = 0; r < reps; r++) out.push(simulateNight(P, S, 1000 + r * 17));
+  return out;
+}
+
+function summarize(runs) {
+  var keys = Object.keys(runs[0]).filter(function (k) { return typeof runs[0][k] === 'number'; });
+  var o = {};
+  keys.forEach(function (k) {
+    var v = runs.map(function (r) { return r[k]; }).sort(function (a, b) { return a - b; });
+    var q = function (p) { return v[Math.min(v.length - 1, Math.max(0, Math.round(p * (v.length - 1))))]; };
+    o[k] = { med: q(0.5), p10: q(0.1), p90: q(0.9), mean: v.reduce(function (s, x) { return s + x; }, 0) / v.length };
+  });
+  ['buckets', 'hourly', 'queue', 'pend'].forEach(function (k) {
+    var n = runs[0][k].length; var a = new Array(n).fill(0);
+    runs.forEach(function (r) { for (var i = 0; i < n; i++) a[i] += r[k][i] / runs.length; });
+    o[k] = a;
+  });
+  return o;
+}
+
+function pairedDiff(a, b, key) {
+  var d = a.map(function (r, i) { return { abs: b[i][key] - r[key], rel: r[key] ? (b[i][key] - r[key]) / r[key] : 0 }; });
+  var q = function (arr, p) { var s = arr.slice().sort(function (x, y) { return x - y; }); return s[Math.min(s.length - 1, Math.max(0, Math.round(p * (s.length - 1))))]; };
+  var abs = d.map(function (x) { return x.abs; }), rel = d.map(function (x) { return x.rel; });
+  return { abs: q(abs, 0.5), absP10: q(abs, 0.1), absP90: q(abs, 0.9), rel: q(rel, 0.5), relP10: q(rel, 0.1), relP90: q(rel, 0.9) };
+}
+
+function aggBz(runs) {
+  var n = runs.length, o = { orders: 0, units: 0, rev: 0, pre: 0, promo: 0, extras: 0, customers: 0, repeat: 0, ready: 0,
+    ageSum: 0, ageN: 0, ageHist: [], buck: [], top: {}, type: {}, bar: [], pay: {}, extrasBy: {} };
+  function addArr(dst, src) { for (var i = 0; i < src.length; i++) dst[i] = (dst[i] || 0) + (src[i] || 0) / n; }
+  function addMap(dst, src) { Object.keys(src).forEach(function (k) { dst[k] = (dst[k] || 0) + src[k] / n; }); }
+  runs.forEach(function (r) {
+    var b = r.bz;
+    ['orders', 'units', 'rev', 'pre', 'promo', 'extras', 'customers', 'repeat', 'ready'].forEach(function (k) { o[k] += b[k] / n; });
+    o.ageSum += b.ageSum; o.ageN += b.ageN;
+    addArr(o.ageHist, b.ageHist); addArr(o.buck, b.buck); addArr(o.bar, b.bar);
+    addMap(o.top, b.top); addMap(o.type, b.type); addMap(o.pay, b.pay); addMap(o.extrasBy, b.extrasBy);
+  });
+  o.avgAge = o.ageN ? o.ageSum / o.ageN : 0;
+  return o;
+}
+
+function runAll(P, post) {
+  var reps = P.reps;
+  var A = runMany(P, scen(P, 'A'), reps);
+  var D = runMany(P, scen(P, 'D'), reps);
+  post({ stage: 'main', A: summarize(A), D: summarize(D), diff: pairedDiff(A, D, 'rev'), bz: aggBz(D) });
+  var B = runMany(P, scen(P, 'B'), reps);
+  var C = runMany(P, scen(P, 'C'), reps);
+  var med = function (runs) { var v = runs.map(function (r) { return r.rev; }).sort(function (a, b) { return a - b; }); return v[Math.floor(v.length / 2)]; };
+  var diffAB = pairedDiff(A, B, 'rev').abs, diffBC = pairedDiff(B, C, 'rev').abs, diffCD = pairedDiff(C, D, 'rev').abs;
+  var E = null;
+  if (P.camareros > 1) E = runMany(P, scen(P, 'D', { staff: P.camareros - 1 }), reps);
+  post({ stage: 'decomp', parts: { capacidad: diffAB, extras: diffBC, promo: diffCD },
+    staff: E ? { E: summarize(E), diff: pairedDiff(A, E, 'rev') } : null });
+  var levels = [0, 20, 40, 60, 80, 100]; var sens = [];
+  var sreps = Math.max(6, Math.round(reps / 2));
+  var Aq = A.slice(0, sreps);
+  levels.forEach(function (lv) {
+    var Ps = Object.assign({}, P, { adopcion: lv });
+    var R = runMany(Ps, scen(Ps, 'D'), sreps);
+    sens.push({ level: lv, rel: pairedDiff(Aq, R, 'rev').rel, share: summarize(R).bozuShare.med });
+  });
+  post({ stage: 'sens', sens: sens });
+}
+
+if (typeof module !== 'undefined') module.exports = { createNight: createNight, simulateNight: simulateNight, runAll: runAll, DEFAULTS: DEFAULTS, scen: scen, summarize: summarize, runMany: runMany };
+if (typeof self !== 'undefined' && typeof window === 'undefined' && typeof module === 'undefined') {
+  self.onmessage = function (e) { runAll(e.data, function (m) { self.postMessage(m); }); };
+}
+
+</script>
+
+<script>
+(function () {
+  'use strict';
+  var STORE = 'bozu-sim-v2';
+  var esInt = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 0, useGrouping: 'always' });
+  var es1 = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 1, minimumFractionDigits: 1, useGrouping: 'always' });
+  var es2 = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+  function eur(v) { return esInt.format(Math.round(v)) + ' €'; }
+  function eur2(v) { return es2.format(v) + ' €'; }
+  function int(v) { return esInt.format(Math.round(v)); }
+  function one(v) { return es1.format(v); }
+  function pct(v, digits) { var f = new Intl.NumberFormat('es-ES', { maximumFractionDigits: digits || 0 }); return f.format(v * 100) + ' %'; }
+  function signed(v, fmt) { return (v > 0 ? '+' : v < 0 ? '−' : '') + fmt(Math.abs(v)); }
+  function hhmm(h) { var m = Math.round(h * 60); var hh = Math.floor(m / 60) % 24, mm = ((m % 60) + 60) % 60; return (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm; }
+  function hours(h) { var m = Math.round(h * 60); return Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : ''); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function $(id) { return document.getElementById(id); }
+
+  // ---------- estado ----------
+  var state = { P: clone(DEFAULTS), answersP: null, venue: 'Tu local', onboarded: false };
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORE) || 'null');
+    if (saved && saved.P) {
+      Object.keys(DEFAULTS).forEach(function (k) { if (k in saved.P) state.P[k] = saved.P[k]; });
+      if (!Array.isArray(state.P.carta) || state.P.carta.length !== DEFAULT_CARTA.length) state.P.carta = clone(DEFAULT_CARTA);
+      state.venue = saved.venue || 'Tu local'; state.onboarded = !!saved.onboarded; state.answersP = saved.answersP || null;
+    }
+  } catch (e) {}
+  function save() { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {} }
+  var P = state.P;
+
+  // ---------- cuestionario ----------
+  var EDADES = { '21': 3.5, '25': 3.5, '31': 4, '27': 7 };
+  var SECS = ['Tu local', 'Horario', 'Carta', 'Tu barra', 'Tu público'];
+  function optLabel(Q) { var o = (Q.opts || []).filter(function (x) { return +P[Q.k] === x[0]; })[0]; return o ? o[1] : null; }
+  var QUESTIONS = [
+    { sec: 0, type: 'text', q: '¿Cómo se llama tu local?', help: 'Para personalizar tus resultados. Se queda en tu navegador, no lo enviamos a ningún sitio.', ph: 'Sala Neón', sum: 'Local', val: function () { return venueDraft.trim() || '—'; } },
+    { sec: 0, type: 'range', k: 'aforo', q: '¿Cuánta gente entra un sábado normal?', help: 'Personas que pasan por tu local a lo largo de la noche.', chips: [300, 500, 800, 1200], min: 100, max: 2000, step: 50, sum: 'Gente', val: function () { return int(P.aforo) + ' personas'; } },
+    { sec: 0, type: 'steppers', q: '¿Cuántas barras tienes y cuántos camareros ponen copas?', help: 'En hora punta, sumando todas las barras.', fields: [{ k: 'barras', l: 'Barras', s: 'donde se piden copas', min: 1, max: 6 }, { k: 'camareros', l: 'Camareros', s: 'poniendo copas a la vez', min: 1, max: 20 }], sum: 'Barras', val: function () { return P.barras + (P.barras === 1 ? ' barra · ' : ' barras · ') + P.camareros + ' cam.'; } },
+    { sec: 1, type: 'multi', q: '¿Cuándo se llena tu local?', groups: [
+      { k: 'picoEntrada', l: 'Hora punta de entrada', opts: [[0.5, '00:30'], [1, '01:00'], [1.5, '01:30'], [2, '02:00'], [2.5, '02:30']] },
+      { k: 'dispEntrada', l: '¿Cómo llega la gente?', opts: [[20, 'Casi todos de golpe'], [40, 'Escalonada'], [70, 'Poco a poco toda la noche']] },
+      { k: 'cierre', l: 'Cierras a las', opts: [[5, '05:00'], [5.5, '05:30'], [6, '06:00'], [6.5, '06:30'], [7, '07:00']] }], sum: 'Horario', val: function () { return 'Punta ' + hhmm(P.picoEntrada) + ' · cierre ' + hhmm(P.cierre); } },
+    { sec: 2, type: 'chips', k: 'incluidas', q: '¿La entrada incluye copa?', opts: [[0, 'Sin copa', 'Todo se paga en barra'], [1, '1 copa', 'Lo más habitual'], [2, '2 copas', 'Entrada con todo incluido']], sum: 'Entrada' },
+    { sec: 2, type: 'prices', q: '¿Cuánto cuestan tus copas?', help: 'Precio en barra. La carta completa la afinas después.', items: [0, 1, 2, 3], sum: 'Precios', val: function () { return 'Copa ' + one(P.carta[0].price) + ' €'; } },
+    { sec: 2, type: 'chips', k: 'extra', q: 'Además de la entrada, ¿cuántas copas pagaría cada cliente?', help: 'Lo que pediría si no hubiera colas.', opts: [[1, 'Menos de 1', 'Muchos se quedan en la de la entrada'], [1.8, '1 o 2', 'Lo normal un sábado'], [2.8, '2 o 3', 'Público que sale a darlo todo'], [3.8, 'Más de 3', 'Noches largas de fiesta']], sum: 'Consumo' },
+    { sec: 3, type: 'chips', k: 'paciencia', q: 'Un sábado a la hora punta, ¿cuánto se espera en tu barra?', opts: [[5, 'Menos de 5 min', 'Barra ágil'], [10, '5 a 10 min', 'Lo típico'], [14, '10 a 15 min', 'Se forma tapón'], [19, 'Más de 15 min', 'Mucha gente se rinde']], sum: 'Espera' },
+    { sec: 3, type: 'chips', k: 'efectivo', q: '¿Cuánta gente paga en efectivo?', help: 'Cobrar en efectivo tarda más que con tarjeta.', opts: [[5, 'Casi nadie', 'Todo con tarjeta o móvil'], [20, '1 de cada 5', 'Lo normal'], [35, '1 de cada 3', 'Bastante efectivo'], [50, 'La mitad', 'Mucho efectivo']], sum: 'Efectivo' },
+    { sec: 4, type: 'chips', k: 'edad', q: '¿Qué edad tiene tu público?', opts: [[21, '18 a 22', 'Universitario'], [25, '23 a 27', 'Gente joven que trabaja'], [31, '28 a 35', 'Público adulto'], [27, 'De todo', 'Edades muy variadas']], sum: 'Edad' },
+    { sec: 4, type: 'chips', k: 'adopcion', q: '¿Cuánta gente crees que usaría bozu al principio?', help: 'Si alguien del grupo lo tiene, suele pedir la ronda para todos.', opts: [[15, 'Pocos', '15 % de tus clientes'], [30, 'Algunos', '30 % de tus clientes'], [50, 'La mitad', '50 % de tus clientes'], [70, 'Casi todos', '70 % de tus clientes']], sum: 'Con bozu' }
+  ];
+  var qi = -1, seen = [], venueDraft = state.venue === 'Tu local' || state.venue === 'Sala de ejemplo' ? '' : state.venue;
+  var stepHost = $('stepHost');
+  function showScreen(id) { ['intro', 'loading', 'app'].forEach(function (s) { $(s).hidden = s !== id; }); window.scrollTo(0, 0); }
+  function qVal(Q) { if (Q.val) return Q.val(); var l = optLabel(Q); return l || String(P[Q.k]); }
+  function segsHtml(cur) {
+    return '<div class="segs" aria-hidden="true">' + SECS.map(function (s, si) {
+      var qs = QUESTIONS.map(function (Q, i) { return Q.sec === si ? i : -1; }).filter(function (i) { return i >= 0; });
+      var done = qs.filter(function (i) { return seen[i] || i < cur; }).length, fill = cur >= QUESTIONS.length ? 100 : done / qs.length * 100;
+      var cls = cur >= QUESTIONS.length || done === qs.length ? 'done' : QUESTIONS[cur] && QUESTIONS[cur].sec === si ? 'cur' : '';
+      return '<div class="seg-p ' + cls + '"><div class="bar"><i style="width:' + fill + '%"></i></div><span>' + esc(s) + '</span></div>';
+    }).join('') + '</div>';
+  }
+  function sideHtml() {
+    return '<div class="sum-card"><div class="head"><b>' + esc(venueDraft.trim() || 'Tu noche') + '</b><span>' + seen.filter(Boolean).length + ' de ' + QUESTIONS.length + '</span></div><ul>' +
+      QUESTIONS.map(function (Q, i) { return '<li class="' + (i === qi ? 'cur ' : '') + (seen[i] ? 'done' : '') + '"><button type="button" data-jump="' + i + '"><span>' + esc(Q.sum) + '</span><b>' + esc(qVal(Q)) + '</b></button></li>'; }).join('') +
+      '</ul><p class="foot-note">Puedes cambiarlo todo después, en Supuestos.</p></div>';
+  }
+  function navHtml(label) {
+    return '<div class="q-nav"><button class="pill back-btn" id="qBack" type="button" aria-label="Atrás">←</button><button class="pill pill-lime" id="qNext" type="button">' + label + '</button><span class="hint">o pulsa <kbd>Intro</kbd></span></div>';
+  }
+  function bindJumps() { stepHost.querySelectorAll('[data-jump]').forEach(function (b) { b.onclick = function () { var to = +b.dataset.jump, dir = to < qi ? 'back' : ''; qi = to; renderStep(dir); }; }); }
+  function renderStep(dir) {
+    if (qi < 0) {
+      stepHost.innerHTML = '<div class="step welcome' + (dir ? ' ' + dir : '') + '">' +
+        '<p class="label">Para dueños y gerentes de discotecas</p>' +
+        '<h1 class="h-display"><span class="w">Cuéntanos cómo es tu noche.</span><span class="g">Te enseñamos cuánto facturarías con bozu.</span></h1>' +
+        '<p class="lead">Son ' + QUESTIONS.length + ' preguntas rápidas sobre tu local. Con tus respuestas simulamos una noche entera, persona a persona: una vez con tu barra de siempre y otra con bozu.</p>' +
+        '<div class="welcome-list"><div><b>2 minutos</b><span>Casi todo se responde con un toque. Sin registro.</span></div><div><b>Tu noche, en directo</b><span>Colas, rondas, gente que se rinde y temazos.</span></div><div><b>Tus estadísticas</b><span>Lo que verías en tu panel de bozu.</span></div></div>' +
+        '<div class="q-nav"><button class="pill pill-lime" id="qStart" type="button">Empezar ↗</button><button class="pill" id="qExample" type="button">Ver un ejemplo</button></div>' +
+        '</div>';
+      $('qStart').onclick = function () { qi = 0; renderStep(); };
+      $('qExample').onclick = function () { useExample(); };
+      return;
+    }
+    if (qi >= QUESTIONS.length) {
+      stepHost.innerHTML = '<div class="step review' + (dir ? ' ' + dir : '') + '" style="max-width:980px">' + segsHtml(qi) +
+        '<h1 class="h-display"><span class="w">Esta es tu noche.</span><span class="g">Revísala y la simulamos.</span></h1>' +
+        '<div class="review-grid">' + QUESTIONS.map(function (Q, i) { return '<button type="button" data-jump="' + i + '"><span>' + esc(Q.sum) + '<em>Cambiar</em></span><b>' + esc(qVal(Q)) + '</b></button>'; }).join('') + '</div>' +
+        navHtml('Simular mi noche ↗') + '</div>';
+      bindJumps();
+      $('qBack').onclick = function () { qi--; renderStep('back'); };
+      $('qNext').onclick = next; $('qNext').focus();
+      return;
+    }
+    var Q = QUESTIONS[qi];
+    var h = '<div class="quiz"><div class="step' + (dir ? ' ' + dir : '') + '">' + segsHtml(qi) +
+      '<p class="q-kicker">Pregunta ' + (qi + 1) + ' de ' + QUESTIONS.length + ' · ' + esc(SECS[Q.sec]) + '</p>' +
+      '<h1 class="q-title">' + esc(Q.q) + '</h1>' + (Q.help ? '<p class="q-help">' + esc(Q.help) + '</p>' : '');
+    if (Q.type === 'text') h += '<input class="q-input" id="qText" type="text" autocomplete="off" maxlength="40" placeholder="' + esc(Q.ph) + '" value="' + esc(venueDraft) + '" aria-label="Nombre de tu local">';
+    if (Q.type === 'chips') h += optsHtml(Q.k, Q.opts);
+    if (Q.type === 'multi') Q.groups.forEach(function (g) { h += '<div class="q-group"><div class="t">' + esc(g.l) + '</div>' + chipsHtml(g.k, g.opts) + '</div>'; });
+    if (Q.type === 'range') {
+      h += '<div class="q-range"><div class="big-num"><output id="qOut">' + int(P[Q.k]) + '</output><span>personas</span></div>' +
+        '<input type="range" id="qRange" min="' + Q.min + '" max="' + Q.max + '" step="' + Q.step + '" value="' + P[Q.k] + '" aria-label="' + esc(Q.q) + '">' +
+        '<div class="marks"><span>' + int(Q.min) + '</span><span>' + int(Q.max) + '</span></div>' +
+        '<div class="chips">' + Q.chips.map(function (c) { return '<button type="button" class="chip-opt" data-k="' + Q.k + '" data-v="' + c + '" aria-pressed="' + (P[Q.k] === c) + '">' + int(c) + '</button>'; }).join('') + '</div></div>';
+    }
+    if (Q.type === 'steppers') h += '<div class="steppers">' + Q.fields.map(function (f) { return stepperHtml(f.k, f.l, f.s, function (v) { return int(v); }); }).join('') + '</div><p class="q-warn" id="qWarn" hidden></p>';
+    if (Q.type === 'prices') h += '<div class="steppers">' + Q.items.map(function (i) { return stepperHtml('price' + i, P.carta[i].name, null, function (v) { return one(v) + ' €'; }); }).join('') + '</div>';
+    h += navHtml(qi === QUESTIONS.length - 1 ? 'Revisar mi noche' : 'Siguiente') + '</div><aside class="quiz-side" aria-label="Tus respuestas">' + sideHtml() + '</aside></div>';
+    stepHost.innerHTML = h;
+    function refreshSide() { var s = stepHost.querySelector('.quiz-side'); if (s) { s.innerHTML = sideHtml(); bindJumps(); } }
+    stepHost.querySelectorAll('[data-k][data-v]').forEach(function (b) {
+      b.onclick = function () {
+        var k = b.dataset.k, v = +b.dataset.v; P[k] = v;
+        if (k === 'edad') P.edadSd = EDADES[String(v)] || 3.5;
+        b.parentNode.querySelectorAll('[data-v]').forEach(function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+        if (Q.type === 'range') { $('qRange').value = v; $('qOut').textContent = int(v); setFill($('qRange')); }
+        refreshSide();
+        if (Q.type === 'chips') setTimeout(function () { if (QUESTIONS[qi] === Q) next(); }, 280);
+      };
+    });
+    if (Q.type === 'range') { var r = $('qRange'); setFill(r); r.oninput = function () { P[Q.k] = +r.value; $('qOut').textContent = int(+r.value); setFill(r); stepHost.querySelectorAll('.chip-opt').forEach(function (o) { o.setAttribute('aria-pressed', +o.dataset.v === +r.value ? 'true' : 'false'); }); refreshSide(); }; }
+    function warn() { var w = $('qWarn'); if (!w) return; var bad = P.camareros < P.barras; w.hidden = !bad; w.textContent = bad ? 'Con menos camareros que barras, alguna barra se quedará sin nadie.' : ''; }
+    stepHost.querySelectorAll('.stepper').forEach(function (s) {
+      var k = s.dataset.k, out = s.querySelector('output'), isPrice = k.indexOf('price') === 0, idx = isPrice ? +k.slice(5) : -1;
+      var f = Q.type === 'steppers' ? Q.fields.filter(function (x) { return x.k === k; })[0] : null;
+      function get() { return isPrice ? P.carta[idx].price : P[k]; }
+      function set(v) { if (isPrice) P.carta[idx].price = v; else P[k] = v; out.textContent = isPrice ? one(v) + ' €' : int(v); warn(); refreshSide(); }
+      s.querySelectorAll('button').forEach(function (b) {
+        b.onclick = function () { var d = +b.dataset.d * (isPrice ? 0.5 : 1), v = get() + d; v = isPrice ? Math.max(0, Math.min(40, v)) : Math.max(f.min, Math.min(f.max, v)); set(v); };
+      });
+    });
+    warn(); bindJumps();
+    $('qBack').onclick = function () { qi--; renderStep('back'); };
+    $('qNext').onclick = next;
+    var t = $('qText'); if (t) { t.focus(); t.oninput = function () { venueDraft = t.value; refreshSide(); }; }
+  }
+  function chipsHtml(k, opts) {
+    return '<div class="chips">' + opts.map(function (o) { return '<button type="button" class="chip-opt" data-k="' + k + '" data-v="' + o[0] + '" aria-pressed="' + (+P[k] === o[0]) + '">' + esc(o[1]) + '</button>'; }).join('') + '</div>';
+  }
+  function optsHtml(k, opts) {
+    return '<div class="opts">' + opts.map(function (o, i) { return '<button type="button" class="opt" data-k="' + k + '" data-v="' + o[0] + '" aria-pressed="' + (+P[k] === o[0]) + '"><kbd>' + (i + 1) + '</kbd><b>' + esc(o[1]) + '</b>' + (o[2] ? '<span>' + esc(o[2]) + '</span>' : '') + '</button>'; }).join('') + '</div>';
+  }
+  function stepperHtml(k, l, s, f) {
+    var v = k.indexOf('price') === 0 ? P.carta[+k.slice(5)].price : P[k];
+    return '<div class="stepper" data-k="' + k + '"><div class="t">' + esc(l) + (s ? '<small>' + esc(s) + '</small>' : '') + '</div><div class="ctl"><button type="button" data-d="-1" aria-label="Menos ' + esc(l) + '">−</button><output>' + f(v) + '</output><button type="button" data-d="1" aria-label="Más ' + esc(l) + '">+</button></div></div>';
+  }
+  function next() {
+    if (qi >= QUESTIONS.length) { finishQuiz(); return; }
+    if (qi === 0) state.venue = venueDraft.trim() || 'Tu local';
+    seen[qi] = true; qi++; renderStep();
+  }
+  document.addEventListener('keydown', function (e) {
+    if ($('intro').hidden) return;
+    var tag = e.target && e.target.tagName;
+    if (e.key === 'Enter') {
+      if (tag === 'BUTTON' || tag === 'A') return;
+      e.preventDefault(); if (qi < 0) { qi = 0; renderStep(); } else next(); return;
+    }
+    if (tag === 'INPUT' && e.target.type === 'text') return;
+    var Q = QUESTIONS[qi];
+    if (Q && Q.type === 'chips' && /^[1-9]$/.test(e.key)) { var b = stepHost.querySelectorAll('.opt')[+e.key - 1]; if (b) { e.preventDefault(); b.click(); } }
+  });
+  function useExample() { state.P = P = clone(DEFAULTS); state.venue = 'Sala de ejemplo'; finishQuiz(); }
+  function finishQuiz() {
+    if (!$('loading').hidden) return;
+    stepHost.innerHTML = '';
+    state.onboarded = true; state.answersP = clone(P); save();
+    buildControls(); startLoading();
+  }
+  $('skip').onclick = useExample;
+
+  // ---------- pantalla de carga ----------
+  var loadDone = null;
+  function startLoading() {
+    showScreen('loading');
+    $('loadLabel').textContent = state.venue;
+    var lines = ['Abriendo puertas a las 00:00', 'Llenando la pista con ' + int(P.aforo) + ' personas', 'La barra se llena a las ' + hhmm(P.picoEntrada), 'Probando la misma noche con bozu', 'Comparando noche a noche'];
+    var ul = $('loadLines'); ul.innerHTML = ''; var i = 0, t0 = Date.now();
+    var iv = setInterval(function () {
+      if (ul.lastChild) ul.lastChild.className = 'done';
+      if (i < lines.length) { var li = document.createElement('li'); li.textContent = lines[i++] + '…'; ul.appendChild(li); }
+      $('loadBar').style.width = Math.min(92, i / lines.length * 92) + '%';
+    }, 380);
+    loadDone = function () {
+      var wait = Math.max(0, 2100 - (Date.now() - t0));
+      setTimeout(function () {
+        clearInterval(iv); $('loadBar').style.width = '100%';
+        setTimeout(function () { loadDone = null; Live.restart(); enterApp('directo'); }, 250);
+      }, wait);
+    };
+    changed(true);
+  }
+
+  // ---------- software ----------
+  var VIEWS = ['directo', 'estadisticas', 'resumen', 'supuestos'];
+  function enterApp(v) { showScreen('app'); updateVenue(); go(v || 'directo'); }
+  function go(v) {
+    if (VIEWS.indexOf(v) < 0) v = 'directo';
+    document.querySelectorAll('.view').forEach(function (s) { s.hidden = s.dataset.view !== v; });
+    document.querySelectorAll('.nav a').forEach(function (a) { if (a.dataset.v === v) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    if (location.hash !== '#' + v) { try { history.replaceState(null, '', '#' + v); } catch (e) {} }
+    window.scrollTo(0, 0);
+    if (v === 'resumen') renderCharts();
+    if (v === 'estadisticas') renderStats();
+    if (v === 'directo') { Live.resize(); syncQuick(); }
+    if (v === 'supuestos') buildControls();
+  }
+  document.querySelectorAll('.nav a').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); go(a.dataset.v); }); });
+  window.addEventListener('hashchange', function () { if (!$('app').hidden) go(location.hash.slice(1)); });
+  $('redo').onclick = function () { qi = -1; seen = []; venueDraft = state.venue === 'Tu local' || state.venue === 'Sala de ejemplo' ? '' : state.venue; showScreen('intro'); renderStep(); };
+  function updateVenue() {
+    $('venueName').textContent = state.venue;
+    $('venueMeta').textContent = int(P.aforo) + ' personas · ' + P.barras + (P.barras === 1 ? ' barra · ' : ' barras · ') + P.camareros + (P.camareros === 1 ? ' camarero' : ' camareros');
+    $('panelVenue').textContent = '· ' + state.venue;
+    $('resLabel').textContent = 'Resumen · ' + state.venue;
+  }
+  var toastT; function toast(msg) { var t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, 2600); }
+  $('sNormal').addEventListener('click', function () { toast('Sin bozu no hay datos de tus clientes: solo el total de caja.'); });
+  $('sBozu').addEventListener('click', function () { renderStats(); });
+
+  // ---------- ajustes rápidos en directo ----------
+  var QUICK = {
+    aforo: { f: function (v) { return int(v); }, get: function () { return P.aforo; }, set: function (v) { P.aforo = v; } },
+    camareros: { f: function (v) { return int(v); }, get: function () { return P.camareros; }, set: function (v) { P.camareros = v; } },
+    adopcion: { f: function (v) { return v + ' %'; }, get: function () { return P.adopcion; }, set: function (v) { P.adopcion = v; } },
+    precio: { f: function (v) { return one(v) + ' €'; }, get: function () { return P.carta[0].price; }, set: function (v) { P.carta[0].price = v; } }
+  };
+  function syncQuick() {
+    Object.keys(QUICK).forEach(function (k) { var q = QUICK[k], inp = $('q-' + k); inp.value = q.get(); $('qo-' + k).textContent = q.f(q.get()); setFill(inp); });
+    var pn = $('promoNow');
+    pn.textContent = P.promoOn ? 'Promo a las ' + hhmm(P.promoInicio) + ' · lanzar otra' : 'Lanzar promo ahora';
+  }
+  Object.keys(QUICK).forEach(function (k) {
+    var inp = $('q-' + k);
+    inp.addEventListener('input', function () { QUICK[k].set(+inp.value); $('qo-' + k).textContent = QUICK[k].f(+inp.value); setFill(inp); updateVenue(); changed(); });
+  });
+  $('promoNow').addEventListener('click', function () {
+    var t = Math.min(P.cierre - 0.6, Live.time() / 3600 + 1 / 60);
+    P.promoOn = true; P.promoTipo = 'descuento'; P.promoValor = 30; P.promoDur = 30; P.promoAlcance = 'bozu'; P.promoInicio = Math.max(0, t);
+    syncQuick(); changed(true);
+    toast('Promo enviada a los clientes con bozu: −30 % en copas durante 30 minutos.');
+  });
+  document.querySelectorAll('[data-go]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); go(a.dataset.go); }); });
+
+  // ---------- supuestos ----------
+  var SECTIONS = [
+    { title: 'Local', open: true, items: [
+      { k: 'aforo', l: 'Personas en el local', min: 100, max: 2000, step: 50, f: int },
+      { k: 'barras', l: 'Barras', min: 1, max: 6, step: 1, f: int },
+      { k: 'camareros', l: 'Camareros en total', min: 1, max: 20, step: 1, f: int, help: 'Se reparten entre las barras.' },
+      { k: 'picoEntrada', l: 'Hora punta de entrada', min: 0.5, max: 3, step: 0.25, f: hhmm },
+      { k: 'dispEntrada', l: 'Lo escalonada que llega la gente', min: 15, max: 90, step: 5, f: function (v) { return '± ' + v + ' min'; }, help: '2 de cada 3 personas entran en este margen alrededor de la hora punta.' },
+      { k: 'estancia', l: 'Tiempo medio dentro', min: 1.5, max: 5, step: 0.25, f: hours },
+      { k: 'cierre', l: 'Cierre', min: 5, max: 7.5, step: 0.5, f: hhmm, help: 'Abre a las 00:00.' }
+    ] },
+    { title: 'Entrada y consumo', open: true, items: [
+      { k: 'incluidas', l: 'Copas incluidas con la entrada', min: 0, max: 3, step: 1, f: int },
+      { k: 'extra', l: 'Copas pagadas que quiere cada persona', min: 0, max: 5, step: 0.1, f: one, help: 'Media de ganas. Lo que se vende de verdad sale de la simulación: las colas hacen que se pierdan.' },
+      { k: 'pideAlEntrar', l: 'Va a por la copa nada más entrar', min: 0, max: 100, step: 5, f: function (v) { return v + ' %'; } },
+      { k: 'entreCopas', l: 'Tiempo entre copa y copa', min: 15, max: 60, step: 5, f: function (v) { return v + ' min'; } },
+      { k: 'grupo', l: 'Tamaño medio del grupo', min: 1, max: 6, step: 0.5, f: one },
+      { k: 'edad', l: 'Edad media del público', min: 18, max: 45, step: 1, f: function (v) { return v + ' años'; } },
+      { k: 'elasticidad', l: 'Sensibilidad al precio', min: 0, max: 2, step: 0.1, f: one, help: '0: el precio no cambia lo que se bebe. 1: un 10 % más caro, un 10 % menos de copas.' },
+      { k: 'temazos', l: 'Temazos que vacían la barra', type: 'toggle', help: 'Cada 12 minutos, más o menos, suena algo que nadie quiere perderse.' }
+    ] },
+    { title: 'Carta', hint: 'precios y mezcla', open: false, carta: true },
+    { title: 'Barra tradicional', open: false, items: [
+      { k: 'tNota', l: 'Pedir al camarero', min: 10, max: 90, step: 5, f: function (v) { return v + ' s'; } },
+      { k: 'tCobroTarjeta', l: 'Cobrar con tarjeta', min: 5, max: 60, step: 5, f: function (v) { return v + ' s'; } },
+      { k: 'tCobroEfectivo', l: 'Cobrar en efectivo', min: 10, max: 90, step: 5, f: function (v) { return v + ' s'; } },
+      { k: 'efectivo', l: 'Pagan en efectivo', min: 0, max: 100, step: 5, f: function (v) { return v + ' %'; } },
+      { k: 'paciencia', l: 'Cola máxima que aguanta la gente', min: 3, max: 30, step: 1, f: function (v) { return v + ' min'; }, help: 'Valor típico. Cada grupo tiene la suya.' },
+      { k: 'perder', l: 'Si se rinde, ya no pide esa copa', min: 0, max: 100, step: 5, f: function (v) { return v + ' %'; }, help: 'El resto lo vuelve a intentar 10 o 25 minutos después.' },
+      { k: 'upsellBarra', l: 'El camarero consigue añadir un extra', min: 0, max: 20, step: 1, f: function (v) { return v + ' %'; } }
+    ] },
+    { title: 'bozu', open: true, items: [
+      { k: 'adopcion', l: 'Personas que usan bozu', min: 0, max: 100, step: 5, f: function (v) { return v + ' %'; } },
+      { k: 'conApp', l: 'De ellas, con la app descargada', min: 0, max: 100, step: 5, f: function (v) { return v + ' %'; }, help: 'Con la app reciben el aviso de «listo» y las promos al momento. Desde Safari tardan más en enterarse.' },
+      { k: 'preCompra', l: 'Piden la primera copa antes de llegar', min: 0, max: 50, step: 5, f: function (v) { return v + ' %'; }, help: 'Bajo su responsabilidad: no hay devolución si la copa ya se está preparando.' },
+      { k: 'upsellBozu', l: 'Añaden un extra al pedir', min: 0, max: 40, step: 1, f: function (v) { return v + ' %'; }, help: 'Agua, refresco o chupito, por cada copa pedida.' },
+      { k: 'preparaTanda', l: 'Ahorro al preparar en tanda', min: 0, max: 40, step: 5, f: function (v) { return v + ' %'; } },
+      { k: 'tEntrega', l: 'Entregar en el punto bozu', min: 3, max: 30, step: 1, f: function (v) { return v + ' s'; }, help: 'Escanear el QR y dar la copa.' },
+      { k: 'puntoBozu', l: 'Tamaño del punto bozu', min: 5, max: 30, step: 1, f: function (v) { return v + ' % de la barra'; } },
+      { k: 'coberturaMala', l: 'Gente con mala cobertura', min: 0, max: 80, step: 5, f: function (v) { return v + ' %'; }, help: 'El pedido entra igual, pero tardan más en pedir y en ver que está listo.' },
+      { k: 'canjeEntradas', l: 'Las copas de la entrada se canjean con bozu', type: 'toggle' },
+      { k: 'impulso', l: 'Beben más porque pedir es más cómodo', min: 0, max: 30, step: 1, f: function (v) { return '+' + v + ' %'; }, help: 'Hipótesis. Por defecto 0: la mejora sale solo de servir más rápido y perder menos ventas.' }
+    ] },
+    { title: 'Promoción', hint: 'push en directo', open: false, items: [
+      { k: 'promoOn', l: 'Lanzar una promoción', type: 'toggle' },
+      { k: 'promoTipo', l: 'Tipo', type: 'select', options: [['descuento', 'Descuento en copas'], ['2x1', '2x1 en copas'], ['cerveza', 'Cerveza a precio especial'], ['barralibre', 'Barra libre de cerveza']] },
+      { k: 'promoValor', l: 'Descuento', min: 10, max: 70, step: 5, f: function (v) { return v + ' %'; } },
+      { k: 'promoInicio', l: 'Empieza a las', min: 0.5, max: 5.5, step: 0.25, f: hhmm },
+      { k: 'promoDur', l: 'Dura', min: 10, max: 120, step: 5, f: function (v) { return v + ' min'; } },
+      { k: 'promoAlcance', l: 'Quién se entera', type: 'select', options: [['bozu', 'Solo usuarios bozu (notificación)'], ['todos', 'Todo el local (también la anuncia el DJ)']] }
+    ] },
+    { title: 'Simulación', open: false, items: [
+      { k: 'reps', l: 'Noches simuladas por escenario', type: 'select', options: [[10, '10 noches (rápido)'], [20, '20 noches'], [40, '40 noches (más preciso)']] }
+    ] }
+  ];
+  var host = $('ctlHost'), outputs = {};
+  function setFill(inp) { var p = (inp.value - inp.min) / (inp.max - inp.min) * 100; inp.style.setProperty('--p', p + '%'); }
+  function buildControls() {
+    host.innerHTML = ''; outputs = {};
+    SECTIONS.forEach(function (sec) {
+      var d = document.createElement('details'); d.className = 'sec'; d.open = sec.open;
+      d.innerHTML = '<summary>' + esc(sec.title) + (sec.hint ? '<span class="hint">' + esc(sec.hint) + '</span>' : '') + '</summary><div class="body"></div>';
+      var body = d.querySelector('.body');
+      if (sec.carta) {
+        var rows = P.carta.map(function (c, i) {
+          return '<tr><td><input id="c-name-' + i + '" data-i="' + i + '" data-f="name" type="text" value="' + esc(c.name) + '" aria-label="Producto"></td>' +
+            '<td><input id="c-price-' + i + '" data-i="' + i + '" data-f="price" type="number" min="0" max="100" step="0.5" value="' + c.price + '" aria-label="Precio de ' + esc(c.name) + ' en euros"></td>' +
+            '<td><input id="c-share-' + i + '" data-i="' + i + '" data-f="share" type="number" min="0" max="100" step="1" value="' + c.share + '" aria-label="Porcentaje de pedidos de ' + esc(c.name) + '"></td>' +
+            '<td><input id="c-prep-' + i + '" data-i="' + i + '" data-f="prep" type="number" min="1" max="300" step="1" value="' + c.prep + '" aria-label="Segundos de preparación de ' + esc(c.name) + '"></td></tr>';
+        }).join('');
+        body.innerHTML = '<table class="carta"><colgroup><col class="n"><col><col><col></colgroup><thead><tr><th>Producto</th><th>€</th><th>% pedidos</th><th>Prep. (s)</th></tr></thead><tbody>' + rows + '</tbody></table><p class="sumnote" id="sumnote"></p><p class="ctl help">Agua, refresco y chupito son también los extras que se ofrecen al pedir.</p>';
+        body.querySelectorAll('input').forEach(function (inp) {
+          inp.addEventListener('input', function () {
+            var i = +inp.dataset.i, f = inp.dataset.f;
+            if (f === 'name') P.carta[i].name = inp.value;
+            else { var v = parseFloat(inp.value); if (!isFinite(v)) return; P.carta[i][f] = Math.max(f === 'prep' ? 1 : 0, v); }
+            updateSumNote(); changed();
+          });
+        });
+      } else {
+        sec.items.forEach(function (it) {
+          var c = document.createElement('div'); c.className = 'ctl'; c.dataset.k = it.k;
+          var id = 'ctl-' + it.k;
+          if (it.type === 'toggle') {
+            c.innerHTML = '<label class="toggle" for="' + id + '"><span>' + esc(it.l) + '</span><input id="' + id + '" type="checkbox"' + (P[it.k] ? ' checked' : '') + '><span class="sw" aria-hidden="true"></span></label>' + (it.help ? '<span class="help">' + esc(it.help) + '</span>' : '');
+            c.querySelector('input').addEventListener('change', function (e) { P[it.k] = e.target.checked; syncPromo(); changed(); });
+          } else if (it.type === 'select') {
+            c.innerHTML = '<label for="' + id + '">' + esc(it.l) + '</label><select id="' + id + '">' + it.options.map(function (o) { return '<option value="' + o[0] + '"' + (String(P[it.k]) === String(o[0]) ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>';
+            c.querySelector('select').addEventListener('change', function (e) { var v = e.target.value; P[it.k] = it.k === 'reps' ? +v : v; syncPromo(it.k === 'promoTipo'); changed(); });
+          } else {
+            c.innerHTML = '<div class="row"><label for="' + id + '">' + esc(it.l) + '</label><output id="o-' + it.k + '" for="' + id + '"></output></div><input id="' + id + '" type="range" min="' + it.min + '" max="' + it.max + '" step="' + it.step + '" value="' + P[it.k] + '">' + (it.help ? '<span class="help">' + esc(it.help) + '</span>' : '');
+            var inp = c.querySelector('input'), out = c.querySelector('output');
+            outputs[it.k] = { out: out, it: it, inp: inp, label: c.querySelector('label') };
+            out.textContent = it.f(+P[it.k]); setFill(inp);
+            inp.addEventListener('input', function () { P[it.k] = +inp.value; out.textContent = outputs[it.k].it.f(+inp.value); setFill(inp); if (it.k === 'aforo' || it.k === 'barras' || it.k === 'camareros') updateVenue(); changed(); });
+          }
+          body.appendChild(c);
+        });
+      }
+      host.appendChild(d);
+    });
+    updateSumNote(); syncPromo();
+  }
+  function updateSumNote() {
+    var n = $('sumnote'); if (!n) return;
+    var s = P.carta.reduce(function (a, c) { return a + (+c.share || 0); }, 0);
+    n.textContent = Math.round(s) === 100 ? 'Los porcentajes suman 100 %.' : 'Los porcentajes suman ' + Math.round(s) + ' %. Se reparten en proporción.';
+  }
+  function syncPromo(resetValue) {
+    var o = outputs.promoValor; if (!o) return;
+    var tipo = P.promoTipo, wrap = o.inp.closest('.ctl'), on = !!P.promoOn;
+    document.querySelectorAll('.ctl[data-k^="promo"]').forEach(function (el) { if (el.dataset.k !== 'promoOn') el.hidden = !on; });
+    if (tipo === 'descuento' || tipo === 'cerveza') {
+      if (on) wrap.hidden = false;
+      var beer = tipo === 'cerveza';
+      o.it = beer ? { min: 0, max: 6, step: 0.5, f: function (v) { return one(v) + ' € el tercio'; } } : { min: 10, max: 70, step: 5, f: function (v) { return v + ' %'; } };
+      o.label.textContent = beer ? 'Precio del tercio' : 'Descuento';
+      o.inp.min = o.it.min; o.inp.max = o.it.max; o.inp.step = o.it.step;
+      if (resetValue || P.promoValor > o.it.max || P.promoValor < o.it.min) P.promoValor = beer ? 3 : 30;
+      o.inp.value = P.promoValor; o.out.textContent = o.it.f(+P.promoValor); setFill(o.inp);
+    } else wrap.hidden = true;
+  }
+  $('reset').addEventListener('click', function () {
+    if (state.answersP) { state.P = P = clone(state.answersP); } else { state.P = P = clone(DEFAULTS); }
+    buildControls(); updateVenue(); changed(true); toast('Has vuelto a tus respuestas del cuestionario.');
+  });
+
+  // ---------- ejecución ----------
+  var worker = null, timer = null, runId = 0, last = {};
+  var srcText = $('sim-src').textContent;
+  function setStatus(busy, text) {
+    ['status', 'statusM'].forEach(function (id) { var s = $(id); s.classList.toggle('busy', busy); s.querySelector('.st').textContent = text; });
+    $('results').classList.toggle('busy-results', busy);
+  }
+  function changed(now) {
+    state.P = P; save();
+    clearTimeout(timer); setStatus(true, 'Simulando ' + P.reps + ' noches…');
+    timer = setTimeout(run, now ? 0 : 280);
+  }
+  function params() {
+    var p = clone(P);
+    p.carta = p.carta.map(function (c, i) { return Object.assign({}, c, { id: DEFAULT_CARTA[i].id, kind: DEFAULT_CARTA[i].kind, price: +c.price || 0, share: +c.share || 0, prep: Math.max(1, +c.prep || 1) }); });
+    p.camareros = Math.max(1, p.camareros);
+    return p;
+  }
+  function run() {
+    var id = ++runId, p = params();
+    try { Live.build(p, true); } catch (e) { if (window.console) console.error(e); }
+    if (worker) { worker.terminate(); worker = null; }
+    var onMsg = function (m) {
+      if (id !== runId) return;
+      if (m.stage === 'main') { last.p = p; last.main = m; last.decomp = null; last.sens = null; renderMain(); if (loadDone) loadDone(); }
+      if (m.stage === 'decomp') { last.decomp = m; renderDecomp(); }
+      if (m.stage === 'sens') { last.sens = m; renderSens(); setStatus(false, p.reps + ' noches por escenario'); }
+    };
+    try {
+      worker = new Worker(URL.createObjectURL(new Blob([srcText], { type: 'text/javascript' })));
+      worker.onmessage = function (e) { onMsg(e.data); };
+      worker.onerror = function () { worker = null; fallback(p, onMsg, id); };
+      worker.postMessage(p);
+    } catch (e) { fallback(p, onMsg, id); }
+  }
+  function fallback(p, onMsg, id) { setTimeout(function () { if (id === runId) runAll(p, onMsg); }, 10); }
+
+  // ---------- gráficos ----------
+  function niceStep(range, n) { var raw = range / n, mag = Math.pow(10, Math.floor(Math.log10(raw || 1))), r = raw / mag; return (r <= 1 ? 1 : r <= 2 ? 2 : r <= 2.5 ? 2.5 : r <= 5 ? 5 : 10) * mag; }
+  function ticksFor(min, max) { if (max <= min) max = min + 1; var st = niceStep(max - min, 4), lo = Math.floor(min / st) * st, hi = Math.ceil(max / st) * st, t = []; for (var v = lo; v <= hi + st / 2; v += st) t.push(+v.toFixed(6)); return t; }
+  function axisSvg(W, H, m, tk, Y, yFmt) {
+    var s = '';
+    tk.forEach(function (v) {
+      var y = Y(v);
+      s += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y + '" y2="' + y + '" stroke="' + (v === 0 ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.07)') + '" stroke-width="1"/>';
+      s += '<text x="' + (m.l - 10) + '" y="' + (y + 4) + '" text-anchor="end" fill="var(--muted)" font-size="11">' + esc(yFmt(v)) + '</text>';
+    });
+    return s;
+  }
+  function placeTip(plot, tip, px, W, topPx) {
+    var scale = plot.clientWidth / W, x = px * scale, tw = tip.offsetWidth, left = x + 14;
+    if (left + tw > plot.clientWidth) left = x - tw - 14; if (left < 0) left = 0;
+    tip.style.left = left + 'px'; tip.style.top = topPx + 'px';
+  }
+  function lineChart(el, cfg) {
+    var W = Math.max(280, Math.round(el.clientWidth || 600)), H = cfg.height || 260, narrow = W < 520;
+    var m = { l: cfg.ml || 54, r: 18, t: 22, b: 30 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
+    var all = []; cfg.series.forEach(function (s) { all = all.concat(s.values); });
+    var mn = Math.min(0, Math.min.apply(null, all)), mx = Math.max.apply(null, all.concat([mn + 1e-6]));
+    var tk = ticksFor(mn, mx * 1.08), t0 = tk[0], t1 = tk[tk.length - 1], n = cfg.labels.length;
+    var X = function (i) { return m.l + (n <= 1 ? iw / 2 : i / (n - 1) * iw); };
+    var Y = function (v) { return m.t + ih - (v - t0) / (t1 - t0) * ih; };
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(cfg.aria) + '" tabindex="0">' + axisSvg(W, H, m, tk, Y, cfg.yFmt);
+    for (var i = 0; i < n; i++) { var lab = cfg.xTick(i, narrow); if (lab) s += '<text x="' + X(i) + '" y="' + (H - 8) + '" text-anchor="middle" fill="var(--muted)" font-size="11">' + esc(lab) + '</text>'; }
+    if (cfg.marker != null) { var mxp = X(cfg.marker.i); s += '<line x1="' + mxp + '" x2="' + mxp + '" y1="' + m.t + '" y2="' + (m.t + ih) + '" stroke="rgba(255,255,255,0.35)" stroke-width="1"/><text x="' + (mxp + 6) + '" y="' + (m.t + 12) + '" fill="var(--text)" font-size="11">' + esc(cfg.marker.label) + '</text>'; }
+    var peaks = [];
+    cfg.series.forEach(function (se) {
+      var d = se.values.map(function (v, i) { return (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1); }).join(' ');
+      if (cfg.area) s += '<path d="' + d + ' L' + X(n - 1) + ' ' + Y(Math.max(0, t0)) + ' L' + X(0) + ' ' + Y(Math.max(0, t0)) + ' Z" fill="' + se.color + '" fill-opacity="0.1"/>';
+      s += '<path d="' + d + '" fill="none" stroke="' + se.color + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+      if (cfg.dots) se.values.forEach(function (v, i) { s += '<circle cx="' + X(i) + '" cy="' + Y(v) + '" r="4.5" fill="' + se.color + '" stroke="var(--g1)" stroke-width="2"/>'; });
+      if (cfg.peakLabels) { var pi = 0; se.values.forEach(function (v, i) { if (v > se.values[pi]) pi = i; }); peaks.push({ x: X(pi), y: Y(se.values[pi]), txt: cfg.peakFmt(se.values[pi]), color: se.color }); }
+    });
+    peaks.sort(function (a, b) { return a.y - b.y; });
+    peaks.forEach(function (p, k) {
+      var ly = p.y - 10; if (k > 0 && Math.abs(peaks[k - 1].x - p.x) < 70 && Math.abs(peaks[k - 1].y - p.y) < 24) ly = p.y + 20;
+      var anchor = p.x > W - 70 ? 'end' : p.x < m.l + 40 ? 'start' : 'middle';
+      s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="4.5" fill="' + p.color + '" stroke="var(--g1)" stroke-width="2"/><text x="' + p.x + '" y="' + ly + '" text-anchor="' + anchor + '" fill="var(--text)" font-size="12" font-weight="600">' + esc(p.txt) + '</text>';
+    });
+    s += '<g class="hover" style="display:none"><line class="cx" y1="' + m.t + '" y2="' + (m.t + ih) + '" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>';
+    cfg.series.forEach(function (se, k) { s += '<circle class="hd" data-k="' + k + '" r="5" fill="' + se.color + '" stroke="var(--g1)" stroke-width="2"/>'; });
+    s += '</g><rect x="' + m.l + '" y="0" width="' + iw + '" height="' + H + '" fill="transparent"/></svg><div class="tip" hidden></div>';
+    el.innerHTML = '<div class="plot">' + s + '</div>';
+    var svg = el.querySelector('svg'), tip = el.querySelector('.tip'), g = el.querySelector('.hover'), plot = el.querySelector('.plot'), cur = -1;
+    function show(i) {
+      cur = i; var x = X(i); g.style.display = '';
+      g.querySelector('.cx').setAttribute('x1', x); g.querySelector('.cx').setAttribute('x2', x);
+      g.querySelectorAll('.hd').forEach(function (c) { var se = cfg.series[+c.dataset.k]; c.setAttribute('cx', x); c.setAttribute('cy', Y(se.values[i])); });
+      tip.innerHTML = '<b>' + esc(cfg.tipTitle(i)) + '</b>' + cfg.series.map(function (se) { return '<div class="row"><span><i style="background:' + se.color + '"></i>' + esc(se.name) + '</span><strong class="num">' + esc(cfg.tipFmt(se.values[i])) + '</strong></div>'; }).join('');
+      tip.hidden = false; placeTip(plot, tip, x, W, m.t * plot.clientWidth / W);
+    }
+    function hide() { g.style.display = 'none'; tip.hidden = true; cur = -1; }
+    svg.addEventListener('pointermove', function (e) { var r = svg.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * W; show(Math.max(0, Math.min(n - 1, Math.round((px - m.l) / iw * (n - 1))))); });
+    svg.addEventListener('pointerleave', hide); svg.addEventListener('blur', hide);
+    svg.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight') { show(Math.min(n - 1, cur + 1)); e.preventDefault(); } else if (e.key === 'ArrowLeft') { show(Math.max(0, cur < 0 ? n - 1 : cur - 1)); e.preventDefault(); } else if (e.key === 'Escape') hide(); });
+  }
+  function colChart(el, cfg) {
+    var W = Math.max(280, Math.round(el.clientWidth || 600)), H = cfg.height || 250, narrow = W < 520;
+    var m = { l: cfg.ml || 54, r: 12, t: 24, b: 30 }, iw = W - m.l - m.r, ih = H - m.t - m.b, n = cfg.labels.length, ns = cfg.series.length;
+    var all = []; cfg.series.forEach(function (s) { all = all.concat(s.values); });
+    var tk = ticksFor(0, Math.max.apply(null, all.concat([1])) * 1.1), t1 = tk[tk.length - 1];
+    var Y = function (v) { return m.t + ih - v / t1 * ih; };
+    var band = iw / n, gap = 2, groupW = Math.min(band * 0.74, ns * 24 + (ns - 1) * gap), bw = (groupW - (ns - 1) * gap) / ns;
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(cfg.aria) + '" tabindex="0">' + axisSvg(W, H, m, tk, Y, cfg.yFmt);
+    s += '<rect class="hl" x="0" y="' + m.t + '" width="' + band + '" height="' + ih + '" fill="rgba(255,255,255,0.04)" style="display:none"/>';
+    var peaks = [];
+    cfg.series.forEach(function (se, k) {
+      var pi = 0;
+      se.values.forEach(function (v, i) {
+        if (v > se.values[pi]) pi = i;
+        var x = m.l + i * band + (band - groupW) / 2 + k * (bw + gap), y = Y(v), y0 = Y(0), h = y0 - y;
+        if (h <= 0.5) return;
+        var r = Math.min(4, bw / 2, h);
+        s += '<path d="M' + x + ' ' + y0 + ' L' + x + ' ' + (y + r) + ' Q' + x + ' ' + y + ' ' + (x + r) + ' ' + y + ' L' + (x + bw - r) + ' ' + y + ' Q' + (x + bw) + ' ' + y + ' ' + (x + bw) + ' ' + (y + r) + ' L' + (x + bw) + ' ' + y0 + ' Z" fill="' + se.color + '"/>';
+      });
+      if (cfg.peakLabels) peaks.push({ x: m.l + pi * band + (band - groupW) / 2 + k * (bw + gap) + bw / 2, y: Y(se.values[pi]), txt: cfg.peakFmt(se.values[pi]) });
+    });
+    peaks.forEach(function (p, k) {
+      var dy = k > 0 && Math.abs(peaks[k - 1].x - p.x) < 60 && Math.abs(peaks[k - 1].y - p.y) < 18 ? -22 : -8;
+      var anchor = p.x > W - 50 ? 'end' : 'middle';
+      s += '<text x="' + p.x + '" y="' + (p.y + dy) + '" text-anchor="' + anchor + '" fill="var(--text)" font-size="12" font-weight="600">' + esc(p.txt) + '</text>';
+    });
+    for (var i = 0; i < n; i++) { var lab = cfg.xTick(i, narrow); if (lab) s += '<text x="' + (m.l + i * band + band / 2) + '" y="' + (H - 8) + '" text-anchor="middle" fill="var(--muted)" font-size="11">' + esc(lab) + '</text>'; }
+    s += '<rect x="' + m.l + '" y="0" width="' + iw + '" height="' + H + '" fill="transparent"/></svg><div class="tip" hidden></div>';
+    el.innerHTML = '<div class="plot">' + s + '</div>';
+    var svg = el.querySelector('svg'), tip = el.querySelector('.tip'), hl = el.querySelector('.hl'), plot = el.querySelector('.plot'), cur = -1;
+    function show(i) {
+      cur = i; hl.style.display = ''; hl.setAttribute('x', m.l + i * band);
+      tip.innerHTML = '<b>' + esc(cfg.tipTitle(i)) + '</b>' + cfg.series.map(function (se) { return '<div class="row"><span><i style="background:' + se.color + '"></i>' + esc(se.name) + '</span><strong class="num">' + esc(cfg.tipFmt(se.values[i])) + '</strong></div>'; }).join('');
+      tip.hidden = false; placeTip(plot, tip, m.l + i * band + band / 2, W, m.t * plot.clientWidth / W);
+    }
+    function hide() { hl.style.display = 'none'; tip.hidden = true; cur = -1; }
+    svg.addEventListener('pointermove', function (e) { var r = svg.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * W; show(Math.max(0, Math.min(n - 1, Math.floor((px - m.l) / band)))); });
+    svg.addEventListener('pointerleave', hide); svg.addEventListener('blur', hide);
+    svg.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight') { show(Math.min(n - 1, cur + 1)); e.preventDefault(); } else if (e.key === 'ArrowLeft') { show(Math.max(0, cur < 0 ? n - 1 : cur - 1)); e.preventDefault(); } else if (e.key === 'Escape') hide(); });
+  }
+  function hbars(el, items, fmt, opts) {
+    opts = opts || {};
+    var mx = Math.max.apply(null, items.map(function (i) { return Math.abs(i.v); }).concat([1e-9]));
+    el.innerHTML = items.length ? items.map(function (i) {
+      return '<div class="hb' + (i.total ? ' total' : '') + '"><div class="name' + (i.h ? ' wrap' : '') + '">' + esc(i.n) + (i.h ? '<small>' + esc(i.h) + '</small>' : i.s ? '<small>' + esc(i.s) + '</small>' : '') + '</div><div class="val">' + (opts.signed ? signed(i.v, fmt) : fmt(i.v)) + '</div><div class="track"><div class="bar' + (i.v < 0 ? ' neg' : '') + '" style="width:' + (Math.abs(i.v) / mx * 100).toFixed(1) + '%"></div></div></div>';
+    }).join('') : '<p class="sub">Sin pedidos con bozu en esta noche.</p>';
+  }
+  function topOf(map, n) { return Object.keys(map).map(function (k) { return { n: k, v: map[k] }; }).sort(function (a, b) { return b.v - a.v; }).slice(0, n); }
+
+  // ---------- render: resumen ----------
+  function chip(v, goodWhenUp, fmt, small) {
+    if (Math.abs(v) < small) return '<span class="chip flat"><i></i>igual</span>';
+    var good = goodWhenUp ? v > 0 : v < 0;
+    return '<span class="chip ' + (good ? 'up' : 'down') + '"><i></i>' + signed(v, fmt) + '</span>';
+  }
+  function renderMain() {
+    var p = last.p, A = last.main.A, D = last.main.D, diff = last.main.diff, rel = diff.rel;
+    $('h1a').textContent = Math.abs(rel) < 0.005 ? 'Con bozu, ' + state.venue + ' factura lo mismo.' : 'Con bozu, ' + state.venue + ' factura ' + signed(rel, function (v) { return pct(v); }) + '.';
+    $('h1b').textContent = 'Son ' + signed(diff.abs, eur) + ' cada noche.';
+    $('lead').innerHTML = 'Con ' + int(p.aforo) + ' personas, ' + p.barras + (p.barras === 1 ? ' barra' : ' barras') + ', ' + p.camareros + (p.camareros === 1 ? ' camarero' : ' camareros') + ' y el ' + p.adopcion + ' % de la gente usando bozu. En 8 de cada 10 noches simuladas la diferencia queda entre <strong>' + signed(diff.relP10, function (v) { return pct(v); }) + '</strong> y <strong>' + signed(diff.relP90, function (v) { return pct(v); }) + '</strong>.';
+    $('sumV').textContent = signed(rel, function (v) { return pct(v); }); $('sumE').textContent = signed(diff.abs, eur);
+    var k = [
+      { t: 'Facturación de barra', a: A.rev.med, d: D.rev.med, f: eur, up: true, dv: diff.abs, small: 1 },
+      { t: 'Copas servidas', a: A.drinks.med, d: D.drinks.med, f: int, up: true, small: 0.5 },
+      { t: 'Ventas perdidas por colas', a: A.lostRev.med, d: D.lostRev.med, f: eur, up: false, small: 1 },
+      { t: 'Minutos lejos del grupo por copa', a: A.away.med, d: D.away.med, f: function (v) { return one(v) + ' min'; }, up: false, small: 0.05 }
+    ];
+    $('kpis').innerHTML = k.map(function (x) { var dv = x.dv != null ? x.dv : x.d - x.a; return '<div class="kpi"><div class="t">' + esc(x.t) + '</div><div class="v">' + x.f(x.d) + '</div><div class="from">Sin bozu: ' + x.f(x.a) + '</div>' + chip(dv, x.up, x.f, x.small) + '</div>'; }).join('');
+    var rows = [
+      { n: 'Facturación de barra', a: A.rev.med, d: D.rev.med, f: eur, up: true, key: true, dv: diff.abs, small: 1 },
+      { n: 'Gasto en barra por persona', a: A.spend.med, d: D.spend.med, f: function (v) { return one(v) + ' €'; }, up: true, small: 0.05 },
+      { n: 'Copas servidas', h: 'Incluye las de la entrada y los extras', a: A.drinks.med, d: D.drinks.med, f: int, up: true, small: 0.5 },
+      { n: 'Copas pagadas por persona', a: A.paidPP.med, d: D.paidPP.med, f: function (v) { return es2.format(v); }, up: true, small: 0.005 },
+      { n: 'Extras añadidos al pedido', a: A.extras.med, d: D.extras.med, f: int, up: true, small: 0.5 },
+      { n: 'Ventas perdidas por colas', h: 'Gente que se rinde y ya no pide esa copa', a: A.lostRev.med, d: D.lostRev.med, f: eur, up: false, small: 1 },
+      { n: 'Copas que querían y no llegaron a pedir', h: 'Ganas que quedan al irse a casa', a: A.unmet.med, d: D.unmet.med, f: int, up: false, small: 0.5 },
+      { n: 'Tiempo hasta tener la copa', h: 'Media. Con bozu, esperando en la pista', a: A.hand.med, d: D.hand.med, f: function (v) { return one(v) + ' min'; }, up: false, small: 0.05, p90a: A.handP90.med, p90d: D.handP90.med },
+      { n: 'Minutos lejos de tu grupo por copa', a: A.away.med, d: D.away.med, f: function (v) { return one(v) + ' min'; }, up: false, small: 0.05 },
+      { n: 'Cola para quien no usa bozu', h: 'Media de espera en barra', a: A.tradWait.med, d: D.tradWait.med, f: function (v) { return one(v) + ' min'; }, up: false, small: 0.05, p90a: A.tradWaitP90.med, p90d: D.tradWaitP90.med },
+      { n: 'Máximo de personas en cola', a: A.maxQueue.med, d: D.maxQueue.med, f: int, up: false, small: 0.5 },
+      { n: 'Ocupación de los camareros', h: 'Tiempo trabajando sobre toda la noche', a: A.util.med, d: D.util.med, f: function (v) { return pct(v); }, up: null, small: 0.005 }
+    ];
+    var html = rows.map(function (r) {
+      var dv = r.dv != null ? r.dv : r.d - r.a;
+      var c = r.up === null ? '<span class="chip flat"><i></i>' + signed(dv * 100, function (v) { return one(v) + ' pts'; }) + '</span>' : chip(dv, r.up, r.f, r.small);
+      return '<tr' + (r.key ? ' class="key"' : '') + '><td><span class="k">' + esc(r.n) + '</span>' + (r.h ? '<span class="kh">' + esc(r.h) + '</span>' : '') + '</td><td>' + r.f(r.a) + (r.p90a != null ? '<small>1 de cada 10, más de ' + one(r.p90a) + '</small>' : '') + '</td><td>' + r.f(r.d) + (r.p90d != null ? '<small>1 de cada 10, más de ' + one(r.p90d) + '</small>' : '') + '</td><td>' + c + '</td></tr>';
+    }).join('');
+    var cap = Math.round(p.puntoBozu * 1.3);
+    html += '<tr><td><span class="k">Rondas pedidas con bozu</span></td><td>—</td><td>' + pct(D.bozuShare.med) + '</td><td></td></tr>';
+    html += '<tr><td><span class="k">Copas esperando en el punto bozu</span><span class="kh">Pico en una barra. Caben unas ' + cap + '</span></td><td>—</td><td>' + int(D.maxCounter.med) + '</td><td>' + (D.maxCounter.med > cap ? '<span class="chip down"><i></i>No caben</span>' : '<span class="chip up"><i></i>Caben</span>') + '</td></tr>';
+    html += '<tr><td><span class="k">Pedidos bozu no recogidos</span><span class="kh">Ya cobrados: la gente se fue antes de recogerlos</span></td><td>—</td><td>' + int(D.noRecogido.med) + '</td><td></td></tr>';
+    document.querySelector('#cmp tbody').innerHTML = html;
+    $('cajaTotal').textContent = eur(A.rev.med);
+    renderCharts(); renderChecks(); renderStats();
+  }
+  function visible(v) { return !$('view-' + v).hidden && !$('app').hidden; }
+  function renderCharts() {
+    if (!last.main || !visible('resumen')) return;
+    var A = last.main.A, D = last.main.D, nh = A.hourly.length, hl = [];
+    for (var i = 0; i < nh; i++) hl.push(hhmm(i) + '–' + hhmm(i + 1));
+    $('hourSub').textContent = 'Media de las noches simuladas. Total: ' + eur(A.hourly.reduce(function (a, b) { return a + b; }, 0)) + ' sin bozu y ' + eur(D.hourly.reduce(function (a, b) { return a + b; }, 0)) + ' con bozu.';
+    colChart($('hourChart'), {
+      aria: 'Facturación por hora, noche normal frente a bozu', labels: hl, height: 270,
+      series: [{ name: 'Noche normal', color: '#6a8cf0', values: A.hourly }, { name: 'Con bozu', color: '#d4ff3a', values: D.hourly }],
+      yFmt: function (v) { return v >= 1000 ? esInt.format(v / 1000) + ' mil €' : esInt.format(v) + ' €'; },
+      xTick: function (i) { return hhmm(i); }, tipTitle: function (i) { return hl[i]; }, tipFmt: eur, peakLabels: true, peakFmt: eur
+    });
+    $('hourTable').innerHTML = '<table><thead><tr><th>Hora</th><th>Noche normal</th><th>Con bozu</th></tr></thead><tbody>' + hl.map(function (l, i) { return '<tr><td>' + l + '</td><td>' + eur(A.hourly[i]) + '</td><td>' + eur(D.hourly[i]) + '</td></tr>'; }).join('') + '</tbody></table>';
+    var nq = A.queue.length, ql = []; for (var j = 0; j < nq; j++) ql.push(hhmm(j * 5 / 60));
+    lineChart($('qChart'), {
+      aria: 'Personas haciendo cola en la barra a lo largo de la noche', labels: ql, height: 230,
+      series: [{ name: 'Noche normal', color: '#6a8cf0', values: A.queue }, { name: 'Con bozu', color: '#d4ff3a', values: D.queue }],
+      yFmt: function (v) { return esInt.format(v); }, xTick: function (i, narrow) { return i % (narrow ? 24 : 12) === 0 ? ql[i] : ''; },
+      tipTitle: function (i) { return ql[i]; }, tipFmt: function (v) { return one(v) + ' personas'; }, peakLabels: true, peakFmt: function (v) { return int(v) + ' personas'; }
+    });
+    if (last.sens) renderSens();
+  }
+  function renderChecks() {
+    var A = last.main.A, w = A.tradWait.med, pp = A.paidPP.med, u = A.util.med;
+    var checks = [
+      { t: 'Cola media en barra', v: one(w) + ' min', r: 'Con tus respuestas la gente aguanta unos ' + last.p.paciencia + ' min. Si en tu barra se espera más o menos, ajusta la paciencia.' },
+      { t: 'Copas pagadas por persona', v: es2.format(pp), r: 'Además de las ' + last.p.incluidas + ' de la entrada. Si en tu caja salen más, tu barra va más rápido que estos supuestos.' },
+      { t: 'Camareros ocupados', v: pct(u), r: u > 0.7 ? 'Tu barra va al límite buena parte de la noche: aquí es donde bozu más rinde.' : 'Tu barra tiene margen: bozu suma menos por capacidad y más por extras y promos.' }
+    ];
+    $('checks').innerHTML = checks.map(function (c) { return '<div class="check"><div class="t">' + esc(c.t) + '</div><div class="v">' + c.v + '</div><div class="r">' + esc(c.r) + '</div></div>'; }).join('');
+  }
+  function renderDecomp() {
+    var p = last.p, d = last.decomp, parts = d.parts;
+    var total = parts.capacidad + parts.extras + (p.promoOn ? parts.promo : 0);
+    hbars($('parts'), [
+      { n: 'Más rondas servidas y menos gente que se rinde', h: 'Sin tomar nota ni cobrar en barra, preparación en tanda y pedidos desde la pista', v: parts.capacidad },
+      { n: 'Extras añadidos al pedir', h: 'Del ' + p.upsellBarra + ' % en barra al ' + p.upsellBozu + ' % con bozu', v: parts.extras },
+      { n: 'Promoción con notificación', h: p.promoOn ? 'Frente a la misma promo sin bozu' : 'Activa una promoción en Supuestos para verlo', v: p.promoOn ? parts.promo : 0 },
+      { n: 'Total por noche', v: total, total: true }
+    ], eur, { signed: true });
+    if (!d.staff) { $('staffBig').textContent = '—'; $('staffText').textContent = 'Con un solo camarero no se puede quitar ninguno.'; return; }
+    var r = d.staff.diff.rel, n = p.camareros, cam = (n - 1) + (n - 1 === 1 ? ' camarero' : ' camareros');
+    $('staffSub').textContent = 'Tu noche normal con ' + n + ' camareros frente a bozu con ' + (n - 1) + '.';
+    $('staffBig').innerHTML = signed(r, function (v) { return pct(v); }) + ' <small>de facturación</small>';
+    $('staffText').textContent = r >= 0
+      ? 'Con bozu y ' + cam + ' facturas ' + eur(d.staff.E.rev.med) + ', ' + signed(d.staff.diff.abs, eur) + ' más que tu noche normal con ' + n + '. Te ahorras un sueldo y sigues vendiendo más.'
+      : 'Con bozu y ' + cam + ' facturas ' + eur(d.staff.E.rev.med) + ', ' + eur(Math.abs(d.staff.diff.abs)) + ' menos que tu noche normal con ' + n + '. Con esta adopción, mejor no quitar a nadie.';
+  }
+  function renderSens() {
+    if (!last.sens || !visible('resumen')) return;
+    var s = last.sens.sens, p = last.p, labels = s.map(function (x) { return x.level + ' %'; });
+    lineChart($('sensChart'), {
+      aria: 'Aumento de facturación según el porcentaje de gente que usa bozu', labels: labels, height: 230, ml: 58,
+      series: [{ name: 'Aumento', color: '#d4ff3a', values: s.map(function (x) { return x.rel * 100; }) }],
+      yFmt: function (v) { return (v > 0 ? '+' : '') + esInt.format(v) + ' %'; }, xTick: function (i) { return labels[i]; },
+      tipTitle: function (i) { return labels[i] + ' de la gente con bozu · ' + pct(s[i].share) + ' de las rondas'; },
+      tipFmt: function (v) { return (v > 0 ? '+' : '') + one(v) + ' %'; }, area: true, dots: true,
+      marker: { i: p.adopcion / 20, label: 'Tu respuesta: ' + p.adopcion + ' %' }
+    });
+  }
+
+  // ---------- render: estadísticas bozu ----------
+  function renderStats() {
+    if (!last.main || !visible('estadisticas')) return;
+    var b = last.main.bz, D = last.main.D, p = last.p;
+    var peakI = 0; b.buck.forEach(function (v, i) { if (v > b.buck[peakI]) peakI = i; });
+    var tiles = [
+      { t: 'Vendido con bozu', v: eur(b.rev), s: pct(b.rev / Math.max(1, D.rev.med)) + ' de tu barra', a: true },
+      { t: 'Pedidos', v: int(b.orders), s: pct(D.bozuShare.med) + ' de las rondas' },
+      { t: 'Copas', v: int(b.units), s: 'en pedidos bozu' },
+      { t: 'Ticket medio', v: eur2(b.orders ? b.rev / b.orders : 0), s: 'por pedido' },
+      { t: 'Clientes', v: int(b.customers), s: 'personas que han pagado' },
+      { t: 'Gasto por cliente', v: eur2(b.customers ? b.rev / b.customers : 0), s: 'esta noche' },
+      { t: 'Edad media', v: Math.round(b.avgAge) + ' años', s: 'de quien pide', a: true },
+      { t: 'Hora punta de pedidos', v: hhmm(peakI / 4), s: int(b.buck[peakI]) + ' pedidos en 15 min', a: true },
+      { t: 'Tiempo hasta «listo»', v: one(b.ready) + ' min', s: 'desde que pagan' },
+      { t: 'Repiten', v: pct(b.customers ? b.repeat / b.customers : 0), s: 'piden más de una vez' },
+      { t: 'Antes de llegar', v: int(b.pre), s: 'pedidos desde fuera' },
+      { t: 'Extras vendidos', v: int(b.extras), s: 'al pedir la copa' }
+    ];
+    $('bzTiles').innerHTML = tiles.map(function (x) { return '<div class="tile' + (x.a ? ' accent' : '') + '"><div class="t">' + esc(x.t) + '</div><div class="v">' + esc(x.v) + '</div><div class="s">' + esc(x.s) + '</div></div>'; }).join('');
+    $('bzPeakSub').textContent = 'El pico llega a las ' + hhmm(peakI / 4) + '. Ajusta camareros y stock a esa hora.';
+    var bl = b.buck.map(function (_, i) { return hhmm(i / 4); });
+    colChart($('bzHours'), {
+      aria: 'Pedidos con bozu cada 15 minutos', labels: bl, height: 230, ml: 40,
+      series: [{ name: 'Pedidos', color: '#d4ff3a', values: b.buck }],
+      yFmt: function (v) { return esInt.format(v); }, xTick: function (i, narrow) { return i % (narrow ? 8 : 4) === 0 ? bl[i] : ''; },
+      tipTitle: function (i) { return bl[i] + '–' + hhmm((i + 1) / 4); }, tipFmt: function (v) { return one(v) + ' pedidos'; }, peakLabels: true, peakFmt: function (v) { return int(v); }
+    });
+    var units = b.units || 1;
+    hbars($('bzTop'), topOf(b.top, 8).map(function (x) { return { n: x.n, s: pct(x.v / units), v: x.v }; }), int);
+    hbars($('bzType'), topOf(b.type, 9).map(function (x) { return { n: x.n, s: pct(x.v / units), v: x.v }; }), int);
+    var ages = ['18–20', '21–23', '24–26', '27–29', '30–34', '35+'];
+    $('bzAgeSub').textContent = 'Edad media: ' + Math.round(b.avgAge) + ' años. Sale del registro +18 de cada cliente.';
+    colChart($('bzAge'), {
+      aria: 'Pedidos por edad de quien pide', labels: ages, height: 210, ml: 40,
+      series: [{ name: 'Pedidos', color: '#d4ff3a', values: b.ageHist }],
+      yFmt: function (v) { return esInt.format(v); }, xTick: function (i) { return ages[i]; },
+      tipTitle: function (i) { return ages[i] + ' años'; }, tipFmt: function (v) { return int(v) + ' pedidos'; }
+    });
+    var po = b.orders || 1;
+    hbars($('bzPay'), topOf(b.pay, 4).map(function (x) { return { n: x.n, s: pct(x.v / po), v: x.v }; }), int);
+    hbars($('bzBar'), b.bar.map(function (v, i) { return { n: 'Barra ' + (i + 1), v: v }; }).filter(function (x) { return x.v > 0; }), eur);
+    var ex = topOf(b.extrasBy, 4);
+    $('bzExtraSub').textContent = int(b.extras) + ' extras en ' + int(b.orders) + ' pedidos.';
+    hbars($('bzExtras'), ex.map(function (x) { return { n: x.n, v: x.v }; }), int);
+    $('bzNote').textContent = 'Datos de la simulación de ' + state.venue + ', solo de los pedidos hechos con bozu (' + pct(D.bozuShare.med) + ' de las rondas). En tu panel de bozu salen los de verdad, cada noche.';
+  }
+
+  // ---------- la noche en directo ----------
+  var Live = (function () {
+    var COL = { bg: '#08080a', floor: '#0e0f0d', line: 'rgba(255,255,255,0.14)', lineStrong: 'rgba(255,255,255,0.28)', text: '#f4f4f2', muted: '#96969c', dim: '#5f5f66', lime: '#d4ff3a', bad: '#ff7a66', counter: '#17181a' };
+    var START = 0, nowTs = 0;
+    var L = null, simT = 0, playing = !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches), speed = 120, acc = 0, lastTs = 0, seed = 1000, ended = false;
+    var cv = [$('cv0'), $('cv1')], playBtn = $('play');
+    function mkNight(p, bozu) { var S = scen(p, bozu ? 'D' : 'A'); S.trace = true; return { n: createNight(p, S, seed), p: p, bozu: bozu, pos: {}, feed: [], pending: null, marks: [], hitShown: false, idx: bozu ? 1 : 0 }; }
+    function build(p, keepTime) {
+      var keep = keepTime && L, target = keep ? simT : START, oldPos = keep ? [L[0].pos, L[1].pos] : null, oldFeed = keep ? [L[0].feed, L[1].feed] : null, wasEnded = keep && ended;
+      L = [mkNight(p, false), mkNight(p, true)]; simT = 0; ended = false; fastForward(target);
+      if (oldPos) { L[0].pos = oldPos[0]; L[1].pos = oldPos[1]; L[0].feed = oldFeed[0]; L[1].feed = oldFeed[1]; }
+      if (wasEnded) { ended = true; showEnd(); } else hideEnd();
+      resize();
+    }
+    function showEnd() {
+      var d = L[1].n.M.rev - L[0].n.M.rev;
+      $('endTitle').textContent = 'Cierre a las ' + hhmm(L[0].n.close / 3600) + '.';
+      $('endText').innerHTML = 'Con bozu has facturado <strong>' + eur(L[1].n.M.rev) + '</strong>, ' + (d >= 0 ? '<strong>' + signed(d, eur) + '</strong> más' : '<strong>' + eur(-d) + '</strong> menos') + ' que tu noche normal (' + eur(L[0].n.M.rev) + '). Mira quién te ha comprado, qué y a qué hora.';
+      $('liveEnd').hidden = false;
+    }
+    function hideEnd() { $('liveEnd').hidden = true; }
+    function stepBoth() { var a = L[0].n.step(), b = L[1].n.step(); if (a || b) simT += 5; return a || b; }
+    function fastForward(T) { while (simT < T && stepBoth()) {} L.forEach(function (x) { x.n.events.length = 0; x.pos = {}; x.marks = []; x.feed = []; x.pending = null; }); updateStats(); }
+    function msg(x, e) {
+      var g = e.g, n = e.n, quien = n === 1 ? 'Alguien' : 'Un grupo de ' + n;
+      switch (e.type) {
+        case 'balk': return { p: 2, t: quien + ' ve la cola y vuelve a la pista.' };
+        case 'renege': return { p: 3, t: (n === 1 ? 'Alguien deja' : 'Un grupo deja') + ' la cola tras ' + Math.round(e.x / 60) + ' min esperando.' };
+        case 'balk-bozu': return { p: 2, t: 'bozu avisa de ' + Math.round(e.x / 60) + ' min de espera: ' + (n === 1 ? 'alguien lo deja' : 'un grupo lo deja') + ' para luego.' };
+        case 'order': return { p: 1, t: e.x && e.x.pre ? 'Un grupo pide su primera ronda antes de llegar.' : 'Ronda de ' + n + ' pedida desde la pista' + (e.x && e.x.extras ? ', con un extra.' : '.') };
+        case 'ready': return { p: 1, t: g && g.app ? 'Pedido listo: el móvil vibra y van a por él.' : 'Pedido listo. Desde Safari tardan más en verlo.' };
+        case 'served': return e.x > 480 ? { p: 1, t: 'Por fin: ronda de ' + Math.max(1, n) + ' tras ' + Math.round(e.x / 60) + ' min de cola.' } : null;
+        case 'promo': return { p: 4, t: 'Promo lanzada: ' + n + ' grupos se enteran ahora.' };
+        case 'norecogido': return { p: 2, t: 'Un grupo se va sin recoger su pedido.' };
+      }
+      return null;
+    }
+    function drain(x) {
+      var evs = x.n.events;
+      for (var i = 0; i < evs.length; i++) {
+        var e = evs[i];
+        if ((e.type === 'balk' || e.type === 'renege' || e.type === 'balk-bozu') && e.g) x.marks.push({ g: e.g, until: nowTs + 1600 });
+        var m = msg(x, e); if (m && (!x.pending || m.p >= x.pending.p)) { m.time = hhmm(e.t / 3600); x.pending = m; }
+      }
+      evs.length = 0;
+      var hit = x.n.hitEnd[Math.min(x.n.hitEnd.length - 1, Math.floor(simT / 5))] > simT;
+      if (hit && !x.hitShown) { x.hitShown = true; x.pending = { p: 5, time: hhmm(simT / 3600), t: x.bozu ? 'Temazo. Nadie deja la pista, pero los pedidos siguen entrando.' : 'Temazo. Nadie quiere ir a la barra ahora.' }; }
+      if (!hit) x.hitShown = false;
+    }
+    function flushFeed() {
+      if (!L) return;
+      L.forEach(function (x) {
+        if (!x.pending) return;
+        x.feed.unshift(x.pending); x.pending = null; if (x.feed.length > 4) x.feed.length = 4;
+        $('fd' + x.idx).innerHTML = x.feed.map(function (f, i) { return '<li' + (i === 0 ? ' class="new"' : '') + '><time>' + f.time + '</time>' + esc(f.t) + '</li>'; }).join('');
+      });
+    }
+    function updateStats() {
+      if (!L) return;
+      L.forEach(function (x) {
+        var M = x.n.M, q = 0, pend = 0;
+        x.n.bars.forEach(function (b) { b.q.forEach(function (o) { q += o.persons; }); pend += b.bq.length + b.ready.length; b.staff.forEach(function (s) { if (s.task && s.task.channel === 'bozu') pend++; }); });
+        var cells = [['Facturado', eur(M.rev)], ['En cola ahora', int(q)], ['Copas perdidas', int(M.lostDrinks)], ['Copas servidas', int(M.drinks)]];
+        if (x.bozu) cells[1] = ['En cola / en bozu', int(q) + ' / ' + int(pend)];
+        $('st' + x.idx).innerHTML = cells.map(function (c) { return '<div><span>' + c[0] + '</span><strong class="num">' + c[1] + '</strong></div>'; }).join('');
+      });
+      var d = L[1].n.M.rev - L[0].n.M.rev;
+      $('liveDiff').textContent = Math.abs(d) < 1 ? 'Mismo facturado' : signed(d, eur) + ' con bozu';
+      $('clock').innerHTML = hhmm(simT / 3600).split('').map(function (ch) { return ch === ':' ? '<span class="c">:</span>' : '<span class="d">' + ch + '</span>'; }).join('');
+      $('prog').style.width = (simT / L[0].n.close * 100).toFixed(2) + '%';
+    }
+    function geo(x, w, h) {
+      var p = x.p, pad = 12, nb = p.barras, gap = nb > 3 ? 8 : 14;
+      var bw = (w - 2 * pad - (nb - 1) * gap) / nb, cy = pad + 30, ch = 9;
+      var r = Math.max(1.6, Math.min(2.8, w / 200 * Math.sqrt(600 / Math.max(300, p.aforo)))), sp = r * 2.9;
+      var floorTop = Math.round(h * 0.47), floorBot = h - pad - 20;
+      var bars = x.n.bars.map(function (b, i) { var x0 = pad + i * (bw + gap), x1 = x0 + bw, pk = x.bozu ? Math.max(26, bw * p.puntoBozu / 100) : 0; return { x0: x0, x1: x1, pk0: x1 - pk }; });
+      return { pad: pad, w: w, h: h, cy: cy, ch: ch, r: r, sp: sp, floorTop: floorTop, floorBot: floorBot, bars: bars };
+    }
+    function hash(n) { var t = (n * 2654435761) >>> 0; t ^= t >>> 15; t = Math.imul(t, 2246822519) >>> 0; t ^= t >>> 13; return (t >>> 0) / 4294967296; }
+    function home(G, g, mi) {
+      var fx = G.pad + 18 + hash(g.id * 3 + 1) * (G.w - 2 * G.pad - 36), fy = G.floorTop + 20 + hash(g.id * 3 + 2) * (G.floorBot - G.floorTop - 34);
+      if (g.members.length === 1) return [fx, fy];
+      var a = mi / g.members.length * Math.PI * 2 + g.id, rr = G.r * 1.6 + g.members.length * 0.35;
+      return [fx + Math.cos(a) * rr, fy + Math.sin(a) * rr];
+    }
+    function door(G) { return [G.pad + 26, G.h - G.pad - 4]; }
+    function roundRect(ctx, x0, y0, w0, h0, r0) { ctx.beginPath(); ctx.moveTo(x0 + r0, y0); ctx.arcTo(x0 + w0, y0, x0 + w0, y0 + h0, r0); ctx.arcTo(x0 + w0, y0 + h0, x0, y0 + h0, r0); ctx.arcTo(x0, y0 + h0, x0, y0, r0); ctx.arcTo(x0, y0, x0 + w0, y0, r0); ctx.closePath(); }
+    function draw(x, c) {
+      var dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+      if (!w || !h) return;
+      if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+      var ctx = c.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var G = geo(x, w, h), t = simT, now = nowTs;
+      ctx.fillStyle = COL.bg; ctx.fillRect(0, 0, w, h);
+      var hit = x.n.hitEnd[Math.min(x.n.hitEnd.length - 1, Math.floor(t / 5))] > t;
+      ctx.fillStyle = COL.floor; roundRect(ctx, G.pad, G.floorTop, w - 2 * G.pad, G.floorBot - G.floorTop, 14); ctx.fill();
+      if (hit) {
+        var pulse = 0.06 + 0.04 * Math.sin(now / 160), gr = ctx.createRadialGradient(w / 2, G.floorBot, 10, w / 2, G.floorBot, (G.floorBot - G.floorTop) * 1.3);
+        gr.addColorStop(0, 'rgba(212,255,58,' + (pulse * 2).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(212,255,58,0)');
+        ctx.fillStyle = gr; roundRect(ctx, G.pad, G.floorTop, w - 2 * G.pad, G.floorBot - G.floorTop, 14); ctx.fill();
+      }
+      ctx.strokeStyle = COL.line; ctx.lineWidth = 1; roundRect(ctx, G.pad + 0.5, G.floorTop + 0.5, w - 2 * G.pad - 1, G.floorBot - G.floorTop - 1, 14); ctx.stroke();
+      ctx.font = '600 9px "DM Sans", sans-serif'; ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = COL.dim; ctx.textAlign = 'left'; ctx.fillText('PISTA', G.pad + 10, G.floorTop + 14);
+      ctx.fillStyle = COL.counter; ctx.strokeStyle = hit ? COL.lime : COL.lineStrong; roundRect(ctx, w / 2 - 22, G.floorBot + 4, 44, 9, 3); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = hit ? COL.lime : COL.muted; ctx.textAlign = 'center'; ctx.fillText(hit ? 'DJ · TEMAZO' : 'DJ', w / 2, h - 3);
+      var D = door(G);
+      ctx.strokeStyle = COL.lineStrong; ctx.beginPath(); ctx.moveTo(D[0] - 14, h - G.pad + 2); ctx.lineTo(D[0] + 14, h - G.pad + 2); ctx.stroke();
+      ctx.fillStyle = COL.muted; ctx.textAlign = 'left'; ctx.fillText('ENTRADA', D[0] - 14, h - 2);
+      var promoOn = x.p.promoOn && t >= x.n.pS && t < x.n.pE;
+      x.n.bars.forEach(function (b, i) {
+        var B = G.bars[i];
+        ctx.fillStyle = COL.muted; ctx.textAlign = 'left'; ctx.fillText('BARRA ' + (i + 1), B.x0, G.pad + 6);
+        ctx.fillStyle = COL.counter; ctx.strokeStyle = COL.lineStrong; roundRect(ctx, B.x0, G.cy, B.x1 - B.x0, G.ch, 3); ctx.fill(); ctx.stroke();
+        if (x.bozu) {
+          ctx.fillStyle = 'rgba(212,255,58,0.14)'; ctx.strokeStyle = COL.lime; roundRect(ctx, B.pk0, G.cy, B.x1 - B.pk0, G.ch, 3); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = COL.lime; ctx.textAlign = 'right'; ctx.fillText('bozu', B.x1, G.pad + 6);
+          var k = 0, cols = Math.max(2, Math.floor((B.x1 - B.pk0 - 4) / 4));
+          b.ready.forEach(function (o) { for (var j = 0; j < o.lines.length; j++, k++) { var cx = B.pk0 + 4 + (k % cols) * 4, cyy = G.cy + 3 + Math.floor(k / cols) * 3; if (cyy > G.cy + G.ch - 1) continue; ctx.fillStyle = COL.lime; ctx.beginPath(); ctx.arc(cx, cyy, 1.3, 0, 7); ctx.fill(); } });
+        }
+        var ns = b.staff.length, span = (B.pk0 - B.x0 - 16);
+        b.staff.forEach(function (s, si) {
+          var sx = B.x0 + 8 + (si + 0.5) * span / ns, sy = G.cy - 9, col = !s.task ? COL.dim : s.task.channel === 'bozu' ? COL.lime : COL.text;
+          if (s.task) { ctx.shadowColor = col; ctx.shadowBlur = 8; }
+          ctx.fillStyle = col; ctx.beginPath(); ctx.arc(sx, sy, G.r + 1.4, 0, 7); ctx.fill(); ctx.shadowBlur = 0;
+          if (s.task) s.task._sx = sx;
+        });
+        b.q.forEach(function (o, qi2) { o._qi = qi2; });
+        var w8 = 0; b.ready.forEach(function (o) { o._pi = t >= o.tCollect - 90 ? w8++ : -1; });
+      });
+      if (promoOn && (x.bozu || x.p.promoAlcance === 'todos')) { ctx.font = '700 10px "DM Sans", sans-serif'; ctx.fillStyle = COL.lime; ctx.textAlign = 'right'; ctx.fillText('PROMO EN MARCHA', w - G.pad - 8, G.floorTop + 14); }
+      var dt = Math.min(0.1, Math.max(0, (now - (x.lastDraw || now)) / 1000)); x.lastDraw = now;
+      var k2 = Math.min(1, dt * 7), groups = x.n.groups, marked = {};
+      x.marks = x.marks.filter(function (m) { return m.until > now; }); x.marks.forEach(function (m) { marked[m.g.id] = m; });
+      for (var gi = 0; gi < groups.length; gi++) {
+        var g = groups[gi]; if (t < g.arr) continue;
+        var o = g.order, st = g.status;
+        for (var mi = 0; mi < g.members.length; mi++) {
+          var key = g.id * 10 + mi, P0 = x.pos[key], tgt, ring = false, fill = COL.text, alpha = 0.82, glow = false, B = g.bar ? G.bars[g.bar.id] : null;
+          if (st === 'gone') { if (!P0 || P0.a <= 0.02) continue; tgt = door(G); P0.a -= dt * 0.8; alpha = Math.max(0, P0.a); }
+          else if (st === 'queue' && mi < o.persons && o._qi != null) {
+            var avail = B.pk0 - B.x0 - 6, cols2 = Math.max(3, Math.min(9, Math.floor(avail / G.sp))), qx0 = B.x0 + 3 + (avail - cols2 * G.sp) / 2;
+            var row = Math.floor(o._qi / cols2), dx = o._qi % cols2 + (mi ? 0.5 : 0) + (row % 2 ? 0.5 : 0);
+            tgt = [qx0 + dx * G.sp, Math.min(G.floorTop - 4, G.cy + G.ch + 7 + row * G.sp + (mi ? G.sp * 0.5 : 0))];
+            if (t - o.tJoin > g.patience) fill = COL.bad;
+          } else if (st === 'serving' && mi < o.persons) { tgt = [(o._sx || B.x0 + 10) + mi * G.sp, G.cy + G.ch + 4]; }
+          else if (st === 'pickup' && mi === 0 && o._pi >= 0) { var pc = Math.max(1, Math.floor((B.x1 - B.pk0 - 2) / G.sp)); tgt = [B.pk0 + 4 + (o._pi % pc) * G.sp, G.cy + G.ch + 6 + Math.floor(o._pi / pc) * G.sp]; fill = COL.lime; glow = true; }
+          else { tgt = home(G, g, mi); if (mi === 0 && (st === 'bozu' || st === 'preparing')) ring = true; if (mi === 0 && st === 'pickup') { fill = COL.lime; glow = true; } }
+          if (!P0) { var dd = door(G); P0 = x.pos[key] = { x: dd[0] + (mi - 1) * 3, y: dd[1], a: 1 }; } else if (st !== 'gone') P0.a = 1;
+          P0.x += (tgt[0] - P0.x) * k2; P0.y += (tgt[1] - P0.y) * k2;
+          ctx.globalAlpha = alpha; if (glow) { ctx.shadowColor = COL.lime; ctx.shadowBlur = 7; }
+          ctx.fillStyle = fill; ctx.beginPath(); ctx.arc(P0.x, P0.y, G.r, 0, 7); ctx.fill(); ctx.shadowBlur = 0;
+          if (ring) { ctx.strokeStyle = COL.lime; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(P0.x, P0.y, G.r + 2.2 + Math.sin(now / 200 + g.id) * 0.6, 0, 7); ctx.stroke(); }
+          ctx.globalAlpha = 1;
+          if (mi === 0 && marked[g.id]) {
+            ctx.globalAlpha = Math.max(0, (marked[g.id].until - now) / 1600); ctx.strokeStyle = COL.bad; ctx.lineWidth = 1.6;
+            var mx = P0.x + 6, my = P0.y - 6; ctx.beginPath(); ctx.moveTo(mx - 3, my - 3); ctx.lineTo(mx + 3, my + 3); ctx.moveTo(mx + 3, my - 3); ctx.lineTo(mx - 3, my + 3); ctx.stroke(); ctx.globalAlpha = 1;
+          }
+        }
+      }
+      ctx.lineWidth = 1;
+    }
+    function resize() { cv.forEach(function (c) { var w = c.parentNode.clientWidth; if (w) c.style.height = Math.round(Math.max(300, Math.min(520, w * 0.86))) + 'px'; }); }
+    function frame(ts) {
+      requestAnimationFrame(frame);
+      if (!L || !visible('directo')) { lastTs = ts; return; }
+      nowTs = ts;
+      var dtr = lastTs ? Math.min(0.25, (ts - lastTs) / 1000) : 0; lastTs = ts;
+      if (playing && !ended) {
+        acc += dtr * speed; var n = 0;
+        while (acc >= 5 && n < 400) { acc -= 5; n++; if (!stepBoth()) { ended = true; setPlay(false, true); showEnd(); break; } }
+        if (n) { L.forEach(drain); updateStats(); }
+      }
+      draw(L[0], cv[0]); draw(L[1], cv[1]);
+    }
+    function setPlay(on, fin) { playing = on; playBtn.textContent = fin ? 'Volver a empezar' : on ? 'Pausa' : 'Seguir'; playBtn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+    playBtn.addEventListener('click', function () { if (ended) { build(L[0].p, false); setPlay(true); return; } setPlay(!playing); });
+    function restart() { if (L) build(L[0].p, false); setPlay(!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)); }
+    document.querySelectorAll('#speed button').forEach(function (b) { b.addEventListener('click', function () { speed = +b.dataset.s; document.querySelectorAll('#speed button').forEach(function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); }); }); });
+    $('peak').addEventListener('click', function () { if (!L) return; var T = Math.max(0, (L[0].p.picoEntrada - 0.25) * 3600); if (simT > T) build(L[0].p, false); fastForward(T); ended = false; setPlay(true); });
+    $('again').addEventListener('click', function () { if (!L) return; seed = 1000 + Math.floor(Math.random() * 9000) * 17; build(L[0].p, false); setPlay(true); });
+    var rzl; window.addEventListener('resize', function () { clearTimeout(rzl); rzl = setTimeout(resize, 100); });
+    setInterval(flushFeed, 900);
+    setPlay(playing);
+    requestAnimationFrame(frame);
+    return { build: build, resize: resize, restart: restart, time: function () { return simT; } };
+  })();
+
+  var rz; window.addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(function () { renderCharts(); renderStats(); }, 150); });
+
+  // ---------- arranque ----------
+  buildControls();
+  if (state.onboarded) { enterApp(location.hash.slice(1) || 'directo'); changed(true); }
+  else { showScreen('intro'); renderStep(); }
+})();
+</script>
+</body>
+</html>
