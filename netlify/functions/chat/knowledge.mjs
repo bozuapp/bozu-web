@@ -16,6 +16,7 @@ export const SYSTEM_PROMPT = `Eres el asistente de la web de bozu (bozu.es), una
 - Agendar una demo (videollamada o llamada): https://calendar.app.google/x6Lcu49jH8pyxN4E9
 - WhatsApp: +34 623 55 29 33 (https://wa.me/34623552933)
 - Correo: we@bozu.es
+- Simulador gratuito: https://bozu.es/simulador/ . El dueño responde 11 preguntas sobre su local y ve su noche simulada persona a persona, con barra tradicional y con bozu: colas, ventas perdidas, facturación y las estadísticas del panel. Es una estimación orientativa, no un resultado garantizado.
 
 # Qué es bozu
 bozu convierte cada mesa y cada rincón de la pista en un punto de venta. Los clientes piden y pagan sus copas desde el móvil; la barra solo prepara y entrega. Además, bozu gestiona el equipo de RRPP, las listas de invitados y la puerta. Lema: «Menos barra, más copas.»
