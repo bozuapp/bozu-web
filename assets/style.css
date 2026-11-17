@@ -78,7 +78,6 @@ body.locked { overflow: hidden; }
 .nav-links a.on { color: var(--text); }
 .nav-links a.on::after { content: ""; position: absolute; left: 0; right: 0; bottom: -8px; height: 2px; border-radius: 2px; background: var(--lime); box-shadow: 0 0 8px var(--lime); }
 .logo { font-weight: 700; font-size: 30px; letter-spacing: -0.04em; text-decoration: none; display: inline-flex; align-items: flex-end; gap: 3px; line-height: 1; }
-.logo .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 14px var(--lime); margin-bottom: 4px; }
 .nav-links { display: flex; gap: 30px; }
 .nav-links a { color: var(--muted); text-decoration: none; font-size: 15px; transition: color .2s; }
 .nav-links a:hover { color: var(--text); }
@@ -131,7 +130,6 @@ body.locked { overflow: hidden; }
 /* UI compartida del móvil */
 .ui-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .ui-logo { font-weight: 700; font-size: 22px; letter-spacing: -0.04em; display: inline-flex; align-items: baseline; gap: 2px; line-height: 1; }
-.ui-logo i { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); }
 .ui-chip { font-size: 12px; padding: 5px 12px; border-radius: 999px; background: #23261e; color: var(--text); }
 .ui-title { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 16px; }
 .ui-item { display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 18px; background: #16180f; margin-bottom: 10px; }
@@ -428,7 +426,7 @@ input[type="range"]:focus-visible { outline: 2px solid var(--lime); outline-offs
 .ap-club { flex: 1; font-weight: 700; font-size: 1.05em; letter-spacing: -0.02em; white-space: nowrap; } .ap-club i { font-style: normal; font-size: .6em; color: var(--muted); }
 .ap-ic { width: 2.1em; height: 2.1em; border-radius: 50%; background: #1c1d20; display: grid; place-items: center; color: var(--text); flex: none; }
 .ap-ic svg { width: 1.1em; height: 1.1em; }
-.ap-logo { flex: 1; font-weight: 700; font-size: 1.15em; letter-spacing: -0.04em; display: inline-flex; align-items: baseline; gap: .1em; } .ap-logo i { width: .3em; height: .3em; border-radius: 50%; background: var(--lime); }
+.ap-logo { flex: 1; font-weight: 700; font-size: 1.15em; letter-spacing: -0.04em; display: inline-flex; align-items: baseline; gap: .1em; }
 .ap-pill { font-size: .62em; padding: .5em .9em; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.2); white-space: nowrap; }
 .ap-glass { display: flex; justify-content: center; margin: -.2em 0 .3em; }
 .ap-glass svg { height: 8.6em; width: auto; max-width: none; overflow: visible; }
