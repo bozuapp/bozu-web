@@ -485,7 +485,8 @@ const BOZU_CONTACT = {
 
   // Resalta en el menú la sección que se está viendo
   const navLinks = [...document.querySelectorAll('.nav-links a, .menu-links a')];
-  const spied = [...new Set(navLinks.map((a) => a.getAttribute("href")))].map((h) => document.querySelector(h)).filter(Boolean);
+  // Solo los enlaces a secciones de esta página (#...): los que llevan a otra página, como el simulador, no se vigilan
+  const spied = [...new Set(navLinks.map((a) => a.getAttribute("href")).filter((h) => h && h.charAt(0) === "#" && h.length > 1))].map((h) => document.querySelector(h)).filter(Boolean);
   let spiedId = null;
   function spy() {
     const line = innerHeight * 0.45;
